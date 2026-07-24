@@ -1,0 +1,29 @@
+{
+  "name": "dwi-by-thienhoc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission.",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Trần Thiện Học",
+    "email": "hoc@wi.works",
+    "url": "https://d.wi.works"
+  },
+  "homepage": "https://d.wi.works",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thienhoc/dwi-by-thienhoc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thienhoc/dwi-by-thienhoc/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/validate-repo.mjs",
+    "test": "node scripts/validate-repo.mjs",
+    "preflight:public": "node scripts/public-release-preflight.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

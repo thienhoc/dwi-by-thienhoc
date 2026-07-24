@@ -1,0 +1,56 @@
+name: Support request
+description: Ask a non-sensitive installation or usage question
+title: "[Support] "
+labels:
+  - support
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include credentials, personal data, private transcripts, or security reports. Use the private security channel for sensitive material.
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Conduct
+        - Lean
+        - Budget
+        - Bridge
+        - Arc
+        - Evidence
+        - Installation or repository
+    validations:
+      required: true
+  - type: input
+    id: harness
+    attributes:
+      label: AI coding tool and version
+      placeholder: "Codex ..., Claude Code ..., or other"
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+      description: Include the smallest safe reproduction and remove private content.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you already tried?
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, personal data, private transcripts, and security-sensitive details.
+          required: true

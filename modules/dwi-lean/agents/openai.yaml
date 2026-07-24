@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Lean"
+  short_description: "Bound planning and testing to the real task"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-lean to plan the smallest sufficient path and stop when the task is done."
+policy:
+  allow_implicit_invocation: false

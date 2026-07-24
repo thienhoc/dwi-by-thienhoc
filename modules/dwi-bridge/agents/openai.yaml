@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Bridge"
+  short_description: "Coordinate native Claude and Codex safely"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-bridge to coordinate Claude and Codex with explicit authority and evidence."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,46 @@
+name: Module improvement
+description: Propose a bounded improvement to an existing module
+title: "[Module] "
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Conduct
+        - Lean
+        - Budget
+        - Bridge
+        - Arc
+        - Evidence
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Observable user problem
+      description: Describe the friction before proposing a mechanism.
+    validations:
+      required: true
+  - type: textarea
+    id: smallest-change
+    attributes:
+      label: Smallest useful change
+    validations:
+      required: true
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-goals and permission boundary
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or trial design
+      description: Separate verified facts, observations, estimates, targets, and unknowns.
+    validations:
+      required: true

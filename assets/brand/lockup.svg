@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="220" viewBox="0 0 1120 220" role="img" aria-labelledby="title desc">
+  <title id="title">{ } • Dwi by thienhoc</title>
+  <desc id="desc">Dwi by thienhoc lockup with red-orange braces and a light gray dot.</desc>
+  <rect width="1120" height="220" rx="36" fill="#F7F4EE"/>
+  <g font-family="sans-serif" dominant-baseline="middle">
+    <text x="64" y="112" font-size="96" font-weight="700" fill="#FF4F2E">{ }</text>
+    <circle cx="254" cy="110" r="9" fill="#A8ADB5"/>
+    <text x="290" y="112" font-size="96" font-weight="750" letter-spacing="-3" fill="#1F2328">Dwi</text>
+    <text x="484" y="124" font-size="42" font-weight="500" fill="#5A5F67">by thienhoc</text>
+  </g>
+</svg>

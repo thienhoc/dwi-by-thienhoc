@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Dwi architecture</title>
+  <desc id="desc">Human intent passes through the Dwi layer to a native coding-agent harness, with evidence returning to the person.</desc>
+  <rect width="1200" height="520" rx="32" fill="#F7F4EE"/>
+  <g font-family="sans-serif" fill="#1F2328">
+    <text x="64" y="72" font-size="26" font-weight="700" fill="#FF4F2E">{ }</text>
+    <circle cx="123" cy="64" r="3.5" fill="#A8ADB5"/>
+    <text x="136" y="72" font-size="26" font-weight="700" fill="#1F2328">Dwi</text>
+    <text x="202" y="72" font-size="18" font-weight="500" fill="#5A5F67">by thienhoc</text>
+    <text x="64" y="112" font-size="22" fill="#5A5F67">Separate intent, execution, resources, and evidence.</text>
+    <rect x="64" y="178" width="276" height="190" rx="24" fill="#FFFFFF" stroke="#D9D4CA" stroke-width="2"/>
+    <text x="96" y="226" font-size="24" font-weight="700">Human intent</text>
+    <text x="96" y="268" font-size="18" fill="#5A5F67">Outcome · authority</text>
+    <text x="96" y="300" font-size="18" fill="#5A5F67">boundaries · decisions</text>
+    <rect x="462" y="148" width="276" height="250" rx="24" fill="#17191D"/>
+    <text x="494" y="202" font-size="24" font-weight="700" fill="#FFFFFF">Dwi layer</text>
+    <text x="494" y="244" font-size="18" fill="#D8DADE">Conduct · Lean</text>
+    <text x="494" y="276" font-size="18" fill="#D8DADE">Budget · Bridge</text>
+    <text x="494" y="308" font-size="18" fill="#D8DADE">Arc · Evidence</text>
+    <text x="494" y="354" font-size="16" fill="#A8ADB5">Inspectable instructions</text>
+    <rect x="860" y="178" width="276" height="190" rx="24" fill="#FFFFFF" stroke="#D9D4CA" stroke-width="2"/>
+    <text x="892" y="226" font-size="24" font-weight="700">Native harness</text>
+    <text x="892" y="268" font-size="18" fill="#5A5F67">Codex · Claude Code</text>
+    <text x="892" y="300" font-size="18" fill="#5A5F67">tools · sandbox · policy</text>
+    <path d="M350 273 H444" stroke="#FF4F2E" stroke-width="5" stroke-linecap="round"/>
+    <path d="M430 259 L448 273 L430 287" fill="none" stroke="#FF4F2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M748 273 H842" stroke="#FF4F2E" stroke-width="5" stroke-linecap="round"/>
+    <path d="M828 259 L846 273 L828 287" fill="none" stroke="#FF4F2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M998 394 C998 460 202 460 202 394" fill="none" stroke="#A8ADB5" stroke-width="3" stroke-dasharray="8 10"/>
+    <text x="486" y="478" font-size="18" fill="#5A5F67">Evidence returns to the person</text>
+  </g>
+</svg>

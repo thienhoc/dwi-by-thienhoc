@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If Dwi informs your work, cite the repository and the module you used."
+title: "Dwi by thienhoc"
+type: software
+version: 0.1.0
+authors:
+  - given-names: "Thien Hoc"
+    family-names: "Tran"
+    alias: "thienhoc"
+repository-code: "https://github.com/thienhoc/dwi-by-thienhoc"
+url: "https://d.wi.works"
+abstract: "A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission."
+contact:
+  - email: "hoc@wi.works"

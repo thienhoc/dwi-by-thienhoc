@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Arc"
+  short_description: "Layer multi-agent work without writer collisions"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-arc to split this work into bounded cells with one writer per scope."
+policy:
+  allow_implicit_invocation: false
