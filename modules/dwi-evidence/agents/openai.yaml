@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Evidence"
+  short_description: "Separate verified facts from estimates and claims"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-evidence to label claims, preserve provenance, and show what remains unknown."
+policy:
+  allow_implicit_invocation: false

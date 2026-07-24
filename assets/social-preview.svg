@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Dwi by thienhoc social preview</title>
+  <desc id="desc">A warm neutral preview stating AI moves fast, you stay clear.</desc>
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#2B2E34" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="640" fill="#17191D"/>
+  <rect width="1280" height="640" fill="url(#grid)" opacity="0.38"/>
+  <circle cx="1130" cy="80" r="220" fill="#FF4F2E" opacity="0.14"/>
+  <circle cx="70" cy="620" r="250" fill="#FF4F2E" opacity="0.08"/>
+  <g font-family="sans-serif">
+    <text x="88" y="112" font-size="46" font-weight="700" fill="#FF4F2E">{ }</text>
+    <circle cx="188" cy="96" r="6" fill="#A8ADB5"/>
+    <text x="214" y="111" font-size="48" font-weight="750" fill="#FFFFFF">Dwi</text>
+    <text x="318" y="112" font-size="24" font-weight="500" fill="#A8ADB5">by thienhoc</text>
+    <text x="88" y="286" font-size="72" font-weight="750" letter-spacing="-2" fill="#FFFFFF">AI moves fast.</text>
+    <text x="88" y="372" font-size="72" font-weight="750" letter-spacing="-2" fill="#FFFFFF">You stay clear.</text>
+    <text x="92" y="448" font-size="28" fill="#D8DADE">Six independent Agent Skills for the human layer of AI work.</text>
+    <rect x="88" y="506" width="416" height="56" rx="28" fill="#FF4F2E"/>
+    <text x="118" y="543" font-size="22" font-weight="700" fill="#17191D">Intent · Work · Resources · Evidence</text>
+    <text x="1000" y="548" font-size="22" fill="#A8ADB5">d.wi.works</text>
+  </g>
+</svg>

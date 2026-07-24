@@ -1,0 +1,56 @@
+name: Bug report
+description: Report reproducible behavior that conflicts with a module contract
+title: "[Bug] "
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remove secrets, personal data, and private transcripts. For sensitive reports, use SECURITY.md.
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Conduct
+        - Lean
+        - Budget
+        - Bridge
+        - Arc
+        - Evidence
+        - Repository or documentation
+    validations:
+      required: true
+  - type: input
+    id: harness
+    attributes:
+      label: Harness and version
+      placeholder: "Codex ..., Claude Code ..., or other"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior and minimal reproduction
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and scope
+      description: Include commands or artifacts with private content removed.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, personal data, and private transcripts.
+          required: true

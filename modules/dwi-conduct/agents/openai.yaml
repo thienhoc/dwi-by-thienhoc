@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Conduct"
+  short_description: "Clear, kind, answerable agent communication"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-conduct to make this agent interaction clear, kind, and answerable."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • Budget"
+  short_description: "Make token and time use visible and bounded"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-budget to set a practical resource boundary and report actual use honestly."
+policy:
+  allow_implicit_invocation: false
