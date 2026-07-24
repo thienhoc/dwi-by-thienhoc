@@ -114,7 +114,7 @@ This repository intentionally contains no landing-page runtime. The human-layer 
 ## Status
 
 - Product stage: Research Preview `0.1.0`
-- Tested with Claude Code.
+- Tested with Claude and Codex.
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
 - Release process: [history, privacy, rights, and evidence checklist](docs/release-checklist.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
