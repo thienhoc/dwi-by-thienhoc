@@ -114,7 +114,7 @@ Kho này chủ động không chứa mã chạy website. Trang giới thiệu v�
 ## Trạng thái
 
 - Giai đoạn sản phẩm: Bản thử nghiệm nghiên cứu `0.1.0`
-- Thử nghiệm harness (2026-07-25): cài, kích hoạt và gỡ ở phạm vi dự án trên Codex PASS; Claude Code với Opus PASS; Claude Fable 5 CHƯA TEST vì không còn usage credits
+- Đã test với Claude Code.
 - Giấy phép: [Apache-2.0 cho mã; CC BY 4.0 cho tài liệu và tài sản gốc](LICENSES.md)
 - Quy trình phát hành: [checklist lịch sử, quyền riêng tư, quyền sử dụng và bằng chứng](docs/release-checklist.md)
 - Lộ trình: [ROADMAP.md](ROADMAP.md)

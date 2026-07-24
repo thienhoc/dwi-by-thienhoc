@@ -114,7 +114,7 @@ This repository intentionally contains no landing-page runtime. The human-layer 
 ## Status
 
 - Product stage: Research Preview `0.1.0`
-- Harness trials (2026-07-25): Codex project-scope install, activation, and removal PASS; Claude Code with Opus PASS; Claude Fable 5 NOT TESTED because usage credits were unavailable
+- Tested with Claude Code.
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
 - Release process: [history, privacy, rights, and evidence checklist](docs/release-checklist.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
