@@ -70,7 +70,9 @@ if (status.status !== 0) {
 
 const expectedRemote = "https://github.com/thienhoc/dwi-by-thienhoc.git";
 const remote = git(["remote", "get-url", "origin"]);
-if (remote.status === 0 && remote.stdout.trim() === expectedRemote) {
+const normalizedRemote = remote.stdout.trim().replace(/\.git$/, "");
+const normalizedExpectedRemote = expectedRemote.replace(/\.git$/, "");
+if (remote.status === 0 && normalizedRemote === normalizedExpectedRemote) {
   pass("Canonical remote", expectedRemote);
 } else {
   fail(
