@@ -41,7 +41,7 @@ Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hư�
 | Claude và Codex cần phối hợp | [Dwi • Bridge](docs/vi/modules/bridge.md) | Tách lời khuyên, thẩm quyền, tác động và bằng chứng giữa các lớp công cụ gốc |
 | Nhiều tác nhân cần làm chung có cấu trúc | [Dwi • Arc](docs/vi/modules/arc.md) | Chia thành ô công việc có giới hạn, mỗi phạm vi chỉ có một tác nhân ghi và một cổng độc lập |
 | Kết quả nghe chắc chắn nhưng chưa rõ chứng cứ | [Dwi • Evidence](docs/vi/modules/evidence.md) | Phân biệt đã xác minh, đã quan sát, ước tính, mục tiêu và chưa biết |
-| Nhiều lỗi cùng một lúc trong cùng workflow | [Dwi • All-in-One](docs/vi/modules/all-in-one.md) | Áp dụng cả sáu lớp cho các vấn đề đồng thời, với cơ chế tuân thủ có biên an toàn |
+| Nhiều lỗi cùng một lúc trong cùng workflow | [Dwi • All-in-One](docs/vi/modules/all-in-one.md) | Chỉ chọn các lớp Dwi liên quan và giữ đường thực hiện nhanh khi nhiều vấn đề xuất hiện cùng lúc |
 
 Mỗi mô-đun hoạt động độc lập. Bạn không phải cài lõi Dwi, tiến trình chạy nền, máy chủ kết nối công cụ hay website.
 
@@ -84,6 +84,13 @@ All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`
 **Đã dùng AI thường xuyên:** chọn đúng điểm vướng có thể quan sát. Mỗi lần chỉ thêm một hành vi mới.
 
 **Xây hệ thống tác nhân chuyên nghiệp:** bắt đầu với Evidence. Chỉ thêm Bridge khi có phối hợp giữa các lớp công cụ và chỉ thêm Arc khi thật sự có nhiều ô công việc độc lập.
+
+## Đọc sâu hơn
+
+- [Đọc câu chuyện phía sau Dwi](docs/vi/story.md)
+- [Xem Dwi hoạt động như thế nào](docs/vi/how-it-works.md)
+- [Xem các nguyên tắc vận hành](docs/vi/principles.md)
+- [Dùng hướng dẫn nội dung và công bố](docs/vi/content-guidelines.md)
 
 ## Dwi sẽ không làm gì
 
