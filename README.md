@@ -39,7 +39,7 @@ Codex and Claude Code are AI coding tools that run agents and enforce tool permi
 
 Dwi is not another AI skill collection. Its modules shape how agents communicate, decide, coordinate, and handle evidence inside existing agent workflows.
 
-Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. Where a supported harness loads the open Agent Skills format, `SKILL.md` is the technical package, not the product category.
+Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. The canonical `SKILL.md` remains provider-neutral; the installation path must also preserve each harness's explicit-invocation control.
 
 ## Start with the problem you have
 
@@ -60,26 +60,33 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 ## A safe ten-minute trial
 
 1. Pick one module from the table.
-2. Read its `SKILL.md` and the module guide before installing it.
+2. Read its canonical `SKILL.md` and the module guide before installing it.
 3. Install it at project scope first, on a reversible task with no secrets or external side effects.
 4. Invoke the module explicitly and compare the result with your normal workflow.
 5. Remove the module folder if it does not help. No apology or continued trial is required.
 
-For a project-scoped Codex trial with Dwi Conduct:
+From a reviewed checkout that contains the corrected installer, a project-scoped Codex trial with Dwi Conduct is:
 
 ```bash
-git clone --depth 1 --branch v0.2.0 \
-  https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.0
-cd dwi-by-thienhoc-v0.2.0
-TARGET=".agents/skills/dwi-conduct"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
-cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".agents/skills/${MODULE}"
+node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
 ```
 
-All-in-One is an optional composition module released in `v0.2.0`. Install it from the immutable release tag and use it only when multiple observed issues recur in the same workflow.
+For Claude Code, use the Claude renderer instead of copying the canonical file unchanged:
+
+```bash
+MODULE="dwi-conduct"
+TARGET=".claude/skills/${MODULE}"
+node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
+```
+
+The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
+
+All-in-One is an optional composition module released in `v0.2.0`. Use it only when multiple observed issues recur in the same workflow.
 
 [Open the inspect-first installation guide →](docs/installation.md)
 
@@ -119,12 +126,14 @@ Dwi keeps `VERIFIED`, `OBSERVED`, `ESTIMATED`, `TARGET`, and `UNKNOWN` separate.
 ## Repository map
 
 ```text
-modules/                 Installable Dwi modules (Agent Skills package format)
-docs/modules/            English decision and trial guides
-docs/vi/modules/         Vietnamese decision and trial guides
-assets/                  Original brand and architecture sources
-.github/                 Community templates and read-only validation
-scripts/validate-repo.mjs Offline repository contract checker
+modules/                              Canonical Dwi modules and Codex metadata
+docs/modules/                         English decision and trial guides
+docs/vi/modules/                      Vietnamese decision and trial guides
+assets/                               Original brand and architecture sources
+.github/                              Community templates and read-only validation
+scripts/install-module.mjs            Harness-aware local installer
+scripts/validate-install-contract.mjs Installed-artifact regression checker
+scripts/validate-repo.mjs             Offline repository contract checker
 ```
 
 This repository intentionally contains no landing-page runtime. The human-layer introduction lives separately at [d.wi.works](https://d.wi.works).
