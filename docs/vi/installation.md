@@ -11,7 +11,7 @@ Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ s
 
 Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, model có thể tự chọn mô-đun Dwi dựa trên phần mô tả dù người dùng chưa gọi rõ. Đây là lỗi đóng gói và tài liệu. Lỗi này không tự cấp thêm quyền dùng công cụ, không vượt sandbox và không bỏ qua cơ chế phê duyệt gốc.
 
-Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. Cho đến khi có tag vá lỗi đã được duyệt, hãy dùng đúng commit đã được xem xét có chứa `scripts/install-module.mjs`. Một commit phát triển chính xác chỉ định source đang được kiểm tra, không tự biến nó thành bản phát hành.
+Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. Cho đến khi có tag vá lỗi đã được duyệt, hãy dùng đúng commit đã được kiểm tra có chứa `scripts/install-module.mjs`. Một commit phát triển chính xác chỉ định source đang được kiểm tra, không tự biến nó thành bản phát hành.
 
 ## Trước khi cài
 
@@ -23,9 +23,9 @@ Các tag đã phát hành phải được giữ bất biến, không sửa ngư�
 
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
-## Cài từ checkout đã được xem xét
+## Cài từ checkout đã ghim
 
-Xác nhận `pwd -P` trỏ tới checkout đã được xem xét. Trình cài cục bộ cần Node.js 20 trở lên, đúng với runtime phát triển mà kho này công bố.
+Xác nhận `pwd -P` trỏ tới checkout đã ghim mà bạn đã kiểm tra. Trình cài cục bộ cần Node.js 20 trở lên, đúng với runtime phát triển mà kho này công bố.
 
 ```bash
 pwd -P
@@ -42,7 +42,7 @@ Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".agents/skills/${MODULE}"
+TARGET=".agents/skills/dwi-conduct"
 node scripts/install-module.mjs codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
@@ -59,6 +59,22 @@ Cấu trúc sau khi cài là:
 ```
 
 Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không nhắc `$dwi-conduct` không nên tự kích hoạt mô-đun.
+
+### Nhận diện mẫu cài một file bị ảnh hưởng
+
+Không chạy mẫu dưới đây. Nội dung được giữ nguyên chỉ để người dùng nhận ra một bản cài từ `v0.1.0` đến `v0.2.1`:
+
+```text
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".agents/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Nếu đây là toàn bộ các bước đã dùng, hãy thêm metadata Codex còn thiếu theo phần sửa bản cài bên dưới.
 
 ### Cách cài Codex thủ công tương đương
 
@@ -84,7 +100,7 @@ Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".claude/skills/${MODULE}"
+TARGET=".claude/skills/dwi-conduct"
 node scripts/install-module.mjs claude "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
@@ -97,6 +113,20 @@ disable-model-invocation: true
 ```
 
 Sau đó mở một phiên Claude Code mới và gọi rõ `/dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không gọi `/dwi-conduct` không nên khiến Claude tự nạp mô-đun.
+
+### Nhận diện mẫu cài một file bị ảnh hưởng
+
+Không chạy mẫu dưới đây. Nội dung được giữ nguyên chỉ để người dùng nhận ra một bản cài từ `v0.1.0` đến `v0.2.1`:
+
+```text
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".claude/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
 
 Nếu không có Node.js, hãy sao chép `SKILL.md` chuẩn, thêm `disable-model-invocation: true` vào YAML frontmatter mở đầu, rồi xác nhận phần còn lại của file không thay đổi trước khi mở phiên mới.
 
@@ -114,6 +144,22 @@ dwi-all-in-one
 ```
 
 `dwi-all-in-one` là mô-đun phối hợp tùy chọn. Chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
+
+## URL cài đặt đã ghim cho bản phát hành
+
+Các URL source thô bất biến dưới đây vẫn hữu ích để kiểm tra, nhưng đường cài một file của `v0.2.0` không phải gói explicit-only hoàn chỉnh. Không chỉ sao chép `SKILL.md` nếu thời điểm kích hoạt là một yêu cầu quan trọng.
+
+| Mô-đun | Source chuẩn bất biến |
+| --- | --- |
+| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
+| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
+| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
+| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
+| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
+| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
+| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
+
+Bản phát hành sửa lỗi tiếp theo phải ghim đầy đủ đường cài theo từng lớp công cụ và PASS `scripts/validate-install-contract.mjs` trước khi công bố.
 
 ## Sửa một bản cài cũ chỉ có một file
 
@@ -153,12 +199,6 @@ grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
 Sau đó mở một phiên Claude Code mới. Giữ bản sao lưu cho đến khi kiểm tra gọi rõ đã PASS.
-
-## Các URL source thô đã phát hành
-
-Các URL `SKILL.md` thô tại `v0.1.0`, `v0.2.0` và `v0.2.1` vẫn là nguồn bất biến hợp lệ để xem xét, nhưng không phải gói cài explicit-only hoàn chỉnh. Không cài các bản đó bằng cách chỉ sao chép `SKILL.md` nếu thời điểm kích hoạt là một yêu cầu quan trọng.
-
-Bản vá đã duyệt tiếp theo phải ghim đầy đủ đường cài theo từng lớp công cụ và PASS `scripts/validate-install-contract.mjs` trước khi công bố.
 
 ## Gỡ mô-đun
 
