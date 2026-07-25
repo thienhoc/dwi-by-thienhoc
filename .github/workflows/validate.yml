@@ -67,6 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           git switch -C main --track origin/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git fetch --tags --force origin
 
           mapfile -t release_records < <(
@@ -87,6 +88,11 @@ jobs:
           release_record="${release_records[0]}"
           tag="$(basename "$release_record" .md)"
           test "$(head -n 1 "$release_record")" = "# Dwi $tag"
+
+          if ! grep -Fxq 'Release status: approved for publication' "$release_record"; then
+            printf 'publish=false\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           printf 'publish=true\n' >> "$GITHUB_OUTPUT"
           printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
