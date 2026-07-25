@@ -43,10 +43,11 @@ Lần thử đầu nên dùng phạm vi dự án. Xem [hướng dẫn cài và g
 
 ## Tham chiếu phiên bản
 
-- `v0.2.2` là bản phát hành kho đã duyệt gần nhất và sửa hợp đồng cài explicit-only.
+- `v0.2.3` là bản phát hành kho đã duyệt gần nhất và sửa hợp đồng cài explicit-only.
+- Tag `v0.2.2` hiện có là một ref lịch sử không phát hành trỏ tới commit trước bản vá; không dùng tag này cho trình cài đã sửa.
 - Nội dung mô-đun chuẩn và mã SHA-256 không đổi so với `v0.2.0`.
-- `v0.2.1` vẫn là bản vá tài liệu đa ngôn ngữ trong lịch sử.
+- `v0.2.1` vẫn là bản phát hành tài liệu đa ngôn ngữ trong lịch sử.
 - `v0.1.0` vẫn là bản phát hành lịch sử chỉ gồm các mô-đun chuyên biệt.
 - Không cài trực tiếp từ nhánh `main` có thể thay đổi.
-- Tham chiếu cài từ xa phải dùng tag đã duyệt hoặc commit chính xác đã review.
+- Tham chiếu cài từ xa phải dùng tag phát hành đã duyệt hoặc commit chính xác đã review.
 - Danh tính và trạng thái nội dung mô-đun được ghi trong [`modules/catalog.json`](modules/catalog.json).
