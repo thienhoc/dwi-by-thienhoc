@@ -14,6 +14,7 @@ import path from "node:path";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { validateCodexMetadata } from "./install-module.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repositoryRoot = path.resolve(path.dirname(scriptPath), "..");
@@ -161,6 +162,29 @@ async function validateDocumentation() {
     );
     requireText(content, expected, relativePath);
   }
+
+  const workflowPath = ".github/workflows/validate.yml";
+  const workflow = await readFile(path.join(repositoryRoot, workflowPath), "utf8");
+  requireText(
+    workflow,
+    'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+    workflowPath,
+  );
+  requireText(
+    workflow,
+    'first_parent="$(git rev-parse "${GITHUB_SHA}^1")"',
+    workflowPath,
+  );
+  requireText(
+    workflow,
+    'git diff --name-only "$first_parent" "$GITHUB_SHA"',
+    workflowPath,
+  );
+  forbidText(
+    workflow,
+    'git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA"',
+    workflowPath,
+  );
 }
 
 const temporaryRoot = await mkdtemp(
@@ -169,6 +193,60 @@ const temporaryRoot = await mkdtemp(
 
 try {
   await validateDocumentation();
+
+  const validMetadataFixture = [
+    "interface:",
+    "  display_name: Dwi",
+    "policy:",
+    "  allow_implicit_invocation: false",
+    "",
+  ].join("\n");
+  assert.doesNotThrow(() =>
+    validateCodexMetadata(validMetadataFixture, "valid/agents/openai.yaml"),
+  );
+
+  const malformedMetadataFixtures = new Map([
+    [
+      "lookalike key",
+      "policy:\n  not_allow_implicit_invocation: false\n",
+    ],
+    [
+      "commented occurrence",
+      "policy:\n  # allow_implicit_invocation: false\n",
+    ],
+    [
+      "falsehood value",
+      "policy:\n  allow_implicit_invocation: falsehood\n",
+    ],
+    [
+      "true value",
+      "policy:\n  allow_implicit_invocation: true\n",
+    ],
+    [
+      "duplicate declarations",
+      "policy:\n  allow_implicit_invocation: false\n  allow_implicit_invocation: true\n",
+    ],
+    [
+      "wrong block",
+      "interface:\n  allow_implicit_invocation: false\npolicy:\n",
+    ],
+    [
+      "wrong indentation",
+      "policy:\n    allow_implicit_invocation: false\n",
+    ],
+    [
+      "duplicate policy blocks",
+      "policy:\n  allow_implicit_invocation: false\npolicy:\n",
+    ],
+  ]);
+
+  for (const [fixtureName, fixture] of malformedMetadataFixtures) {
+    assert.throws(
+      () => validateCodexMetadata(fixture, `${fixtureName}/agents/openai.yaml`),
+      Error,
+      `Codex metadata validator accepted ${fixtureName}`,
+    );
+  }
 
   const catalog = JSON.parse(
     await readFile(path.join(repositoryRoot, "modules", "catalog.json"), "utf8"),
@@ -183,20 +261,20 @@ try {
       path.join(sourceDirectory, "SKILL.md"),
       "utf8",
     );
-    const sourceMetadata = await readFile(
-      path.join(sourceDirectory, "agents", "openai.yaml"),
-      "utf8",
+    const sourceMetadataPath = path.join(
+      sourceDirectory,
+      "agents",
+      "openai.yaml",
     );
+    const sourceMetadata = await readFile(sourceMetadataPath, "utf8");
 
     assert.doesNotMatch(
       sourceSkill,
       /^disable-model-invocation\s*:/m,
       `${moduleId}: canonical SKILL.md must remain provider-neutral`,
     );
-    assert.equal(
-      (sourceMetadata.match(/allow_implicit_invocation:\s*false/g) ?? []).length,
-      1,
-      `${moduleId}: Codex metadata must contain exactly one explicit-only policy`,
+    assert.doesNotThrow(() =>
+      validateCodexMetadata(sourceMetadata, sourceMetadataPath),
     );
 
     const codexTarget = path.join(temporaryRoot, "codex", moduleId);
@@ -322,7 +400,7 @@ try {
   assert.deepEqual(leftovers, [], "installer left a staging directory behind");
 
   console.log(
-    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including documentation, containment, symlink, and failure-path checks.`,
+    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including strict Codex policy validation, documentation, containment, symlink, and failure-path checks.`,
   );
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
