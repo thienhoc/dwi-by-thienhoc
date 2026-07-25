@@ -35,7 +35,12 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] Release notes preserve bounded evidence wording and make no universal compatibility claim.
 - [x] Wi explicitly requested publication of this installation-contract patch on 2026-07-26.
 - [x] The version advances from the occupied `v0.2.2` tag to `v0.2.3` without changing approved release scope.
-- [x] Release automation creates the immutable tag only from the exact triggering `main` commit after checks pass.
+- [x] Release automation uses the exact tree SHA of the triggering reviewed `main` commit.
+- [x] Release automation creates one clean publication commit whose only parent is approved boundary `b15a45f00c03c325a12673123f685c32d1ecf8ab`.
+- [x] The clean publication commit uses `Trần Thiện Học <hoc@wi.works>` for both author and committer.
+- [x] The release tag points to the clean publication commit, not to a different content tree.
+- [x] The release workflow verifies tree equality, parent, author, committer, local tag target, remote tag target, and public-release preflight before creating the GitHub Release.
+- [x] The existing `main` history is not rewritten; the clean lineage is used only for the immutable release tag.
 - [x] The release record contains `Release status: approved for publication` before automation may create a tag.
 
 ## Blocking gates for v0.2.0
@@ -72,8 +77,10 @@ This historical section is retained for the existing public-release preflight co
 
 ## Release truth
 
-- Wi approved publication of the existing historical author identity through boundary commit `b15a45f00c03c325a12673123f685c32d1ecf8ab` only. Commits after that boundary must use the public release identity.
+- Wi approved publication of the existing historical author identity through boundary commit `b15a45f00c03c325a12673123f685c32d1ecf8ab` only. Commits after that boundary in the release lineage must use the public release identity.
 - Approved public release identities for new commits are `Trần Thiện Học <hoc@wi.works>` and `Trần Thiện Học <hoctt@icloud.com>`.
+- The `v0.2.3` tag may intentionally point to a clean publication commit whose commit SHA differs from the reviewed `main` commit, but its tree SHA must be identical.
+- A clean release lineage does not rewrite or sanitize the existing `main` history.
 - A clean working tree does not sanitize prior commits.
 - A passing static validator does not prove runtime behavior.
 - A bounded harness observation does not prove universal compatibility.
