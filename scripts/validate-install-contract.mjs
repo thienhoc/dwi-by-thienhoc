@@ -70,8 +70,11 @@ async function validateDocumentation() {
       required: [
         "## Important activation-policy correction",
         "The installation examples published in `v0.1.0` through `v0.2.1` copied only `SKILL.md`.",
-        "node scripts/install-module.mjs codex",
-        "node scripts/install-module.mjs claude",
+        "DWI_ROOT=",
+        "PROJECT_ROOT=",
+        "test \"$DWI_ROOT\" != \"$PROJECT_ROOT\"",
+        "node \"$DWI_ROOT/scripts/install-module.mjs\" codex",
+        "node \"$DWI_ROOT/scripts/install-module.mjs\" claude",
         "allow_implicit_invocation: false",
         "disable-model-invocation: true",
         "Do not run the following affected pattern.",
@@ -89,8 +92,11 @@ async function validateDocumentation() {
       required: [
         "## Đính chính quan trọng về chính sách kích hoạt",
         "Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ sao chép `SKILL.md`.",
-        "node scripts/install-module.mjs codex",
-        "node scripts/install-module.mjs claude",
+        "DWI_ROOT=",
+        "PROJECT_ROOT=",
+        "test \"$DWI_ROOT\" != \"$PROJECT_ROOT\"",
+        "node \"$DWI_ROOT/scripts/install-module.mjs\" codex",
+        "node \"$DWI_ROOT/scripts/install-module.mjs\" claude",
         "allow_implicit_invocation: false",
         "disable-model-invocation: true",
         "Không chạy mẫu dưới đây.",
@@ -116,12 +122,15 @@ async function validateDocumentation() {
   }
 
   const readmeChecks = [
-    ["README.md", "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy."],
-    ["README.vi.md", "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ."],
+    ["README.md", "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy"],
+    ["README.vi.md", "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ"],
   ];
 
   for (const [relativePath, expected] of readmeChecks) {
     const content = await readFile(path.join(repositoryRoot, relativePath), "utf8");
+    requireText(content, "DWI_ROOT=", relativePath);
+    requireText(content, "PROJECT_ROOT=", relativePath);
+    requireText(content, 'test "$DWI_ROOT" != "$PROJECT_ROOT"', relativePath);
     requireText(content, "node scripts/install-module.mjs codex", relativePath);
     requireText(content, "node scripts/install-module.mjs claude", relativePath);
     requireText(content, expected, relativePath);
