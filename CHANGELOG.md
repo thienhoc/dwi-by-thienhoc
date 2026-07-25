@@ -4,6 +4,26 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.1 - 2026-07-26
+
+### Added
+
+- Added localized repository entry documentation in Japanese, Korean, Simplified Chinese, French, and Hindi.
+- Added `LANGUAGES.md` to define language coverage and the translation boundary.
+- Added the documentation-only release record for `v0.2.1`.
+
+### Changed
+
+- Expanded public documentation access without changing module behavior, installation paths, compatibility claims, evidence policy, or licensing.
+- Kept English as the canonical operational source and Vietnamese as the first complete translated documentation surface.
+
+### Release truth
+
+- Intended release tag: `v0.2.1`
+- Included installable modules: unchanged from `v0.2.0`
+- Runtime and module contract changes: none
+- Release record: [docs/releases/v0.2.1.md](docs/releases/v0.2.1.md)
+
 ## 0.2.0 - 2026-07-25
 
 ### Added
