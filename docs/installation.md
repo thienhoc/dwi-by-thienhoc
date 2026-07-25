@@ -13,7 +13,7 @@ Without those harness-specific controls, the model may select a Dwi module from 
 
 The earlier examples also changed into the Dwi checkout before using a relative target such as `.agents/skills/...`. Unless the Dwi checkout was intentionally the project under test, that installed the module into the source checkout rather than the person's actual project. The corrected examples keep `DWI_ROOT` and `PROJECT_ROOT` separate, resolve physical paths before comparing them, and reject a target inside the Dwi source checkout.
 
-Published release tags remain immutable. Do not rewrite them. Until a corrected patch release is tagged, use an exact inspected commit containing `scripts/install-module.mjs`; an exact development commit identifies source under inspection but is not itself a release.
+Published release tags remain immutable. Do not rewrite them. `v0.2.2` is the first reviewed release containing the complete per-harness installer and the corrected project-targeting guidance.
 
 ## Before installing
 
@@ -27,10 +27,18 @@ Do not pipe an unreviewed remote script into a shell.
 
 ## Install from a pinned checkout
 
-Keep the inspected Dwi source checkout separate from the project receiving the module. Replace both example paths below with directories that already exist. `pwd -P` resolves alternate spellings and symlink aliases before the containment check:
+Clone the immutable corrected release:
 
 ```bash
-DWI_ROOT="$(cd "/absolute/path/to/dwi-by-thienhoc" && pwd -P)" || exit 1
+git clone --depth 1 --branch v0.2.2 \
+  https://github.com/thienhoc/dwi-by-thienhoc.git \
+  dwi-by-thienhoc-v0.2.2
+```
+
+Keep the inspected Dwi source checkout separate from the project receiving the module. Replace the target project path below with a directory that already exists. `pwd -P` resolves alternate spellings and symlink aliases before the containment check:
+
+```bash
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.2" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
 case "$PROJECT_ROOT/" in
@@ -157,7 +165,7 @@ dwi-all-in-one
 
 ## Public release: pinned module URLs
 
-The immutable raw source URLs below remain useful for inspection, but the `v0.2.0` one-file path is not a complete explicit-only installation package. Do not copy only `SKILL.md` when activation timing matters.
+`v0.2.2` contains the complete per-harness installer. The immutable raw source URLs below remain pinned to the `v0.2.0` canonical module-content baseline because the module bodies and SHA-256 values did not change in `v0.2.2`. These one-file URLs are useful for inspection, but they are not a complete explicit-only installation package.
 
 | Module | Immutable canonical source |
 | --- | --- |
@@ -169,7 +177,7 @@ The immutable raw source URLs below remain useful for inspection, but the `v0.2.
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
 | All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-The next corrected release must pin the complete per-harness installation path and pass `scripts/validate-install-contract.mjs` before publication.
+The `v0.2.2` release pins the complete installation path and passed `scripts/validate-install-contract.mjs` before publication.
 
 ## Repair an existing one-file install
 
