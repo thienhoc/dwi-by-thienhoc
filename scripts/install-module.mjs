@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-import { access, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import {
+  access,
+  mkdir,
+  readFile,
+  realpath,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -20,6 +28,34 @@ async function exists(filePath) {
   } catch {
     return false;
   }
+}
+
+async function canonicalizeProspectivePath(filePath) {
+  const absolutePath = path.resolve(filePath);
+  const missingSegments = [];
+  let cursor = absolutePath;
+
+  while (!(await exists(cursor))) {
+    const parent = path.dirname(cursor);
+    if (parent === cursor) {
+      throw new Error(`unable to find an existing ancestor for ${absolutePath}`);
+    }
+    missingSegments.unshift(path.basename(cursor));
+    cursor = parent;
+  }
+
+  const canonicalAncestor = await realpath(cursor);
+  return path.join(canonicalAncestor, ...missingSegments);
+}
+
+function isSameOrDescendant(parentPath, candidatePath) {
+  const relative = path.relative(parentPath, candidatePath);
+  return (
+    relative === "" ||
+    (relative !== ".." &&
+      !relative.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relative))
+  );
 }
 
 function renderClaudeSkill(source, sourcePath) {
@@ -68,6 +104,16 @@ async function main() {
     fail(`target directory must end with ${moduleId}`);
     return;
   }
+
+  const canonicalRepositoryRoot = await realpath(repositoryRoot);
+  const canonicalTarget = await canonicalizeProspectivePath(target);
+  if (isSameOrDescendant(canonicalRepositoryRoot, canonicalTarget)) {
+    fail(
+      `target directory must be outside the Dwi source checkout ${canonicalRepositoryRoot}`,
+    );
+    return;
+  }
+
   if (await exists(target)) {
     fail(`refusing to overwrite existing path ${target}`);
     return;
