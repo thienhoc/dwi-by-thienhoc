@@ -31,7 +31,7 @@ See [the v0.1.0 release record](docs/releases/v0.1.0.md).
 
 See [the v0.2.0 release record](docs/releases/v0.2.0.md).
 
-## 0.2.1 Documentation patch - released as v0.2.1
+## 0.2.1 Documentation release - released as v0.2.1
 
 - [x] Add Japanese, Korean, Simplified Chinese, French, and Hindi entry documentation
 - [x] Define the translation boundary in `LANGUAGES.md`
@@ -40,7 +40,17 @@ See [the v0.2.0 release record](docs/releases/v0.2.0.md).
 
 See [the v0.2.1 release record](docs/releases/v0.2.1.md).
 
-## 0.2.2 Installation-contract patch - released as v0.2.2
+## v0.2.2 tag conflict - not published
+
+- [x] Detect that tag `v0.2.2` already points to pre-patch commit `4fdecbcccb2caf092a145517b2bdcc84e431de27`
+- [x] Stop publication before moving or rewriting the existing tag
+- [x] Preserve the ref as immutable historical evidence
+- [x] Record that `v0.2.2` does not contain the installation-contract patch
+- [x] Publish no GitHub Release for `v0.2.2`
+
+See [the v0.2.2 non-release record](docs/releases/v0.2.2.md).
+
+## 0.2.3 Installation-contract release - released as v0.2.3
 
 - [x] Preserve `allow_implicit_invocation: false` in installed Codex artifacts
 - [x] Add `disable-model-invocation: true` to installed Claude Code artifacts
@@ -51,9 +61,10 @@ See [the v0.2.1 release record](docs/releases/v0.2.1.md).
 - [x] Pass repository and installation contracts on Node.js 20 and 24
 - [x] Record bounded clean-session runtime PASS observations for Codex and Claude Code
 - [x] Resolve all actionable PR review threads
-- [x] Publish the reviewed `v0.2.2` tag and GitHub Release through the gated release workflow
+- [x] Preserve the occupied `v0.2.2` ref and advance the approved release to `v0.2.3`
+- [x] Publish the reviewed `v0.2.3` tag and GitHub Release through the gated release workflow
 
-See [the v0.2.2 release record](docs/releases/v0.2.2.md).
+See [the v0.2.3 release record](docs/releases/v0.2.3.md).
 
 ## Later, only with evidence
 
