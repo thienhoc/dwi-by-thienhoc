@@ -65,26 +65,34 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 4. Invoke the module explicitly and compare the result with your normal workflow.
 5. Remove the module folder if it does not help. No apology or continued trial is required.
 
-From a reviewed checkout that contains the corrected installer, a project-scoped Codex trial with Dwi Conduct is:
+Keep the inspected Dwi checkout separate from the project receiving the module:
 
 ```bash
+DWI_ROOT="/absolute/path/to/dwi-by-thienhoc"
+PROJECT_ROOT="/absolute/path/to/your-project"
 MODULE="dwi-conduct"
-TARGET=".agents/skills/${MODULE}"
+test "$DWI_ROOT" != "$PROJECT_ROOT"
+cd "$DWI_ROOT"
+```
+
+For Codex:
+
+```bash
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
 node scripts/install-module.mjs codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 ```
 
-For Claude Code, use the Claude renderer instead of copying the canonical file unchanged:
+For Claude Code:
 
 ```bash
-MODULE="dwi-conduct"
-TARGET=".claude/skills/${MODULE}"
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
 node scripts/install-module.mjs claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
+The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy and could place the skill inside the Dwi checkout rather than the intended project. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
 
 All-in-One is an optional composition module released in `v0.2.0`. Use it only when multiple observed issues recur in the same workflow.
 
