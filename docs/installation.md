@@ -1,23 +1,38 @@
 # Install one module, inspect first
 
-Dwi is a modular human layer. Each module is distributed as agent-native instructions; harnesses that support the open Agent Skills format load the required behavior from `SKILL.md`. There is no separate Dwi installer service, daemon, runtime package, MCP server, or website dependency. A supported AI coding tool such as Codex or Claude Code is still required.
+Dwi is a modular human layer. Each module is distributed as agent-native instructions. There is no Dwi daemon, background service, MCP server, or website dependency. A supported AI coding tool such as Codex or Claude Code is still required.
+
+## Important activation-policy correction
+
+The installation examples published in `v0.1.0` through `v0.2.1` copied only `SKILL.md`. That was enough for the harness to discover the module, but it did not preserve Dwi's intended explicit-only invocation contract:
+
+- Codex also needs `agents/openai.yaml` with `allow_implicit_invocation: false`.
+- Claude Code needs `disable-model-invocation: true` in the installed `SKILL.md` frontmatter.
+
+Without those harness-specific controls, the model may select a Dwi module from its description even when the person did not invoke it explicitly. This is a packaging and documentation defect. It does not grant the module extra tool permissions or bypass the native sandbox and approval system.
+
+Published release tags remain immutable. Do not rewrite them. Until a reviewed patch release is tagged, use the exact reviewed commit containing `scripts/install-module.mjs`; an exact development commit identifies source under review but is not itself a release.
 
 ## Before installing
 
 1. Choose one module from [MODULES.md](../MODULES.md).
-2. Read its `SKILL.md` in the repository.
-3. Confirm its effects, non-goals, permission boundaries, and removal path.
+2. Read its canonical `SKILL.md` in the repository.
+3. Confirm its effects, non-goals, permission boundaries, invocation policy, and removal path.
 4. Use project scope for the first trial.
 5. Choose a reversible task with no secrets and no external side effects.
 
 Do not pipe an unreviewed remote script into a shell.
 
+## Install from a reviewed checkout
 
-## Install from a pinned checkout
+Confirm that `pwd -P` points to the reviewed checkout. The local helper requires Node.js 20 or later, matching this repository's declared development runtime.
 
-For local installation, pin the Dwi checkout to the reviewed release tag or exact commit you intend to inspect, then confirm `pwd -P` points to that checkout.
+```bash
+pwd -P
+node --version
+```
 
-For the six focused modules carried forward from `v0.1.0` and the optional All-in-One released in `v0.2.0`, use the `v0.2.0` tag when reproducibility matters. An exact development commit identifies source under test; it does not make that source a release.
+The helper refuses to overwrite an existing module directory and stages the complete artifact before moving it into place.
 
 ## Codex
 
@@ -26,17 +41,40 @@ Codex discovers repository skills under `.agents/skills/` and user skills under 
 Project-scoped example for Conduct:
 
 ```bash
-pwd -P
-SOURCE="modules/dwi-conduct/SKILL.md"
-TARGET=".agents/skills/dwi-conduct"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".agents/skills/${MODULE}"
+node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
 ```
 
-Then start a fresh Codex session and invoke `$dwi-conduct` explicitly.
+The installed structure is:
+
+```text
+.agents/skills/dwi-conduct/
+├── SKILL.md
+└── agents/
+    └── openai.yaml
+```
+
+Then start a fresh Codex session and invoke `$dwi-conduct` explicitly. A matching prompt that does not mention `$dwi-conduct` should not activate the module implicitly.
+
+### Manual Codex equivalent
+
+```bash
+MODULE="dwi-conduct"
+SOURCE="modules/${MODULE}"
+TARGET=".agents/skills/${MODULE}"
+test -f "$SOURCE/SKILL.md"
+test -f "$SOURCE/agents/openai.yaml"
+test ! -e "$TARGET"
+install -d "$TARGET/agents"
+install -m 0644 "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+install -m 0644 "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+cmp "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+cmp "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+```
 
 ## Claude Code
 
@@ -45,21 +83,26 @@ Claude Code discovers project skills under `.claude/skills/` and user skills und
 Project-scoped example for Conduct:
 
 ```bash
-pwd -P
-SOURCE="modules/dwi-conduct/SKILL.md"
-TARGET=".claude/skills/dwi-conduct"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".claude/skills/${MODULE}"
+node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-Then start a fresh Claude Code session and invoke `/dwi-conduct` or ask the harness to use the installed skill.
+The helper derives the Claude artifact from the canonical provider-neutral `SKILL.md` and adds exactly one harness-specific frontmatter field:
+
+```yaml
+disable-model-invocation: true
+```
+
+Then start a fresh Claude Code session and invoke `/dwi-conduct` explicitly. A matching prompt that does not invoke `/dwi-conduct` should not make Claude load the module automatically.
+
+If Node.js is unavailable, copy the canonical `SKILL.md`, add `disable-model-invocation: true` inside its opening YAML frontmatter, and verify that the rest of the file is unchanged before starting a fresh session.
 
 ## Install a different module
 
-For a released remote source URL or a local focused-module path, replace `dwi-conduct` with one of:
+Replace `dwi-conduct` with one of:
 
 ```text
 dwi-lean
@@ -70,66 +113,68 @@ dwi-evidence
 dwi-all-in-one
 ```
 
-## Public release: pinned module URLs
+`dwi-all-in-one` is an optional composition module. Install it only when multiple observed problems recur in the same workflow.
 
-Each released module has its own immutable `v0.2.0` source URL:
+## Repair an existing one-file install
 
-| Module | Reviewed source |
-| --- | --- |
-| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
-| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
-| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
-| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
-| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
-| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
-| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
+### Codex repair
 
-`dwi-all-in-one` is an optional composition module; install it only when multiple observed problems recur in the same workflow.
-
-Download the selected file and the release checksum manifest, verify SHA-256, inspect the file, and only then install:
+If the installed module currently contains only `SKILL.md`, add the missing metadata without replacing the skill:
 
 ```bash
-RELEASE_REF="v0.2.0"
 MODULE="dwi-conduct"
-TMP_SKILL="/tmp/${MODULE}.SKILL.md"
-TMP_SUMS="/tmp/dwi-${RELEASE_REF}-SHA256SUMS"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/modules/${MODULE}/SKILL.md" \
-  -o "$TMP_SKILL"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/checksums/SHA256SUMS" \
-  -o "$TMP_SUMS"
-EXPECTED="$(awk -v file="modules/${MODULE}/SKILL.md" '$2 == file {print $1}' "$TMP_SUMS")"
-ACTUAL="$(shasum -a 256 "$TMP_SKILL" | awk '{print $1}')"
-test -n "$EXPECTED"
-test "$ACTUAL" = "$EXPECTED"
-less "$TMP_SKILL"
+SOURCE="modules/${MODULE}/agents/openai.yaml"
+TARGET=".agents/skills/${MODULE}/agents/openai.yaml"
+test -f ".agents/skills/${MODULE}/SKILL.md"
+test -f "$SOURCE"
+test ! -e "$TARGET"
+install -d "$(dirname "$TARGET")"
+install -m 0644 "$SOURCE" "$TARGET"
+cmp "$SOURCE" "$TARGET"
 ```
 
-After review, install without overwriting an existing skill:
+Start a fresh Codex session afterward.
+
+### Claude Code repair
+
+The quickest reversible control is to open `/skills`, select the Dwi module, cycle its state to `user-invocable-only`, and save. Claude Code records that local override in `.claude/settings.local.json`.
+
+For a file-based repair, keep the old directory as a backup, install a newly rendered artifact, inspect it, and remove the backup only after verification:
 
 ```bash
-TARGET=".agents/skills/${MODULE}"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$TMP_SKILL" "$TARGET/SKILL.md"
-cmp "$TMP_SKILL" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+OLD=".claude/skills/${MODULE}"
+BACKUP=".claude/skills/${MODULE}.before-explicit-only"
+test -d "$OLD"
+test ! -e "$BACKUP"
+mv "$OLD" "$BACKUP"
+node scripts/install-module.mjs claude "$MODULE" "$OLD"
+grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-For Claude Code, change only the target root to `.claude/skills/`.
+Start a fresh Claude Code session afterward. Keep the backup until the explicit invocation test passes.
+
+## Released raw source URLs
+
+The `v0.1.0`, `v0.2.0`, and `v0.2.1` raw `SKILL.md` URLs remain valid immutable source references, but they are not complete explicit-only installation packages. Do not install those releases by copying only the raw `SKILL.md` when activation timing matters.
+
+The next reviewed patch release must pin the complete per-harness installation path and pass `scripts/validate-install-contract.mjs` before publication.
 
 ## Remove a module
 
-Remove only the file installed by this guide, then remove the directory only if it is empty:
+For Codex, remove only the two files installed by this guide, then remove directories only when empty:
 
 ```bash
 TARGET=".agents/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+rm "$TARGET/agents/openai.yaml"
+rmdir "$TARGET/agents"
 rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
 ```
 
-or:
+For Claude Code:
 
 ```bash
 TARGET=".claude/skills/dwi-conduct"
@@ -138,8 +183,8 @@ rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
 ```
 
-`rmdir` fails safely if the folder contains another file. Review that content instead of deleting it recursively. For user-scoped installs, use the corresponding exact folder under `~/.agents/skills/` or `~/.claude/skills/`. Start a fresh session after removal.
+`rmdir` fails safely if a directory contains another file. Review that content instead of deleting recursively. For user-scoped installs, use the corresponding exact folder under `~/.agents/skills/` or `~/.claude/skills/`. Start a fresh session after removal.
 
 ## Stop conditions
 
-Stop the trial if the module asks for more authority than the task requires, hides an external effect, conflicts with native harness controls, or makes the workflow harder to understand. Removal is a valid result; no apology or continued trial is required.
+Stop the trial if the module asks for more authority than the task requires, hides an external effect, conflicts with native harness controls, activates without the intended explicit invocation, or makes the workflow harder to understand. Removal is a valid result; no apology or continued trial is required.
