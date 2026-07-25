@@ -24,6 +24,16 @@ The person still had to:
 
 This work rarely appeared in the final answer. It appeared as fatigue, review overhead, and uncertainty.
 
+## The observation surface
+
+> More than 20 billion gross tokens of documented, author-reported AI activity.
+
+Across author-identified Codex and Claude Code usage surfaces, the evidence record reconciles displayed totals of `13.6B` and `11.7539B` gross tokens. The public statement rounds down and does not treat cached activity as savings or usage volume as proof of product effectiveness.
+
+[Read the author-reported usage evidence record](../evidence/author-reported/ai-usage-observation-surface.md).
+
+The number describes the scale of repeated personal use and observation. It is not an independently audited benchmark, a universal performance claim, or evidence that Dwi caused token savings.
+
 ## The first principle
 
 Dwi began with a simple idea:
