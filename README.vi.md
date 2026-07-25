@@ -29,7 +29,7 @@ Codex và Claude Code là các công cụ lập trình AI chạy tác nhân và 
 
 Dwi không phải thêm một bộ kỹ năng AI. Các mô-đun của Dwi định hình cách tác nhân giao tiếp, ra quyết định, phối hợp và xử lý bằng chứng ngay trong workflow hiện có.
 
-Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hướng dẫn gốc cho tác nhân, nhỏ, có thể kiểm tra và cài độc lập. Với lớp công cụ hỗ trợ định dạng Agent Skills mở, `SKILL.md` chỉ là gói cài đặt kỹ thuật, không phải cách định vị sản phẩm.
+Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hướng dẫn gốc cho tác nhân, nhỏ, có thể kiểm tra và cài độc lập. `SKILL.md` chuẩn được giữ trung lập với nhà cung cấp; đường cài phải đồng thời giữ đúng cơ chế chỉ gọi rõ của từng lớp công cụ.
 
 ## Bắt đầu từ vấn đề đang có
 
@@ -50,28 +50,33 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 ## Thử an toàn trong mười phút
 
 1. Chọn đúng một mô-đun.
-2. Đọc `SKILL.md` và hướng dẫn của mô-đun trước khi cài.
+2. Đọc `SKILL.md` chuẩn và hướng dẫn của mô-đun trước khi cài.
 3. Cài ở phạm vi dự án trước; chọn một việc có thể hoàn tác, không chứa bí mật và không gây tác động bên ngoài.
 4. Gọi mô-đun một cách rõ ràng rồi so sánh với cách làm thường ngày.
 5. Xóa thư mục mô-đun nếu không hữu ích. Bạn không cần xin lỗi hoặc tiếp tục thử.
 
-Để thử Dwi Conduct trong phạm vi một dự án Codex:
+Từ một checkout đã được xem xét có chứa trình cài đã sửa, có thể thử Dwi Conduct trong phạm vi dự án Codex như sau:
 
 ```bash
-git clone --depth 1 --branch v0.2.0 \
-  https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.0
-cd dwi-by-thienhoc-v0.2.0
-TARGET=".agents/skills/dwi-conduct"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
-cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".agents/skills/${MODULE}"
+node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
 ```
 
-Với Claude Code, dùng cùng nguồn đã duyệt và đổi thư mục đích thành `.claude/skills/dwi-conduct`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
+Với Claude Code, dùng bộ render dành cho Claude thay vì sao chép nguyên `SKILL.md` chuẩn:
 
-All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`. Hãy cài từ tag phát hành bất biến và chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
+```bash
+MODULE="dwi-conduct"
+TARGET=".claude/skills/${MODULE}"
+node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
+```
+
+Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ. Xem hướng dẫn cài đặt để biết chính xác ảnh hưởng, cách sửa bản cài cũ, cách cài thủ công tương đương và lệnh gỡ.
+
+All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`. Chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
 [Mở hướng dẫn cài đặt theo nguyên tắc xem trước →](docs/vi/installation.md)
 
@@ -111,12 +116,14 @@ Dwi tách rõ `ĐÃ XÁC MINH`, `ĐÃ QUAN SÁT`, `ƯỚC TÍNH`, `MỤC TIÊU` 
 ## Sơ đồ kho
 
 ```text
-modules/                 Các mô-đun Dwi có thể cài độc lập
-docs/modules/            Hướng dẫn quyết định và thử bằng tiếng Anh
-docs/vi/modules/         Hướng dẫn quyết định và thử bằng tiếng Việt
-assets/                  Nguồn brand và sơ đồ do dự án tạo
-.github/                 Mẫu cộng đồng và kiểm tra chỉ đọc
-scripts/validate-repo.mjs Công cụ kiểm tra hợp đồng kho, chạy ngoại tuyến
+modules/                              Mô-đun Dwi chuẩn và metadata Codex
+docs/modules/                         Hướng dẫn quyết định và thử bằng tiếng Anh
+docs/vi/modules/                      Hướng dẫn quyết định và thử bằng tiếng Việt
+assets/                               Nguồn brand và sơ đồ do dự án tạo
+.github/                              Mẫu cộng đồng và kiểm tra chỉ đọc
+scripts/install-module.mjs            Trình cài cục bộ hiểu từng harness
+scripts/validate-install-contract.mjs Bộ kiểm tra hồi quy artifact sau khi cài
+scripts/validate-repo.mjs             Công cụ kiểm tra hợp đồng kho, chạy ngoại tuyến
 ```
 
 Kho này chủ động không chứa mã chạy website. Trang giới thiệu về lớp con người được đặt riêng tại [d.wi.works](https://d.wi.works).
