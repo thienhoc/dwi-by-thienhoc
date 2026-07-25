@@ -11,6 +11,8 @@ The installation examples published in `v0.1.0` through `v0.2.1` copied only `SK
 
 Without those harness-specific controls, the model may select a Dwi module from its description even when the person did not invoke it explicitly. This is a packaging and documentation defect. It does not grant the module extra tool permissions or bypass the native sandbox and approval system.
 
+The earlier examples also changed into the Dwi checkout before using a relative target such as `.agents/skills/...`. Unless the Dwi checkout was intentionally the project under test, that installed the module into the source checkout rather than the person's actual project. The corrected examples keep `DWI_ROOT` and `PROJECT_ROOT` separate.
+
 Published release tags remain immutable. Do not rewrite them. Until a corrected patch release is tagged, use an exact inspected commit containing `scripts/install-module.mjs`; an exact development commit identifies source under inspection but is not itself a release.
 
 ## Before installing
@@ -25,14 +27,18 @@ Do not pipe an unreviewed remote script into a shell.
 
 ## Install from a pinned checkout
 
-Confirm that `pwd -P` points to the pinned checkout you inspected. The local helper requires Node.js 20 or later, matching this repository's declared development runtime.
+Keep the inspected Dwi source checkout separate from the project receiving the module. Replace both example paths below with absolute paths on your machine:
 
 ```bash
-pwd -P
+DWI_ROOT="/absolute/path/to/dwi-by-thienhoc"
+PROJECT_ROOT="/absolute/path/to/your-project"
+test -f "$DWI_ROOT/scripts/install-module.mjs"
+test -d "$PROJECT_ROOT"
+test "$DWI_ROOT" != "$PROJECT_ROOT"
 node --version
 ```
 
-The helper refuses to overwrite an existing module directory and stages the complete artifact before moving it into place.
+The local helper requires Node.js 20 or later, refuses to overwrite an existing module directory, and stages the complete artifact before moving it into place. Do not set `PROJECT_ROOT` to `DWI_ROOT` unless you intentionally want to test Dwi inside its own source repository.
 
 ## Codex
 
@@ -42,8 +48,8 @@ Project-scoped example for Conduct:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".agents/skills/dwi-conduct"
-node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
@@ -52,13 +58,13 @@ grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
 The installed structure is:
 
 ```text
-.agents/skills/dwi-conduct/
+<your-project>/.agents/skills/dwi-conduct/
 ├── SKILL.md
 └── agents/
     └── openai.yaml
 ```
 
-Then start a fresh Codex session and invoke `$dwi-conduct` explicitly. A matching prompt that does not mention `$dwi-conduct` should not activate the module implicitly.
+Then start a fresh Codex session from `PROJECT_ROOT` and invoke `$dwi-conduct` explicitly. A matching prompt that does not mention `$dwi-conduct` should not activate the module implicitly.
 
 ### Recognize the affected one-file pattern
 
@@ -74,14 +80,14 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-If those were the only steps used, add the missing Codex metadata with the repair procedure below.
+If those were the only steps used, check whether the module was installed into the Dwi checkout or the intended project, then add the missing Codex metadata with the repair procedure below.
 
 ### Manual Codex equivalent
 
 ```bash
 MODULE="dwi-conduct"
-SOURCE="modules/${MODULE}"
-TARGET=".agents/skills/${MODULE}"
+SOURCE="${DWI_ROOT}/modules/${MODULE}"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
 test -f "$SOURCE/SKILL.md"
 test -f "$SOURCE/agents/openai.yaml"
 test ! -e "$TARGET"
@@ -100,8 +106,8 @@ Project-scoped example for Conduct:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".claude/skills/dwi-conduct"
-node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
@@ -112,7 +118,7 @@ The helper derives the Claude artifact from the canonical provider-neutral `SKIL
 disable-model-invocation: true
 ```
 
-Then start a fresh Claude Code session and invoke `/dwi-conduct` explicitly. A matching prompt that does not invoke `/dwi-conduct` should not make Claude load the module automatically.
+Then start a fresh Claude Code session from `PROJECT_ROOT` and invoke `/dwi-conduct` explicitly. A matching prompt that does not invoke `/dwi-conduct` should not make Claude load the module automatically.
 
 ### Recognize the affected one-file pattern
 
@@ -128,7 +134,7 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-If Node.js is unavailable, copy the canonical `SKILL.md`, add `disable-model-invocation: true` inside its opening YAML frontmatter, and verify that the rest of the file is unchanged before starting a fresh session.
+If Node.js is unavailable, copy the canonical `SKILL.md` from `DWI_ROOT`, add `disable-model-invocation: true` inside its opening YAML frontmatter, and verify that the rest of the file is unchanged before starting a fresh session from `PROJECT_ROOT`.
 
 ## Install a different module
 
@@ -163,15 +169,17 @@ The next corrected release must pin the complete per-harness installation path a
 
 ## Repair an existing one-file install
 
+First identify the project that actually contains the installed `SKILL.md`. Use that directory as `PROJECT_ROOT`; do not assume the Dwi checkout is the destination.
+
 ### Codex repair
 
 If the installed module currently contains only `SKILL.md`, add the missing metadata without replacing the skill:
 
 ```bash
 MODULE="dwi-conduct"
-SOURCE="modules/${MODULE}/agents/openai.yaml"
-TARGET=".agents/skills/${MODULE}/agents/openai.yaml"
-test -f ".agents/skills/${MODULE}/SKILL.md"
+SOURCE="${DWI_ROOT}/modules/${MODULE}/agents/openai.yaml"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}/agents/openai.yaml"
+test -f "${PROJECT_ROOT}/.agents/skills/${MODULE}/SKILL.md"
 test -f "$SOURCE"
 test ! -e "$TARGET"
 install -d "$(dirname "$TARGET")"
@@ -179,33 +187,33 @@ install -m 0644 "$SOURCE" "$TARGET"
 cmp "$SOURCE" "$TARGET"
 ```
 
-Start a fresh Codex session afterward.
+Start a fresh Codex session from `PROJECT_ROOT` afterward.
 
 ### Claude Code repair
 
-The quickest reversible control is to open `/skills`, select the Dwi module, cycle its state to `user-invocable-only`, and save. Claude Code records that local override in `.claude/settings.local.json`.
+The quickest reversible control is to open `/skills` from the affected project, select the Dwi module, cycle its state to `user-invocable-only`, and save. Claude Code records that local override in `.claude/settings.local.json`.
 
 For a file-based repair, keep the old directory as a backup, install a newly rendered artifact, inspect it, and remove the backup only after verification:
 
 ```bash
 MODULE="dwi-conduct"
-OLD=".claude/skills/${MODULE}"
-BACKUP=".claude/skills/${MODULE}.before-explicit-only"
+OLD="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+BACKUP="${PROJECT_ROOT}/.claude/skills/${MODULE}.before-explicit-only"
 test -d "$OLD"
 test ! -e "$BACKUP"
 mv "$OLD" "$BACKUP"
-node scripts/install-module.mjs claude "$MODULE" "$OLD"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$OLD"
 grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-Start a fresh Claude Code session afterward. Keep the backup until the explicit invocation test passes.
+Start a fresh Claude Code session from `PROJECT_ROOT` afterward. Keep the backup until the explicit invocation test passes.
 
 ## Remove a module
 
 For Codex, remove only the two files installed by this guide, then remove directories only when empty:
 
 ```bash
-TARGET=".agents/skills/dwi-conduct"
+TARGET="${PROJECT_ROOT}/.agents/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 rm "$TARGET/agents/openai.yaml"
@@ -217,7 +225,7 @@ rmdir "$TARGET"
 For Claude Code:
 
 ```bash
-TARGET=".claude/skills/dwi-conduct"
+TARGET="${PROJECT_ROOT}/.claude/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
 rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
@@ -227,4 +235,4 @@ rmdir "$TARGET"
 
 ## Stop conditions
 
-Stop the trial if the module asks for more authority than the task requires, hides an external effect, conflicts with native harness controls, activates without the intended explicit invocation, or makes the workflow harder to understand. Removal is a valid result; no apology or continued trial is required.
+Stop the trial if the module asks for more authority than the task requires, hides an external effect, conflicts with native harness controls, activates without the intended explicit invocation, installs into a different project than intended, or makes the workflow harder to understand. Removal is a valid result; no apology or continued trial is required.
