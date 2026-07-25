@@ -6,7 +6,7 @@
 
 <p align="center">과도한 계획, 토큰 낭비, 컨텍스트 손실, 명확한 권한 없이 수행되는 행동을 줄이기 위한 모듈식 레이어입니다.</p>
 
-<p align="center"><strong>Research Preview 0.2.1</strong> · 문서 패치 · 6개 집중 모듈 + 선택형 All-in-One</p>
+<p align="center"><strong>Research Preview 0.2.0</strong> · 최신 검토 완료 저장소 릴리스: v0.2.2 · 6개 집중 모듈 + 선택형 All-in-One</p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.fr.md">Français</a> · <a href="README.hi.md">हिन्दी</a></p>
 
@@ -42,9 +42,11 @@ Dwi는 별도의 런타임, 데몬, MCP 서버가 아닙니다. 각 모듈은 �
 
 ## 상태
 
-- Research Preview: `0.2.1`
-- 런타임 변경: 없음
-- 이번 패치: 일본어, 한국어, 중국어 간체, 프랑스어, 힌디어 진입 문서 추가
+- 모듈 콘텐츠 Research Preview 기준선: `0.2.0`
+- 최신 검토 완료 저장소 릴리스: `v0.2.2`
+- 이번 패치: Codex와 Claude Code의 명시적 호출 전용 설치 계약 수정
+- 표준 모듈 본문과 SHA-256: `v0.2.0`에서 변경 없음
 - 설치형 구성: 6개 집중 모듈 + 선택형 All-in-One
+- 정확한 설치 명령은 영어 또는 베트남어 문서를 기준으로 사용
 
 문의: [hoc@wi.works](mailto:hoc@wi.works)
