@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "repository_version": "0.2.0-dev",
-  "latest_reviewed_release": "v0.1.0",
+  "repository_version": "0.2.0",
+  "latest_reviewed_release": "v0.2.0",
   "modules": [
     {
       "slug": "conduct",
@@ -56,8 +56,8 @@
       "id": "dwi-all-in-one",
       "title": "All-in-One",
       "kind": "composite",
-      "released_in": null,
-      "remote_install": false
+      "released_in": "v0.2.0",
+      "remote_install": true
     }
   ]
 }

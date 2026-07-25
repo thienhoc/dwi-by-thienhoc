@@ -58,7 +58,7 @@ Only a missing blocker should be surfaced to the person.
 
 ## Small trial
 
-1. Install from an exact reviewed commit while All-in-One remains unreleased.
+1. Install from the reviewed `v0.2.0` tag.
 2. Choose one reversible, single-file task.
 3. Invoke `$dwi-all-in-one`.
 4. Confirm that it takes the silent fast path.

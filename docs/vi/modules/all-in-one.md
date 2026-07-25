@@ -58,7 +58,7 @@ Chỉ nêu phần còn thiếu thật sự chặn bước tiếp theo.
 
 ## Lần thử nhỏ
 
-1. Khi All-in-One chưa phát hành, chỉ cài từ commit chính xác đã review.
+1. Cài từ tag `v0.2.0` đã được duyệt.
 2. Chọn một thay đổi có thể hoàn tác trong một file.
 3. Gọi `$dwi-all-in-one`.
 4. Xác nhận mô-đun dùng đường thực hiện nhanh im lặng.

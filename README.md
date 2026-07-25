@@ -9,11 +9,21 @@
 </p>
 
 <p align="center">
-  <strong>Development Preview 0.2.0-dev</strong> · latest reviewed release: v0.1.0 · 6 focused modules + optional unreleased All-in-One
+  <strong>Research Preview 0.2.0</strong> · latest reviewed repository release: v0.2.3 · 6 focused modules + 1 optional All-in-One
 </p>
 
 <p align="center">
+  <a href="README.md">English</a> ·
   <a href="README.vi.md">Tiếng Việt</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.hi.md">हिन्दी</a> ·
+  <a href="LANGUAGES.md">All languages</a>
+</p>
+
+<p align="center">
   <a href="MODULES.md">Choose a module</a> ·
   <a href="docs/installation.md">Install</a> ·
   <a href="docs/safety.md">Safety</a>
@@ -29,7 +39,7 @@ Codex and Claude Code are AI coding tools that run agents and enforce tool permi
 
 Dwi is not another AI skill collection. Its modules shape how agents communicate, decide, coordinate, and handle evidence inside existing agent workflows.
 
-Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. Where a supported harness loads the open Agent Skills format, `SKILL.md` is the technical package—not the product category.
+Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. The canonical `SKILL.md` remains provider-neutral; the installation path must also preserve each harness's explicit-invocation control.
 
 ## Start with the problem you have
 
@@ -41,7 +51,7 @@ Dwi does not replace the harness. Each module is a small, inspectable set of age
 | Claude and Codex need to coordinate | [Dwi • Bridge](docs/modules/bridge.md) | Separates advice, authority, effects, and evidence across native harnesses |
 | Several agents need a shared structure | [Dwi • Arc](docs/modules/arc.md) | Creates bounded cells with one writer per scope and an independent gate |
 | A result sounds certain but the proof is unclear | [Dwi • Evidence](docs/modules/evidence.md) | Labels verified, observed, estimated, target, and unknown claims |
-| The same workflow repeatedly hits multiple issues | [Dwi • All-in-One](docs/modules/all-in-one.md) | Applies all six lenses with one bounded adherence loop when issues co-occur |
+| The same workflow repeatedly hits multiple issues | [Dwi • All-in-One](docs/modules/all-in-one.md) | Selects only the relevant Dwi lenses and preserves a silent fast path when issues co-occur |
 
 Every module stands alone. You do not need to install a Dwi core, daemon, MCP server, or website.
 
@@ -50,28 +60,48 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 ## A safe ten-minute trial
 
 1. Pick one module from the table.
-2. Read its `SKILL.md` and the module guide before installing it.
+2. Read its canonical `SKILL.md` and the module guide before installing it.
 3. Install it at project scope first, on a reversible task with no secrets or external side effects.
 4. Invoke the module explicitly and compare the result with your normal workflow.
 5. Remove the module folder if it does not help. No apology or continued trial is required.
 
-For a project-scoped Codex trial with Dwi Conduct:
+Clone the corrected immutable release, resolve the Dwi checkout and target project to physical paths, then reject a target inside the Dwi checkout:
 
 ```bash
-git clone --depth 1 --branch v0.1.0 \
+git clone --depth 1 --branch v0.2.3 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.1.0
-cd dwi-by-thienhoc-v0.1.0
-TARGET=".agents/skills/dwi-conduct"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
-cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
+  dwi-by-thienhoc-v0.2.3
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.3" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
+MODULE="dwi-conduct"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT must resolve outside DWI_ROOT" >&2
+    exit 1
+    ;;
+esac
 ```
 
-All-in-One is present only on the unreleased `0.2.0-dev` branch state. Do not install it from mutable `main`. Until a reviewed release tag includes it, use it only from a checkout pinned to an exact reviewed commit and verify the local checksum before installation.
+For Codex:
 
-Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in-one`. The full guide includes checksum verification, immutable release references for released modules, and exact removal.
+```bash
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+```
+
+For Claude Code:
+
+```bash
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
+```
+
+The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy and could place the skill inside the Dwi checkout rather than the intended project. `v0.2.3` corrects that installation contract. The existing `v0.2.2` tag identifies a pre-patch commit, was not published as this release, and must not be used for the corrected installation. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
+
+All-in-One is an optional composition module first released in `v0.2.0`. Use it only when multiple observed issues recur in the same workflow.
 
 [Open the inspect-first installation guide →](docs/installation.md)
 
@@ -84,6 +114,13 @@ Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in
 **Already using AI regularly:** choose the module that matches the friction you can actually observe. Add only one new behavior at a time.
 
 **Building professional agent systems:** begin with Evidence. Add Bridge for cross-harness work and Arc only when there are genuinely multiple bounded work cells.
+
+## Go deeper
+
+- [Read the story behind Dwi](docs/story.md)
+- [See how Dwi works](docs/how-it-works.md)
+- [Review the operating principles](docs/principles.md)
+- [Use the content and publication guidelines](docs/content-guidelines.md)
 
 ## What Dwi will not do
 
@@ -104,25 +141,30 @@ Dwi keeps `VERIFIED`, `OBSERVED`, `ESTIMATED`, `TARGET`, and `UNKNOWN` separate.
 ## Repository map
 
 ```text
-modules/                 Installable Dwi modules (Agent Skills package format)
-docs/modules/            English decision and trial guides
-docs/vi/modules/         Vietnamese decision and trial guides
-assets/                  Original brand and architecture sources
-.github/                 Community templates and read-only validation
-scripts/validate-repo.mjs Offline repository contract checker
+modules/                              Canonical Dwi modules and Codex metadata
+docs/modules/                         English decision and trial guides
+docs/vi/modules/                      Vietnamese decision and trial guides
+assets/                               Original brand and architecture sources
+.github/                              Community templates, validation, and reviewed release automation
+scripts/install-module.mjs            Harness-aware local installer
+scripts/validate-install-contract.mjs Installed-artifact regression checker
+scripts/validate-repo.mjs             Offline repository contract checker
 ```
 
 This repository intentionally contains no landing-page runtime. The human-layer introduction lives separately at [d.wi.works](https://d.wi.works).
 
 ## Status
 
-- Development branch: `0.2.0-dev`
-- Latest reviewed release: `v0.1.0`, containing the six focused modules
-- All-in-One: unreleased development content; no immutable install URL yet
+- Research Preview module-content baseline: `0.2.0`
+- Latest reviewed repository release: `v0.2.3`, correcting explicit-only installation for Codex and Claude Code
+- Existing `v0.2.2` tag: preserved non-release ref to a pre-patch commit; do not use for corrected installation
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Included modules: six focused modules and optional All-in-One
 - Bounded compatibility observations: [Codex and Claude Code evidence records](evidence/compatibility/README.md)
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
-- Next-release gates: [release checklist](docs/release-checklist.md)
-- Release record: [v0.1.0](docs/releases/v0.1.0.md)
+- Release checklist: [release checklist](docs/release-checklist.md)
+- Release record: [v0.2.3](docs/releases/v0.2.3.md)
+- Non-release tag record: [v0.2.2](docs/releases/v0.2.2.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Changes: [CHANGELOG.md](CHANGELOG.md)
 

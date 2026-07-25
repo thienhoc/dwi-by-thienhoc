@@ -92,12 +92,12 @@ if (catalog.schema_version !== 1) {
   errors.push("modules/catalog.json: schema_version must be 1");
 }
 
-if (catalog.repository_version !== "0.2.0-dev") {
-  errors.push("modules/catalog.json: repository_version must be 0.2.0-dev");
+if (catalog.repository_version !== "0.2.0") {
+  errors.push("modules/catalog.json: repository_version must be 0.2.0");
 }
 
-if (catalog.latest_reviewed_release !== "v0.1.0") {
-  errors.push("modules/catalog.json: latest_reviewed_release must be v0.1.0");
+if (catalog.latest_reviewed_release !== "v0.2.0") {
+  errors.push("modules/catalog.json: latest_reviewed_release must be v0.2.0");
 }
 
 if (!Array.isArray(catalog.modules)) {
@@ -167,9 +167,9 @@ for (const entry of moduleEntries) {
   }
 
   if (entry.kind === "composite") {
-    if (entry.released_in !== null || entry.remote_install !== false) {
+    if (entry.released_in !== "v0.2.0" || entry.remote_install !== true) {
       errors.push(
-        `modules/catalog.json: composite module ${entry.id} must remain unreleased with remote_install false`,
+        `modules/catalog.json: composite module ${entry.id} must be released in v0.2.0 with remote_install true`,
       );
     }
   }
@@ -210,6 +210,7 @@ const requiredPaths = [
   "docs/license-decision.md",
   "docs/release-checklist.md",
   "docs/releases/v0.1.0.md",
+  "docs/releases/v0.2.0.md",
   "docs/repository-metadata.md",
   "evidence/compatibility/README.md",
   "evidence/compatibility/2026-07-25-codex-project-scope.md",
@@ -601,17 +602,17 @@ for (const installationPath of [
 
 const focusedInstallEn =
   installationEn
-    .split("## Install a different focused module")[1]
-    ?.split("## All-in-One development trial")[0] ?? "";
+    .split("## Install a different module")[1]
+    ?.split("## Public release: pinned module URLs")[0] ?? "";
 const focusedInstallVi =
   installationVi
-    .split("## Cài một mô-đun chuyên biệt khác")[1]
-    ?.split("## Thử All-in-One trong môi trường phát triển")[0] ?? "";
+    .split("## Cài một mô-đun khác")[1]
+    ?.split("## URL cài đặt đã ghim cho bản phát hành")[0] ?? "";
 
 if (!focusedInstallEn.trim()) {
   errors.push("docs/installation.md: focused-module install section is missing");
 } else {
-  requireNotContains(
+  requireContains(
     focusedInstallEn,
     "dwi-all-in-one",
     "docs/installation.md focused-module section",
@@ -621,7 +622,7 @@ if (!focusedInstallEn.trim()) {
 if (!focusedInstallVi.trim()) {
   errors.push("docs/vi/installation.md: focused-module install section is missing");
 } else {
-  requireNotContains(
+  requireContains(
     focusedInstallVi,
     "dwi-all-in-one",
     "docs/vi/installation.md focused-module section",
@@ -635,7 +636,7 @@ const focusedInstallationContracts = [
     pinnedHeading: "## Install from a pinned checkout",
     codexHeading: "## Codex",
     claudeHeading: "## Claude Code",
-    focusedHeading: "## Install a different focused module",
+    focusedHeading: "## Install a different module",
     codexTarget: 'TARGET=".agents/skills/dwi-conduct"',
     claudeTarget: 'TARGET=".claude/skills/dwi-conduct"',
     projectExample: "Project-scoped example for Conduct:",
@@ -646,7 +647,7 @@ const focusedInstallationContracts = [
     pinnedHeading: "## Cài từ checkout đã ghim",
     codexHeading: "## Codex",
     claudeHeading: "## Claude Code",
-    focusedHeading: "## Cài một mô-đun chuyên biệt khác",
+    focusedHeading: "## Cài một mô-đun khác",
     codexTarget: 'TARGET=".agents/skills/dwi-conduct"',
     claudeTarget: 'TARGET=".claude/skills/dwi-conduct"',
     projectExample: "Ví dụ cài Conduct trong phạm vi dự án:",
@@ -734,14 +735,24 @@ for (const contract of focusedInstallationContracts) {
   );
 }
 
+requireNotContains(
+  installationEn,
+  "All-in-One development trial",
+  "docs/installation.md",
+);
+requireNotContains(
+  installationVi,
+  "Thử All-in-One trong môi trường phát triển",
+  "docs/vi/installation.md",
+);
 requireContains(
   installationEn,
-  "## All-in-One development trial (not in v0.1.0)",
+  "v0.2.0/modules/dwi-all-in-one/SKILL.md",
   "docs/installation.md",
 );
 requireContains(
   installationVi,
-  "## Thử All-in-One trong môi trường phát triển (không có trong v0.1.0)",
+  "v0.2.0/modules/dwi-all-in-one/SKILL.md",
   "docs/vi/installation.md",
 );
 
@@ -776,9 +787,20 @@ const currentOperationalSurfaces = [
   "ROADMAP.md",
   "CONTRIBUTING.md",
   "docs/release-checklist.md",
+  "docs/installation.md",
+  "docs/vi/installation.md",
+  "docs/modules/all-in-one.md",
+  "docs/vi/modules/all-in-one.md",
 ];
 
 const stalePhrases = [
+  "0.2.0-dev",
+  "Development Preview",
+  "All-in-One is unreleased",
+  "All-in-One: unreleased development content",
+  "All-in-One hiện chỉ có trong trạng thái phát triển chưa phát hành",
+  "All-in-One: nội dung phát triển chưa phát hành",
+  "chỉ cài từ commit chính xác đã review",
   "repository is in private Research Preview",
   "While the repository is private",
   "No public release tag has been created",
@@ -795,13 +817,14 @@ for (const surface of currentOperationalSurfaces) {
   }
 }
 
-requireContains(readmeEn, "0.2.0-dev", "README.md");
-requireContains(readmeEn, "v0.1.0", "README.md");
-requireContains(readmeVi, "0.2.0-dev", "README.vi.md");
-requireContains(readmeVi, "v0.1.0", "README.vi.md");
+requireContains(readmeEn, "0.2.0", "README.md");
+requireContains(readmeEn, "v0.2.0", "README.md");
+requireContains(readmeVi, "0.2.0", "README.vi.md");
+requireContains(readmeVi, "v0.2.0", "README.vi.md");
 
 const changelog = await readText("CHANGELOG.md");
 requireContains(changelog, "## 0.1.0 - 2026-07-25", "CHANGELOG.md");
+requireContains(changelog, "## 0.2.0 - 2026-07-25", "CHANGELOG.md");
 
 const files = await walk(root);
 const legacyAuthorEmail = ["thienhoc.tk", "gmail.com"].join("@");
