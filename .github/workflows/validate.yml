@@ -111,7 +111,8 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare local immutable tag
+      - name: Inspect local release ref
+        id: tag_state
         if: steps.release.outputs.publish == 'true'
         shell: bash
         env:
@@ -119,11 +120,34 @@ jobs:
         run: |
           set -euo pipefail
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
-            test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
-            exit 0
+            printf 'exists=true\n' >> "$GITHUB_OUTPUT"
+            printf 'before=%s\n' "$(git rev-parse "${TAG}^{commit}")" >> "$GITHUB_OUTPUT"
+          else
+            printf 'exists=false\n' >> "$GITHUB_OUTPUT"
+            printf 'before=none\n' >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Create local immutable release ref
+        if: steps.release.outputs.publish == 'true' && steps.tag_state.outputs.exists == 'false'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
           git update-ref "refs/tags/$TAG" "$GITHUB_SHA"
-          test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
+
+      - name: Verify local immutable release ref
+        id: tag_verify
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse "${TAG}^{commit}")"
+          printf 'actual=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+          printf 'expected=%s\n' "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          test "$actual" = "$GITHUB_SHA"
 
       - name: Run public-release preflight against local tag
         if: steps.release.outputs.publish == 'true'
@@ -140,7 +164,6 @@ jobs:
         run: |
           set -euo pipefail
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
             exit 0
           fi
           git push origin "refs/tags/$TAG"
@@ -172,6 +195,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.release.outputs.tag }}
           JOB_STATUS: ${{ job.status }}
+          TAG_EXISTED: ${{ steps.tag_state.outputs.exists }}
+          TAG_BEFORE: ${{ steps.tag_state.outputs.before }}
+          TAG_ACTUAL: ${{ steps.tag_verify.outputs.actual }}
+          TAG_EXPECTED: ${{ steps.tag_verify.outputs.expected }}
         run: |
           set -euo pipefail
           body_file="$(mktemp)"
@@ -181,6 +208,10 @@ jobs:
             printf -- '- Job status: `%s`\n' "$JOB_STATUS"
             printf -- '- Workflow run ID: `%s`\n' "$GITHUB_RUN_ID"
             printf -- '- Commit: `%s`\n' "$GITHUB_SHA"
+            printf -- '- Local tag existed before preparation: `%s`\n' "${TAG_EXISTED:-unknown}"
+            printf -- '- Local tag target before preparation: `%s`\n' "${TAG_BEFORE:-unknown}"
+            printf -- '- Local tag target after preparation: `%s`\n' "${TAG_ACTUAL:-unknown}"
+            printf -- '- Expected tag target: `%s`\n' "${TAG_EXPECTED:-$GITHUB_SHA}"
             if [ -f /tmp/dwi-public-release-preflight.log ]; then
               printf '\n<details><summary>Public-release preflight tail</summary>\n\n```text\n'
               tail -n 100 /tmp/dwi-public-release-preflight.log
