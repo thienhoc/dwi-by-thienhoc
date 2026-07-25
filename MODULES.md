@@ -43,10 +43,11 @@ Project scope is recommended for the first trial. See [the complete installation
 
 ## Version references
 
-- `v0.2.2` is the latest reviewed repository release and corrects the explicit-only installation contract.
+- `v0.2.3` is the latest reviewed repository release and corrects the explicit-only installation contract.
+- Existing tag `v0.2.2` is a preserved non-release ref to a pre-patch commit and must not be used for the corrected installer.
 - Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
-- `v0.2.1` remains the historical documentation-localization patch.
+- `v0.2.1` remains the historical documentation-localization release.
 - `v0.1.0` remains the historical focused-module release.
 - Do not install from mutable `main`.
-- A remote install reference must use a reviewed tag or exact reviewed commit.
+- A remote install reference must use a reviewed release tag or exact reviewed commit.
 - Module identity and module-content availability are recorded in [`modules/catalog.json`](modules/catalog.json).
