@@ -4,7 +4,7 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
-## 0.2.2 - 2026-07-26
+## 0.2.3 - 2026-07-26
 
 ### Fixed
 
@@ -22,15 +22,24 @@ All notable repository changes are recorded here.
 - Clean Codex fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
 - Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
 - Both actionable Codex review threads were addressed and resolved before release preparation.
+- Publication gates reject an existing tag that points to a different commit.
 
 ### Release truth
 
-- Release tag: `v0.2.2`
+- Release tag: `v0.2.3`
 - Base repository release: `v0.2.1`
 - Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
-- Packaging and installation contract: corrected in `v0.2.2`
+- Packaging and installation contract: corrected in `v0.2.3`
+- Version `v0.2.2` was not published as this patch because that tag already identified a pre-patch commit and was preserved immutably.
 - Runtime evidence remains bounded to the reported trials; no universal compatibility claim is made.
-- Release record: [docs/releases/v0.2.2.md](docs/releases/v0.2.2.md)
+- Release record: [docs/releases/v0.2.3.md](docs/releases/v0.2.3.md)
+
+## v0.2.2 - not published
+
+- The tag already existed at pre-patch commit `4fdecbcccb2caf092a145517b2bdcc84e431de27`.
+- The tag does not contain the installation-contract correction and was not moved or rewritten.
+- No GitHub Release was published for `v0.2.2`.
+- Historical record: [docs/releases/v0.2.2.md](docs/releases/v0.2.2.md)
 
 ## 0.2.1 - 2026-07-26
 
