@@ -1,68 +1,74 @@
 # Dwi • All-in-One
 
-**One optional module for repeated multi-lens problems.**
+**A relevance-gated composition preset for repeated multi-lens problems.**
 
 [Open the installable `SKILL.md`](../../modules/dwi-all-in-one/SKILL.md) · [Vietnamese guide](../vi/modules/all-in-one.md)
 
 ## Choose All-in-One when
 
-- the same workflow repeatedly shows signs from multiple modules;
-- scope, cost, and responsibility keep drifting together;
-- focused modules are useful but too many to coordinate manually;
-- you want a bounded, explicit starter for recurring mixed-friction tasks.
+Use it when at least two observed Dwi problem patterns occur in the same workflow, for example:
+
+- communication friction and scope expansion;
+- resource drift and repeated coordination;
+- unclear authority and writer overlap;
+- completion claims and missing evidence.
+
+Prefer a focused module when one issue dominates.
 
 ## What changes
 
-All-in-One applies the same six lenses as individual modules: communication, plan size, resource control, coordination, one-writer boundaries, and evidence labeling.
+All-in-One selects only the relevant Dwi lenses for the current task.
 
-It keeps them in one explicit module and adds the bounded adherence loop for repeated misses before escalation.
+It adds:
+
+- an explicit precedence order;
+- a relevance gate;
+- a silent fast path for clear, reversible, single-writer work;
+- a material-action boundary;
+- bounded miss handling.
+
+It does not require every task to run all six lenses.
+
+## Silent fast path
+
+For a small, reversible task with clear authority and one writer, All-in-One should:
+
+1. act directly;
+2. use the smallest relevant check;
+3. disclose material assumptions afterward;
+4. report remaining unknowns;
+5. stop.
+
+It should not print a six-item checklist, build an agent structure, or create an evidence record when none changes the decision.
+
+## Material actions
+
+Before a write, commit, push, merge, release, deployment, deletion, disclosure, payment, visibility change, shared-schema change, or cross-harness execution transfer, All-in-One checks the affected scope, authority, reversibility, writer, and evidence path.
+
+Only a missing blocker should be surfaced to the person.
 
 ## What does not change
 
-- It does not replace the harness permission model.
-- It does not claim universal compatibility or guaranteed savings.
-- It does not remove the need for clear user confirmation before consequential actions.
-- It does not override project-specific governance.
+- Native harness permissions remain authoritative.
+- Messages do not become authorization.
+- Project governance remains authoritative.
+- Unknown remains a valid evidence status.
+- All-in-One creates no new runtime, daemon, connector, service, writer, or agent.
+- All-in-One does not claim universal compatibility or guaranteed savings.
 
-## When to pick a focused module instead
+## Small trial
 
-Use a focused module first when one issue is dominant:
+1. Install from an exact reviewed commit while All-in-One remains unreleased.
+2. Choose one reversible, single-file task.
+3. Invoke `$dwi-all-in-one`.
+4. Confirm that it takes the silent fast path.
+5. Confirm that it uses only relevant lenses.
+6. Remove it if the added control does not improve the decision or result.
 
-- only communication friction: `dwi-conduct`
-- only overplanning/testing drift: `dwi-lean`
-- only resource uncertainty: `dwi-budget`
-- only coordination friction: `dwi-bridge`
-- only writer-boundary issues: `dwi-arc`
-- only unclear evidence status: `dwi-evidence`
+## A good result
 
-## Install and trial
-
-1. Install from a reviewed checkout (or pinned URL for focused modules).
-2. Run one reversible task.
-3. Compare the change in outcome quality, boundary clarity, and token/context behavior.
-4. Keep or remove after one clear trial.
-
-For installation, use the full procedure in [docs/installation.md](../installation.md).
-
-## A small fit test
-
-Ask the task for:
-
-1. explicit objective;
-2. explicit boundaries;
-3. finish line;
-4. required evidence;
-5. action owner.
-
-If these are missing, it is a fit-miss and you should pause before action.
-
-## Bounded adherence loop in practice
-
-- first miss: pause one affected step, state the missing check, apply smallest safe correction, and re-check once;
-- second miss: pause that action and ask one direct permission question with a safe default.
-
-If the user asks to stop, remove the module.
+The requested outcome is reached with clear authority, proportionate effort, one writer, sufficient evidence, and less ceremony than manually coordinating all six modules.
 
 ## Safety and removal
 
-Read the safety model first. Follow the exact install/remove flow in [the installation guide](../installation.md), including checksum verification and exact removal.
+Read [the safety model](../safety.md). Follow the exact install and removal procedure in [the installation guide](../installation.md). Start a fresh session after removal.

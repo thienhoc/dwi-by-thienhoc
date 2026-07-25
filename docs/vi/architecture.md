@@ -22,6 +22,10 @@ Dwi nằm giữa ý định của con người và lớp công cụ tác nhân l
 - Arc tổ chức nhiều ô công việc có giới hạn.
 - Evidence bảo vệ mặt tiếp xúc với kết quả.
 
+## Phối hợp, không phải lớp thứ bảy
+
+All-in-One là mô-đun phối hợp tùy chọn trên sáu mô-đun chuyên biệt. Nó chọn các lớp liên quan cho một tác vụ và không bổ sung quyền, thẩm quyền, runtime, bộ điều phối hoặc lớp kiến trúc mới. Một tác vụ nhỏ, có thể hoàn tác vẫn phải đi theo đường thực hiện nhanh im lặng.
+
 ## Quy tắc một người ghi
 
 Đọc song song thường an toàn. Sửa song song chỉ an toàn khi phạm vi được tách rõ. Mỗi phạm vi có thể thay đổi cần một chủ sở hữu, một hợp đồng nghiệm thu và một điểm bàn giao. Người tích hợp gốc quyết định phần nào được đưa vào kết quả chung.
