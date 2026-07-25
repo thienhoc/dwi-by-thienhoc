@@ -6,7 +6,7 @@
 
 <p align="center">一个模块化的人本层，用于减少过度规划、Token 浪费、上下文丢失，以及在权限不明确时执行操作。</p>
 
-<p align="center"><strong>Research Preview 0.2.1</strong> · 文档补丁 · 6 个专用模块 + 1 个可选 All-in-One</p>
+<p align="center"><strong>Research Preview 0.2.0</strong> · 最新已审核仓库版本：v0.2.2 · 6 个专用模块 + 1 个可选 All-in-One</p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a> · <a href="README.fr.md">Français</a> · <a href="README.hi.md">हिन्दी</a></p>
 
@@ -42,9 +42,11 @@ Dwi 不是新的运行时、守护进程或 MCP 服务器。每个模块都可�
 
 ## 状态
 
-- Research Preview：`0.2.1`
-- 运行时变化：无
-- 本补丁：新增日语、韩语、简体中文、法语和印地语入口文档
+- 模块内容 Research Preview 基线：`0.2.0`
+- 最新已审核仓库版本：`v0.2.2`
+- 本补丁：修复 Codex 与 Claude Code 的仅显式调用安装契约
+- 标准模块正文与 SHA-256：相较 `v0.2.0` 无变化
 - 可安装内容：6 个专用模块 + 可选 All-in-One
+- 精确安装命令以英文或越南文文档为准
 
 联系：[hoc@wi.works](mailto:hoc@wi.works)

@@ -1,0 +1,120 @@
+name: Publish reviewed release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/releases/v*.md"
+      - "docs/release-checklist.md"
+      - ".github/workflows/release.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-reviewed-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Resolve the reviewed release record
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git switch -C main --track origin/main
+          git fetch --tags --force origin
+
+          mapfile -t release_records < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" |
+              grep -E '^docs/releases/v[0-9]+\.[0-9]+\.[0-9]+\.md$' || true
+          )
+
+          if [ "${#release_records[@]}" -ne 1 ]; then
+            printf '%s\n' "Expected exactly one versioned release record in the merged commit; found ${#release_records[@]}." >&2
+            exit 1
+          fi
+
+          release_record="${release_records[0]}"
+          tag="$(basename "$release_record" .md)"
+          test "$(head -n 1 "$release_record")" = "# Dwi $tag"
+
+          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
+          printf 'release_record=%s\n' "$release_record" >> "$GITHUB_OUTPUT"
+
+      - name: Validate release gates
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          npm run check
+
+          section="$({
+            sed -n "/^## Blocking gates for ${TAG}$/,/^## /p" docs/release-checklist.md
+          } | sed '$d')"
+
+          test -n "$section"
+          if grep -F -- "- [ ]" <<<"$section"; then
+            printf '%s\n' "One or more ${TAG} release gates remain open." >&2
+            exit 1
+          fi
+
+      - name: Create immutable tag after preflight
+        id: tag
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            printf 'created=false\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" "$GITHUB_SHA" -m "Dwi $TAG"
+          npm run preflight:public
+          git push origin "refs/tags/$TAG"
+          printf 'created=true\n' >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_RECORD: ${{ steps.release.outputs.release_record }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release view "$TAG"
+            exit 0
+          fi
+
+          gh release create "$TAG" \
+            --verify-tag \
+            --latest \
+            --title "Dwi $TAG" \
+            --notes-file "$RELEASE_RECORD"
+
+          gh release view "$TAG"

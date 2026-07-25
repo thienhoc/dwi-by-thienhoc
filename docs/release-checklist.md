@@ -1,8 +1,8 @@
-# Release checklist for Dwi v0.2.0
+# Release checklist for Dwi v0.2.2
 
-Repository visibility, a development branch, a release tag, and deployment are separate states.
+Repository visibility, a development branch, a release tag, and a GitHub Release are separate states.
 
-The current reviewed release is `v0.2.0`. The `v0.1.0` record remains historical.
+The current release candidate is `v0.2.2`. The `v0.2.0` module-content record and `v0.2.1` documentation record remain historical.
 
 Run:
 
@@ -12,7 +12,31 @@ npm run preflight:public
 
 The command checks automatable gates and lists manual GitHub or human gates. Static validation does not replace runtime evidence.
 
+## Blocking gates for v0.2.2
+
+- [x] `v0.2.2` has a versioned release record.
+- [x] Published tags `v0.1.0`, `v0.2.0`, and `v0.2.1` remain immutable.
+- [x] Codex installation includes `SKILL.md` and `agents/openai.yaml` with `allow_implicit_invocation: false`.
+- [x] Claude Code installation contains exactly one `disable-model-invocation: true` field.
+- [x] Canonical module bodies remain provider-neutral and unchanged.
+- [x] The installer refuses to overwrite an existing module directory.
+- [x] The installer rejects destinations that resolve inside the Dwi source checkout, including symlink aliases.
+- [x] Claude repair backups are outside the `.claude/skills/` discovery root.
+- [x] Installed-artifact regression checks cover all seven modules on both harnesses.
+- [x] Repository and install contracts pass on Node.js 20 and 24.
+- [x] Clean Codex fresh-session negative and explicit-invocation tests were reported PASS by Wi on 2026-07-26.
+- [x] Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by Wi on 2026-07-26.
+- [x] Both actionable review threads on PR #5 were addressed and resolved.
+- [x] English and Vietnamese installation meaning is aligned.
+- [x] Canonical module checksums remain current and unchanged from `v0.2.0`.
+- [x] Release notes preserve bounded evidence wording and make no universal compatibility claim.
+- [x] Wi gives final copy approval for `v0.2.2`.
+- [x] Wi gives explicit merge, tag, and GitHub Release approval for `v0.2.2`.
+- [x] Release automation creates the immutable tag only from the merged `main` commit after checks pass.
+
 ## Blocking gates for v0.2.0
+
+This historical section is retained for the existing public-release preflight contract.
 
 - [x] `v0.2.0` is distinct from the historical `v0.1.0` release
 - [x] `v0.2.0` has a versioned release record
@@ -39,8 +63,8 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] About description, website, and topics match `docs/repository-metadata.md`
 - [x] The approved 1280x640 social preview is configured on GitHub
 - [x] Issues and Discussions have an owner response policy
-- [x] A reviewed `v0.2.0` tag points to the exact approved commit
-- [x] All-in-One install documentation points only to the versioned reviewed tag
+- [x] Existing reviewed tags point to their exact approved commits
+- [x] The `v0.2.2` workflow uses `contents: write` only for the reviewed tag and GitHub Release operation
 
 ## Release truth
 
@@ -51,4 +75,4 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - A bounded harness observation does not prove universal compatibility.
 - A development branch is not a release.
 - A public repository is not automatically a supported product.
-- A tag, visibility change, merge, or deployment requires its own authority.
+- A merge, tag, release, visibility change, or deployment requires its own authority.

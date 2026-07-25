@@ -1,23 +1,56 @@
 # Cài một mô-đun, xem trước khi dùng
 
-Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phân phối dưới dạng hướng dẫn gốc cho tác nhân; lớp công cụ hỗ trợ định dạng Agent Skills sẽ nạp hành vi bắt buộc từ `SKILL.md`. Không có dịch vụ cài đặt, tiến trình chạy nền, gói chạy Dwi riêng, máy chủ kết nối công cụ hoặc phụ thuộc website. Vẫn cần một lớp công cụ tác nhân lập trình được hỗ trợ.
+Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phân phối dưới dạng hướng dẫn gốc cho tác nhân. Không có tiến trình Dwi chạy nền, dịch vụ cài đặt riêng, máy chủ MCP hoặc phụ thuộc website. Vẫn cần một lớp công cụ lập trình AI được hỗ trợ như Codex hoặc Claude Code.
+
+## Đính chính quan trọng về chính sách kích hoạt
+
+Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ sao chép `SKILL.md`. Cách đó đủ để lớp công cụ nhận ra mô-đun, nhưng không giữ được hợp đồng chỉ kích hoạt khi người dùng gọi rõ:
+
+- Codex còn cần `agents/openai.yaml` với `allow_implicit_invocation: false`.
+- Claude Code cần `disable-model-invocation: true` trong YAML frontmatter của `SKILL.md` đã cài.
+
+Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, model có thể tự chọn mô-đun Dwi dựa trên phần mô tả dù người dùng chưa gọi rõ. Đây là lỗi đóng gói và tài liệu. Lỗi này không tự cấp thêm quyền dùng công cụ, không vượt sandbox và không bỏ qua cơ chế phê duyệt gốc.
+
+Các ví dụ cũ còn `cd` vào checkout Dwi rồi dùng target tương đối như `.agents/skills/...`. Trừ khi checkout Dwi chính là dự án chủ ý dùng để thử, cách đó cài mô-đun vào repo nguồn Dwi thay vì dự án thật của người dùng. Ví dụ đã sửa tách riêng `DWI_ROOT` và `PROJECT_ROOT`, chuẩn hóa đường dẫn vật lý trước khi so sánh và từ chối target nằm trong checkout source Dwi.
+
+Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. `v0.2.2` là bản phát hành đã duyệt đầu tiên có trình cài đầy đủ theo từng lớp công cụ và hướng dẫn target dự án đã sửa.
 
 ## Trước khi cài
 
 1. Chọn một mô-đun trong [MODULES.vi.md](../../MODULES.vi.md).
-2. Đọc `SKILL.md` ngay trong kho.
-3. Kiểm tra tác dụng, điều mô-đun không làm, ranh giới quyền hạn và cách gỡ.
+2. Đọc `SKILL.md` chuẩn ngay trong kho.
+3. Kiểm tra tác dụng, điều mô-đun không làm, ranh giới quyền hạn, chính sách kích hoạt và cách gỡ.
 4. Lần thử đầu nên cài trong phạm vi dự án.
 5. Chọn một việc có thể hoàn tác, không chứa bí mật và không tạo tác động bên ngoài.
 
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
-
 ## Cài từ checkout đã ghim
 
-Khi cài cục bộ, hãy ghim checkout Dwi vào tag phát hành đã được duyệt hoặc commit chính xác mà bạn muốn kiểm tra, rồi xác nhận `pwd -P` trỏ tới checkout đó.
+Clone bản phát hành bất biến đã sửa:
 
-Với sáu mô-đun chuyên biệt được chuyển tiếp từ `v0.1.0` và All-in-One tùy chọn được phát hành trong `v0.2.0`, dùng tag `v0.2.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
+```bash
+git clone --depth 1 --branch v0.2.2 \
+  https://github.com/thienhoc/dwi-by-thienhoc.git \
+  dwi-by-thienhoc-v0.2.2
+```
+
+Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay đường dẫn dự án đích dưới đây bằng một thư mục đã tồn tại. `pwd -P` giải quyết cách viết đường dẫn khác nhau và bí danh symlink trước khi kiểm tra quan hệ chứa:
+
+```bash
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.2" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
+test -f "$DWI_ROOT/scripts/install-module.mjs"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT phải nằm ngoài DWI_ROOT sau khi chuẩn hóa đường dẫn" >&2
+    exit 1
+    ;;
+esac
+node --version
+```
+
+Trình cài cục bộ cần Node.js 20 trở lên, từ chối ghi đè thư mục mô-đun đang có, dựng đủ artifact trước khi chuyển vào vị trí đích, chuẩn hóa target dự kiến và từ chối target trỏ tới checkout source Dwi hoặc bất kỳ thư mục con nào của nó. Kiểm tra này cũng bao phủ bí danh symlink.
 
 ## Codex
 
@@ -26,7 +59,30 @@ Codex nhận kỹ năng của dự án tại `.agents/skills/` và kỹ năng c�
 Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
-pwd -P
+MODULE="dwi-conduct"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
+```
+
+Cấu trúc sau khi cài là:
+
+```text
+<du-an-cua-ban>/.agents/skills/dwi-conduct/
+├── SKILL.md
+└── agents/
+    └── openai.yaml
+```
+
+Sau đó mở một phiên Codex mới từ `PROJECT_ROOT` và gọi rõ `$dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không nhắc `$dwi-conduct` không nên tự kích hoạt mô-đun.
+
+### Nhận diện mẫu cài một file bị ảnh hưởng
+
+Không chạy mẫu dưới đây. Nội dung được giữ nguyên chỉ để người dùng nhận ra một bản cài từ `v0.1.0` đến `v0.2.1`:
+
+```text
 SOURCE="modules/dwi-conduct/SKILL.md"
 TARGET=".agents/skills/dwi-conduct"
 test -f "$SOURCE"
@@ -36,7 +92,23 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`.
+Nếu đây là toàn bộ các bước đã dùng, hãy kiểm tra mô-đun nằm trong checkout Dwi hay trong dự án chủ ý cài, rồi thêm metadata Codex còn thiếu theo phần sửa bản cài bên dưới.
+
+### Cách cài Codex thủ công tương đương
+
+```bash
+MODULE="dwi-conduct"
+SOURCE="${DWI_ROOT}/modules/${MODULE}"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
+test -f "$SOURCE/SKILL.md"
+test -f "$SOURCE/agents/openai.yaml"
+test ! -e "$TARGET"
+install -d "$TARGET/agents"
+install -m 0644 "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+install -m 0644 "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+cmp "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+cmp "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+```
 
 ## Claude Code
 
@@ -45,7 +117,26 @@ Claude Code nhận kỹ năng của dự án tại `.claude/skills/` và kỹ n�
 Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
-pwd -P
+MODULE="dwi-conduct"
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
+```
+
+Trình cài tạo artifact Claude từ `SKILL.md` chuẩn, trung lập với nhà cung cấp, rồi thêm đúng một trường frontmatter riêng cho Claude Code:
+
+```yaml
+disable-model-invocation: true
+```
+
+Sau đó mở một phiên Claude Code mới từ `PROJECT_ROOT` và gọi rõ `/dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không gọi `/dwi-conduct` không nên khiến Claude tự nạp mô-đun.
+
+### Nhận diện mẫu cài một file bị ảnh hưởng
+
+Không chạy mẫu dưới đây. Nội dung được giữ nguyên chỉ để người dùng nhận ra một bản cài từ `v0.1.0` đến `v0.2.1`:
+
+```text
 SOURCE="modules/dwi-conduct/SKILL.md"
 TARGET=".claude/skills/dwi-conduct"
 test -f "$SOURCE"
@@ -55,11 +146,11 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.
+Nếu không có Node.js, hãy sao chép `SKILL.md` chuẩn từ `DWI_ROOT`, thêm `disable-model-invocation: true` vào YAML frontmatter mở đầu, rồi xác nhận phần còn lại của file không thay đổi trước khi mở phiên mới từ `PROJECT_ROOT`.
 
 ## Cài một mô-đun khác
 
-Với URL nguồn đã phát hành hoặc đường dẫn cục bộ của mô-đun chuyên biệt, thay `dwi-conduct` bằng một trong các tên sau:
+Thay `dwi-conduct` bằng một trong các tên sau:
 
 ```text
 dwi-lean
@@ -70,11 +161,13 @@ dwi-evidence
 dwi-all-in-one
 ```
 
+`dwi-all-in-one` là mô-đun phối hợp tùy chọn. Chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
+
 ## URL cài đặt đã ghim cho bản phát hành
 
-Mỗi mô-đun đã phát hành có URL nguồn cố định tại `v0.2.0`:
+`v0.2.2` chứa trình cài hoàn chỉnh theo từng lớp công cụ. Các URL source thô bất biến dưới đây vẫn ghim vào baseline nội dung mô-đun `v0.2.0` vì nội dung mô-đun và mã SHA-256 không thay đổi trong `v0.2.2`. Các URL một file này hữu ích để kiểm tra, nhưng không phải một gói cài explicit-only hoàn chỉnh.
 
-| Mô-đun | Nguồn đã duyệt |
+| Mô-đun | Source chuẩn bất biến |
 | --- | --- |
 | Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
 | Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
@@ -84,55 +177,69 @@ Mỗi mô-đun đã phát hành có URL nguồn cố định tại `v0.2.0`:
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
 | All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-`dwi-all-in-one` là mô-đun phối hợp tùy chọn; chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
+Bản phát hành `v0.2.2` ghim đầy đủ đường cài và đã PASS `scripts/validate-install-contract.mjs` trước khi công bố.
 
-Tải file đã chọn cùng manifest (danh sách mã kiểm tra), xác minh SHA-256, đọc nội dung rồi mới cài:
+## Sửa một bản cài cũ chỉ có một file
+
+Trước hết, xác định dự án thực sự đang chứa `SKILL.md` đã cài. Dùng thư mục đó làm `PROJECT_ROOT`; không mặc định checkout Dwi là nơi nhận mô-đun. Chuẩn hóa cả hai root bằng khối lệnh đường dẫn vật lý ở trên trước khi sửa bất kỳ file nào.
+
+### Sửa bản cài Codex
+
+Nếu thư mục đã cài hiện chỉ có `SKILL.md`, thêm metadata còn thiếu mà không thay thế skill:
 
 ```bash
-RELEASE_REF="v0.2.0"
 MODULE="dwi-conduct"
-TMP_SKILL="/tmp/${MODULE}.SKILL.md"
-TMP_SUMS="/tmp/dwi-${RELEASE_REF}-SHA256SUMS"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/modules/${MODULE}/SKILL.md" \
-  -o "$TMP_SKILL"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/checksums/SHA256SUMS" \
-  -o "$TMP_SUMS"
-EXPECTED="$(awk -v file="modules/${MODULE}/SKILL.md" '$2 == file {print $1}' "$TMP_SUMS")"
-ACTUAL="$(shasum -a 256 "$TMP_SKILL" | awk '{print $1}')"
-test -n "$EXPECTED"
-test "$ACTUAL" = "$EXPECTED"
-less "$TMP_SKILL"
+SOURCE="${DWI_ROOT}/modules/${MODULE}/agents/openai.yaml"
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}/agents/openai.yaml"
+test -f "${PROJECT_ROOT}/.agents/skills/${MODULE}/SKILL.md"
+test -f "$SOURCE"
+test ! -e "$TARGET"
+install -d "$(dirname "$TARGET")"
+install -m 0644 "$SOURCE" "$TARGET"
+cmp "$SOURCE" "$TARGET"
 ```
 
-Sau khi đọc, cài mà không ghi đè kỹ năng đang có:
+Sau đó mở một phiên Codex mới từ `PROJECT_ROOT`.
+
+### Sửa bản cài Claude Code
+
+Cách kiểm soát nhanh và có thể hoàn tác là mở `/skills` từ dự án bị ảnh hưởng, chọn mô-đun Dwi, chuyển trạng thái sang `user-invocable-only` rồi lưu. Claude Code ghi override cục bộ đó vào `.claude/settings.local.json`.
+
+Để sửa trực tiếp bằng artifact mới, chuyển thư mục cũ ra ngoài `.claude/skills/` trước khi kiểm thử. Việc này ngăn Claude Code phát hiện bản sao lưu vẫn còn khả năng được model tự gọi bên cạnh artifact đã sửa:
 
 ```bash
-TARGET=".agents/skills/${MODULE}"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$TMP_SKILL" "$TARGET/SKILL.md"
-cmp "$TMP_SKILL" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+OLD="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+BACKUP_ROOT="${PROJECT_ROOT}/.claude/dwi-skill-backups"
+BACKUP="${BACKUP_ROOT}/${MODULE}.before-explicit-only"
+test -d "$OLD"
+test ! -e "$BACKUP"
+install -d "$BACKUP_ROOT"
+mv "$OLD" "$BACKUP"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$OLD"
+grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-Với Claude Code, chỉ đổi gốc thư mục đích thành `.claude/skills/`.
+`BACKUP_ROOT` nằm ngoài `.claude/skills/`, nên mô-đun cũ không thuộc thư mục discovery của project skill trong lúc kiểm thử phiên mới. Giữ bản sao lưu cho đến khi cả negative test và kiểm tra gọi rõ đều PASS. Sau đó kiểm tra rồi xóa đúng bản sao lưu, hoặc chỉ chuyển nó trở lại khi chủ ý rollback.
 
 ## Gỡ mô-đun
 
-Chỉ xóa file do hướng dẫn này đã cài, rồi xóa thư mục nếu thư mục thật sự rỗng:
+Với Codex, chỉ xóa hai file do hướng dẫn này cài, rồi chỉ xóa thư mục khi rỗng:
 
 ```bash
-TARGET=".agents/skills/dwi-conduct"
+TARGET="${PROJECT_ROOT}/.agents/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+rm "$TARGET/agents/openai.yaml"
+rmdir "$TARGET/agents"
 rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
 ```
 
-hoặc:
+Với Claude Code:
 
 ```bash
-TARGET=".claude/skills/dwi-conduct"
+TARGET="${PROJECT_ROOT}/.claude/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
 rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
@@ -142,4 +249,4 @@ rmdir "$TARGET"
 
 ## Khi nào nên dừng
 
-Dừng thử nếu mô-đun đòi quyền lớn hơn nhu cầu thật, che giấu tác động bên ngoài, xung đột với kiểm soát của lớp công cụ gốc hoặc làm quy trình khó hiểu hơn. Gỡ bỏ là một kết quả hợp lệ; bạn không phải xin lỗi hoặc tiếp tục.
+Dừng thử nếu mô-đun đòi quyền lớn hơn nhu cầu thật, che giấu tác động bên ngoài, xung đột với kiểm soát của lớp công cụ gốc, tự kích hoạt khi chưa được gọi rõ, bị cài vào nhầm dự án hoặc làm quy trình khó hiểu hơn. Gỡ bỏ là một kết quả hợp lệ; bạn không phải xin lỗi hoặc tiếp tục.

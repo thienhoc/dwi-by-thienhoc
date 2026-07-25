@@ -4,6 +4,34 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.2 - 2026-07-26
+
+### Fixed
+
+- Corrected the installation contract so Codex receives `agents/openai.yaml` with `allow_implicit_invocation: false` instead of receiving only `SKILL.md`.
+- Corrected the Claude Code installation contract so the installed artifact contains `disable-model-invocation: true` while the canonical provider-neutral `SKILL.md` remains unchanged.
+- Corrected project-scoped examples to keep the inspected Dwi source checkout separate from the target project; the earlier relative target could place the module inside the Dwi repository instead of the intended project.
+- Canonicalized prospective install targets and made the installer reject direct paths and symlink aliases that resolve inside the Dwi source checkout.
+- Moved Claude repair backups outside `.claude/skills/` so the old implicitly invocable artifact cannot remain discoverable during fresh-session verification.
+- Replaced the incomplete one-file installation path with a harness-aware local installer that refuses to overwrite an existing module directory.
+- Added an installed-artifact regression test for all focused modules and All-in-One across both Codex and Claude Code.
+
+### Validated
+
+- Repository and install contracts pass on Node.js 20 and 24.
+- Clean Codex fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
+- Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
+- Both actionable Codex review threads were addressed and resolved before release preparation.
+
+### Release truth
+
+- Release tag: `v0.2.2`
+- Base repository release: `v0.2.1`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Packaging and installation contract: corrected in `v0.2.2`
+- Runtime evidence remains bounded to the reported trials; no universal compatibility claim is made.
+- Release record: [docs/releases/v0.2.2.md](docs/releases/v0.2.2.md)
+
 ## 0.2.1 - 2026-07-26
 
 ### Added
@@ -19,7 +47,7 @@ All notable repository changes are recorded here.
 
 ### Release truth
 
-- Intended release tag: `v0.2.1`
+- Release tag: `v0.2.1`
 - Included installable modules: unchanged from `v0.2.0`
 - Runtime and module contract changes: none
 - Release record: [docs/releases/v0.2.1.md](docs/releases/v0.2.1.md)

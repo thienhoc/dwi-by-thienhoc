@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Bản Research Preview 0.2.0</strong> · bản phát hành đã duyệt gần nhất: v0.2.0 · 6 mô-đun chuyên biệt + 1 All-in-One tùy chọn
+  <strong>Bản Research Preview 0.2.0</strong> · bản phát hành kho đã duyệt gần nhất: v0.2.2 · 6 mô-đun chuyên biệt + 1 All-in-One tùy chọn
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@ Codex và Claude Code là các công cụ lập trình AI chạy tác nhân và 
 
 Dwi không phải thêm một bộ kỹ năng AI. Các mô-đun của Dwi định hình cách tác nhân giao tiếp, ra quyết định, phối hợp và xử lý bằng chứng ngay trong workflow hiện có.
 
-Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hướng dẫn gốc cho tác nhân, nhỏ, có thể kiểm tra và cài độc lập. Với lớp công cụ hỗ trợ định dạng Agent Skills mở, `SKILL.md` chỉ là gói cài đặt kỹ thuật, không phải cách định vị sản phẩm.
+Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hướng dẫn gốc cho tác nhân, nhỏ, có thể kiểm tra và cài độc lập. `SKILL.md` chuẩn được giữ trung lập với nhà cung cấp; đường cài phải đồng thời giữ đúng cơ chế chỉ gọi rõ của từng lớp công cụ.
 
 ## Bắt đầu từ vấn đề đang có
 
@@ -50,28 +50,48 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 ## Thử an toàn trong mười phút
 
 1. Chọn đúng một mô-đun.
-2. Đọc `SKILL.md` và hướng dẫn của mô-đun trước khi cài.
+2. Đọc `SKILL.md` chuẩn và hướng dẫn của mô-đun trước khi cài.
 3. Cài ở phạm vi dự án trước; chọn một việc có thể hoàn tác, không chứa bí mật và không gây tác động bên ngoài.
 4. Gọi mô-đun một cách rõ ràng rồi so sánh với cách làm thường ngày.
 5. Xóa thư mục mô-đun nếu không hữu ích. Bạn không cần xin lỗi hoặc tiếp tục thử.
 
-Để thử Dwi Conduct trong phạm vi một dự án Codex:
+Clone bản phát hành bất biến đã sửa, chuẩn hóa checkout Dwi và dự án đích thành đường dẫn vật lý, rồi từ chối target nằm trong checkout Dwi:
 
 ```bash
-git clone --depth 1 --branch v0.2.0 \
+git clone --depth 1 --branch v0.2.2 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.0
-cd dwi-by-thienhoc-v0.2.0
-TARGET=".agents/skills/dwi-conduct"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
-cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
+  dwi-by-thienhoc-v0.2.2
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.2" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
+MODULE="dwi-conduct"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT phải nằm ngoài DWI_ROOT sau khi chuẩn hóa đường dẫn" >&2
+    exit 1
+    ;;
+esac
 ```
 
-Với Claude Code, dùng cùng nguồn đã duyệt và đổi thư mục đích thành `.claude/skills/dwi-conduct`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
+Với Codex:
 
-All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`. Hãy cài từ tag phát hành bất biến và chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
+```bash
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+```
+
+Với Claude Code:
+
+```bash
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
+```
+
+Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ và có thể đặt skill bên trong checkout Dwi thay vì dự án chủ ý cài. `v0.2.2` sửa hợp đồng cài đặt này. Xem hướng dẫn cài đặt để biết chính xác ảnh hưởng, cách sửa bản cài cũ, cách cài thủ công tương đương và lệnh gỡ.
+
+All-in-One là mô-đun phối hợp tùy chọn được phát hành lần đầu trong `v0.2.0`. Chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
 [Mở hướng dẫn cài đặt theo nguyên tắc xem trước →](docs/vi/installation.md)
 
@@ -111,26 +131,30 @@ Dwi tách rõ `ĐÃ XÁC MINH`, `ĐÃ QUAN SÁT`, `ƯỚC TÍNH`, `MỤC TIÊU` 
 ## Sơ đồ kho
 
 ```text
-modules/                 Các mô-đun Dwi có thể cài độc lập
-docs/modules/            Hướng dẫn quyết định và thử bằng tiếng Anh
-docs/vi/modules/         Hướng dẫn quyết định và thử bằng tiếng Việt
-assets/                  Nguồn brand và sơ đồ do dự án tạo
-.github/                 Mẫu cộng đồng và kiểm tra chỉ đọc
-scripts/validate-repo.mjs Công cụ kiểm tra hợp đồng kho, chạy ngoại tuyến
+modules/                              Mô-đun Dwi chuẩn và metadata Codex
+docs/modules/                         Hướng dẫn quyết định và thử bằng tiếng Anh
+docs/vi/modules/                      Hướng dẫn quyết định và thử bằng tiếng Việt
+assets/                               Nguồn brand và sơ đồ do dự án tạo
+.github/                              Mẫu cộng đồng, kiểm tra và tự động hóa phát hành đã duyệt
+scripts/install-module.mjs            Trình cài cục bộ hiểu từng harness
+scripts/validate-install-contract.mjs Bộ kiểm tra hồi quy artifact sau khi cài
+scripts/validate-repo.mjs             Công cụ kiểm tra hợp đồng kho, chạy ngoại tuyến
 ```
 
 Kho này chủ động không chứa mã chạy website. Trang giới thiệu về lớp con người được đặt riêng tại [d.wi.works](https://d.wi.works).
 
 ## Trạng thái
 
-- Research Preview: `0.2.0`
-- Bản phát hành đã duyệt gần nhất: `v0.2.0`, gồm sáu mô-đun chuyên biệt và All-in-One tùy chọn
-- All-in-One: mô-đun phối hợp tùy chọn với URL cài bất biến tại `v0.2.0`
+- Baseline nội dung mô-đun Research Preview: `0.2.0`
+- Bản phát hành kho đã duyệt gần nhất: `v0.2.2`, sửa cơ chế cài explicit-only cho Codex và Claude Code
+- Nội dung mô-đun chuẩn và mã SHA-256: không đổi so với `v0.2.0`
+- Mô-đun đi kèm: sáu mô-đun chuyên biệt và All-in-One tùy chọn
 - Quan sát tương thích có giới hạn: [hồ sơ bằng chứng Codex và Claude Code](evidence/compatibility/README.md)
 - Giấy phép: [Apache-2.0 cho mã; CC BY 4.0 cho tài liệu và tài sản gốc](LICENSES.md)
 - Checklist phát hành: [checklist phát hành](docs/release-checklist.md)
-- Hồ sơ phát hành: [v0.2.0](docs/releases/v0.2.0.md)
+- Hồ sơ phát hành: [v0.2.2](docs/releases/v0.2.2.md)
 - Lộ trình: [ROADMAP.md](ROADMAP.md)
+- Thay đổi: [CHANGELOG.md](CHANGELOG.md)
 - Liên hệ: [hoc@wi.works](mailto:hoc@wi.works)
 
 Brand: `{ } • Dwi by thienhoc` · Trang giới thiệu lớp con người: [d.wi.works](https://d.wi.works)
