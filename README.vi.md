@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Bản phát triển xem trước 0.2.0-dev</strong> · bản phát hành đã duyệt gần nhất: v0.1.0 · 6 mô-đun chuyên biệt + All-in-One chưa phát hành
+  <strong>Bản Research Preview 0.2.0</strong> · bản phát hành đã duyệt gần nhất: v0.2.0 · 6 mô-đun chuyên biệt + 1 All-in-One tùy chọn
 </p>
 
 <p align="center">
@@ -58,10 +58,10 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 Để thử Dwi Conduct trong phạm vi một dự án Codex:
 
 ```bash
-git clone --depth 1 --branch v0.1.0 \
+git clone --depth 1 --branch v0.2.0 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.1.0
-cd dwi-by-thienhoc-v0.1.0
+  dwi-by-thienhoc-v0.2.0
+cd dwi-by-thienhoc-v0.2.0
 TARGET=".agents/skills/dwi-conduct"
 test ! -e "$TARGET/SKILL.md"
 install -d "$TARGET"
@@ -71,9 +71,7 @@ cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 
 Với Claude Code, dùng cùng nguồn đã duyệt và đổi thư mục đích thành `.claude/skills/dwi-conduct`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
 
-All-in-One hiện chỉ có trong trạng thái phát triển chưa phát hành `0.2.0-dev`. Không cài từ nhánh `main` có thể thay đổi. Cho tới khi một tag đã duyệt chứa mô-đun này, chỉ dùng từ checkout được ghim vào một commit chính xác đã review và phải xác minh checksum cục bộ trước khi cài.
-
-Claude Code dùng cùng nguồn với đích `.claude/skills/dwi-all-in-one`. Hướng dẫn đầy đủ có bước xác minh checksum, tham chiếu phát hành bất biến cho mô-đun đã phát hành và cách gỡ chính xác.
+All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`. Hãy cài từ tag phát hành bất biến và chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
 [Mở hướng dẫn cài đặt theo nguyên tắc xem trước →](docs/vi/installation.md)
 
@@ -118,13 +116,13 @@ Kho này chủ động không chứa mã chạy website. Trang giới thiệu v�
 
 ## Trạng thái
 
-- Nhánh phát triển: `0.2.0-dev`
-- Bản phát hành đã duyệt gần nhất: `v0.1.0`, gồm sáu mô-đun chuyên biệt
-- All-in-One: nội dung phát triển chưa phát hành; chưa có URL cài bất biến
+- Research Preview: `0.2.0`
+- Bản phát hành đã duyệt gần nhất: `v0.2.0`, gồm sáu mô-đun chuyên biệt và All-in-One tùy chọn
+- All-in-One: mô-đun phối hợp tùy chọn với URL cài bất biến tại `v0.2.0`
 - Quan sát tương thích có giới hạn: [hồ sơ bằng chứng Codex và Claude Code](evidence/compatibility/README.md)
 - Giấy phép: [Apache-2.0 cho mã; CC BY 4.0 cho tài liệu và tài sản gốc](LICENSES.md)
-- Cổng cho bản phát hành kế tiếp: [checklist phát hành](docs/release-checklist.md)
-- Hồ sơ phát hành: [v0.1.0](docs/releases/v0.1.0.md)
+- Checklist phát hành: [checklist phát hành](docs/release-checklist.md)
+- Hồ sơ phát hành: [v0.2.0](docs/releases/v0.2.0.md)
 - Lộ trình: [ROADMAP.md](ROADMAP.md)
 - Liên hệ: [hoc@wi.works](mailto:hoc@wi.works)
 

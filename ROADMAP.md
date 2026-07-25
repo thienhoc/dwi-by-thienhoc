@@ -16,22 +16,20 @@
 
 See [the v0.1.0 release record](docs/releases/v0.1.0.md).
 
-## 0.2 Development Preview - current main branch
+## 0.2 Research Preview - released as v0.2.0
 
 - [x] Add optional All-in-One source packaging
-- [x] Mark current development state as `0.2.0-dev`
 - [x] Add a machine-readable module catalog
 - [x] Add semantic validation for module surfaces and EN/VI parity
 - [x] Add bounded compatibility evidence records from available observations
 - [x] Add missing All-in-One examples and issue-form coverage
 - [x] Add a relevance gate and silent fast path to All-in-One
 - [x] Add behavioral regression fixtures
-- [ ] Run new clean-environment trials for the current All-in-One revision in Codex and Claude Code
-- [ ] Run structured feedback with newcomers, regular AI users, and professional developers
-- [ ] Add Linux, WSL, and PowerShell installation evidence
-- [ ] Review all open release gates
-- [ ] Publish a reviewed `v0.2.0` tag
-- [ ] Add an immutable All-in-One install URL only after the reviewed tag exists
+- [x] Complete the approved clean-harness, EN/VI, visual, evidence, and release reviews
+- [x] Publish the reviewed `v0.2.0` tag
+- [x] Publish immutable install links for all seven modules
+
+See [the v0.2.0 release record](docs/releases/v0.2.0.md).
 
 ## Later, only with evidence
 

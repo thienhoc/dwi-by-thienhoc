@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Development Preview 0.2.0-dev</strong> · latest reviewed release: v0.1.0 · 6 focused modules + optional unreleased All-in-One
+  <strong>Research Preview 0.2.0</strong> · latest reviewed release: v0.2.0 · 6 focused modules + 1 optional All-in-One
 </p>
 
 <p align="center">
@@ -58,10 +58,10 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 For a project-scoped Codex trial with Dwi Conduct:
 
 ```bash
-git clone --depth 1 --branch v0.1.0 \
+git clone --depth 1 --branch v0.2.0 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.1.0
-cd dwi-by-thienhoc-v0.1.0
+  dwi-by-thienhoc-v0.2.0
+cd dwi-by-thienhoc-v0.2.0
 TARGET=".agents/skills/dwi-conduct"
 test ! -e "$TARGET/SKILL.md"
 install -d "$TARGET"
@@ -69,9 +69,7 @@ install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 ```
 
-All-in-One is present only on the unreleased `0.2.0-dev` branch state. Do not install it from mutable `main`. Until a reviewed release tag includes it, use it only from a checkout pinned to an exact reviewed commit and verify the local checksum before installation.
-
-Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in-one`. The full guide includes checksum verification, immutable release references for released modules, and exact removal.
+All-in-One is an optional composition module released in `v0.2.0`. Install it from the immutable release tag and use it only when multiple observed issues recur in the same workflow.
 
 [Open the inspect-first installation guide →](docs/installation.md)
 
@@ -116,13 +114,13 @@ This repository intentionally contains no landing-page runtime. The human-layer 
 
 ## Status
 
-- Development branch: `0.2.0-dev`
-- Latest reviewed release: `v0.1.0`, containing the six focused modules
-- All-in-One: unreleased development content; no immutable install URL yet
+- Research Preview: `0.2.0`
+- Latest reviewed release: `v0.2.0`, containing six focused modules and optional All-in-One
+- All-in-One: optional composition module with an immutable `v0.2.0` install URL
 - Bounded compatibility observations: [Codex and Claude Code evidence records](evidence/compatibility/README.md)
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
-- Next-release gates: [release checklist](docs/release-checklist.md)
-- Release record: [v0.1.0](docs/releases/v0.1.0.md)
+- Release checklist: [release checklist](docs/release-checklist.md)
+- Release record: [v0.2.0](docs/releases/v0.2.0.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Changes: [CHANGELOG.md](CHANGELOG.md)
 

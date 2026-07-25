@@ -17,7 +17,7 @@ Do not pipe an unreviewed remote script into a shell.
 
 For local installation, pin the Dwi checkout to the reviewed release tag or exact commit you intend to inspect, then confirm `pwd -P` points to that checkout.
 
-For the six focused modules released in `v0.1.0`, use the `v0.1.0` tag when reproducibility matters. An exact development commit identifies source under test; it does not make that source a release.
+For the six focused modules carried forward from `v0.1.0` and the optional All-in-One released in `v0.2.0`, use the `v0.2.0` tag when reproducibility matters. An exact development commit identifies source under test; it does not make that source a release.
 
 ## Codex
 
@@ -57,7 +57,7 @@ cmp "$SOURCE" "$TARGET/SKILL.md"
 
 Then start a fresh Claude Code session and invoke `/dwi-conduct` or ask the harness to use the installed skill.
 
-## Install a different focused module
+## Install a different module
 
 For a released remote source URL or a local focused-module path, replace `dwi-conduct` with one of:
 
@@ -67,48 +67,29 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
+dwi-all-in-one
 ```
-
-## All-in-One development trial (not in v0.1.0)
-
-`dwi-all-in-one` is unreleased development content. It has no reviewed release tag or versioned install URL.
-
-Do not install it from mutable `main`. A contributor may inspect and test it only from a local checkout pinned to an exact commit. A pull-request branch or commit is not a reviewed release.
-
-From that pinned local checkout:
-
-```bash
-pwd -P
-SOURCE="modules/dwi-all-in-one/SKILL.md"
-TARGET=".agents/skills/dwi-all-in-one"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
-```
-
-For Claude Code, use the same source with target `.claude/skills/dwi-all-in-one`.
 
 ## Public release: pinned module URLs
 
-Each focused module has its own immutable `v0.1.0` source URL:
+Each released module has its own immutable `v0.2.0` source URL:
 
 | Module | Reviewed source |
 | --- | --- |
-| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-conduct/SKILL.md) |
-| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-lean/SKILL.md) |
-| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-budget/SKILL.md) |
-| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-bridge/SKILL.md) |
-| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-arc/SKILL.md) |
-| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-evidence/SKILL.md) |
+| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
+| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
+| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
+| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
+| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
+| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
+| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-`dwi-all-in-one` is not yet included in a tagged install URL.
+`dwi-all-in-one` is an optional composition module; install it only when multiple observed problems recur in the same workflow.
 
 Download the selected file and the release checksum manifest, verify SHA-256, inspect the file, and only then install:
 
 ```bash
-RELEASE_REF="v0.1.0"
+RELEASE_REF="v0.2.0"
 MODULE="dwi-conduct"
 TMP_SKILL="/tmp/${MODULE}.SKILL.md"
 TMP_SUMS="/tmp/dwi-${RELEASE_REF}-SHA256SUMS"

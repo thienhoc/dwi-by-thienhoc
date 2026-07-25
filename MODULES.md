@@ -38,9 +38,9 @@ Project scope is recommended for the first trial. See [the complete installation
 
 ## Version references
 
-- `v0.1.0` is the latest reviewed release and contains the six focused modules.
-- `main` is unreleased development version `0.2.0-dev`.
-- `dwi-all-in-one` exists only in the unreleased development state.
+- `v0.2.0` is the latest reviewed release and contains six focused modules plus the optional All-in-One composition module.
+- Every released module has a versioned remote source under its release tag; never install from mutable `main`.
+- `v0.1.0` remains the historical focused-module release.
 - Do not install from mutable `main`.
 - A remote install reference must use a reviewed tag or exact reviewed commit.
 - Module identity and release availability are recorded in [`modules/catalog.json`](modules/catalog.json).

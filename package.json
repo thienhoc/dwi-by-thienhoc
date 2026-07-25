@@ -1,6 +1,6 @@
 {
   "name": "dwi-by-thienhoc",
-  "version": "0.2.0-dev",
+  "version": "0.2.0",
   "private": true,
   "description": "A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission.",
   "license": "Apache-2.0",

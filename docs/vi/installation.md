@@ -17,7 +17,7 @@ Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào 
 
 Khi cài cục bộ, hãy ghim checkout Dwi vào tag phát hành đã được duyệt hoặc commit chính xác mà bạn muốn kiểm tra, rồi xác nhận `pwd -P` trỏ tới checkout đó.
 
-Với sáu mô-đun chuyên biệt được phát hành trong `v0.1.0`, dùng tag `v0.1.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
+Với sáu mô-đun chuyên biệt được chuyển tiếp từ `v0.1.0` và All-in-One tùy chọn được phát hành trong `v0.2.0`, dùng tag `v0.2.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
 
 ## Codex
 
@@ -57,7 +57,7 @@ cmp "$SOURCE" "$TARGET/SKILL.md"
 
 Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.
 
-## Cài một mô-đun chuyên biệt khác
+## Cài một mô-đun khác
 
 Với URL nguồn đã phát hành hoặc đường dẫn cục bộ của mô-đun chuyên biệt, thay `dwi-conduct` bằng một trong các tên sau:
 
@@ -67,48 +67,29 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
+dwi-all-in-one
 ```
-
-## Thử All-in-One trong môi trường phát triển (không có trong v0.1.0)
-
-`dwi-all-in-one` là nội dung phát triển chưa phát hành. Mô-đun chưa có tag phát hành đã duyệt hoặc URL cài phiên bản hóa.
-
-Không cài từ nhánh `main` có thể thay đổi. Người đóng góp chỉ được xem và thử từ checkout cục bộ ghim vào một commit chính xác. Branch hoặc commit của pull request không phải bản phát hành đã duyệt.
-
-Từ checkout cục bộ đã ghim:
-
-```bash
-pwd -P
-SOURCE="modules/dwi-all-in-one/SKILL.md"
-TARGET=".agents/skills/dwi-all-in-one"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
-```
-
-Với Claude Code, dùng cùng nguồn nhưng đích là `.claude/skills/dwi-all-in-one`.
 
 ## URL cài đặt đã ghim cho bản phát hành
 
-Mỗi mô-đun chuyên biệt có URL nguồn cố định tại `v0.1.0`:
+Mỗi mô-đun đã phát hành có URL nguồn cố định tại `v0.2.0`:
 
 | Mô-đun | Nguồn đã duyệt |
 | --- | --- |
-| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-conduct/SKILL.md) |
-| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-lean/SKILL.md) |
-| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-budget/SKILL.md) |
-| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-bridge/SKILL.md) |
-| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-arc/SKILL.md) |
-| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-evidence/SKILL.md) |
+| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
+| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
+| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
+| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
+| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
+| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
+| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-`dwi-all-in-one` chưa có URL cài ghim.
+`dwi-all-in-one` là mô-đun phối hợp tùy chọn; chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
 Tải file đã chọn cùng manifest (danh sách mã kiểm tra), xác minh SHA-256, đọc nội dung rồi mới cài:
 
 ```bash
-RELEASE_REF="v0.1.0"
+RELEASE_REF="v0.2.0"
 MODULE="dwi-conduct"
 TMP_SKILL="/tmp/${MODULE}.SKILL.md"
 TMP_SUMS="/tmp/dwi-${RELEASE_REF}-SHA256SUMS"

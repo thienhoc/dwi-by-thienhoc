@@ -4,6 +4,8 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.0 - 2026-07-25
+
 ### Added
 
 - Added an optional All-in-One composition module on the development branch.
@@ -13,8 +15,8 @@ All notable repository changes are recorded here.
 
 ### Changed
 
-- Marked `main` as development version `0.2.0-dev`.
-- Separated the reviewed `v0.1.0` release truth from unreleased All-in-One development.
+- Released the optional All-in-One composition module in `v0.2.0`.
+- Separated the historical `v0.1.0` focused-module release truth from the `v0.2.0` composition release.
 - Refactored All-in-One to select only relevant lenses and preserve a silent fast path.
 - Expanded repository validation to cover semantic module surfaces, EN/VI parity, release truth, issue forms, examples, and table shape.
 - Replaced project-specific actor wording in public Bridge guidance with an authorized decision-owner role.
@@ -25,6 +27,12 @@ All notable repository changes are recorded here.
 - Corrected the malformed All-in-One row and wording in `MODULES.vi.md`.
 - Removed the unsupported umbrella claim that Dwi was generally "tested with Claude and Codex".
 - Added the missing All-in-One examples and issue-form options.
+
+### Release truth
+
+- Release tag: `v0.2.0`
+- Included installable modules: six focused modules and optional All-in-One
+- Release record: [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md)
 
 ## 0.1.0 - 2026-07-25
 

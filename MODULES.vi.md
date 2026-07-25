@@ -38,9 +38,9 @@ Lần thử đầu nên dùng phạm vi dự án. Xem [hướng dẫn cài và g
 
 ## Tham chiếu phiên bản
 
-- `v0.1.0` là bản phát hành đã duyệt gần nhất và chứa sáu mô-đun chuyên biệt.
-- `main` là trạng thái phát triển chưa phát hành `0.2.0-dev`.
-- `dwi-all-in-one` hiện chỉ có trong trạng thái phát triển chưa phát hành.
+- `v0.2.0` là bản phát hành đã duyệt gần nhất và gồm sáu mô-đun chuyên biệt cùng mô-đun phối hợp tùy chọn All-in-One.
+- Mỗi mô-đun đã phát hành có nguồn từ xa theo tag phiên bản; không cài từ `main` có thể thay đổi.
+- `v0.1.0` vẫn là bản phát hành lịch sử chỉ gồm các mô-đun chuyên biệt.
 - Không cài trực tiếp từ nhánh `main` có thể thay đổi.
 - Tham chiếu cài từ xa phải dùng tag đã duyệt hoặc commit chính xác đã review.
 - Danh tính và trạng thái phát hành của mô-đun được ghi trong [`modules/catalog.json`](modules/catalog.json).
