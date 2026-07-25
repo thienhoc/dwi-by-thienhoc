@@ -5,15 +5,6 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
-const modules = [
-  "conduct",
-  "lean",
-  "budget",
-  "bridge",
-  "arc",
-  "evidence",
-  "all-in-one",
-];
 
 async function exists(relativePath) {
   try {
@@ -30,6 +21,19 @@ async function requirePath(relativePath) {
   }
 }
 
+async function readText(relativePath) {
+  return readFile(path.join(root, relativePath), "utf8");
+}
+
+async function readJson(relativePath) {
+  try {
+    return JSON.parse(await readText(relativePath));
+  } catch (error) {
+    errors.push(`${relativePath}: invalid JSON: ${error.message}`);
+    return null;
+  }
+}
+
 async function walk(directory, results = []) {
   const entries = await readdir(directory, { withFileTypes: true });
   for (const entry of entries) {
@@ -42,6 +46,133 @@ async function walk(directory, results = []) {
     }
   }
   return results;
+}
+
+function reportAndExit() {
+  if (errors.length > 0) {
+    console.error(`Repository contract failed with ${errors.length} issue(s):`);
+    for (const error of errors) {
+      console.error(`- ${error}`);
+    }
+    process.exitCode = 1;
+    return true;
+  }
+  return false;
+}
+
+function countMarkdownCells(line) {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return null;
+  return trimmed.slice(1, -1).split("|").length;
+}
+
+function requireContains(content, expected, source) {
+  if (!content.includes(expected)) {
+    errors.push(`${source}: missing required content ${JSON.stringify(expected)}`);
+  }
+}
+
+function requireNotContains(content, forbidden, source) {
+  if (content.includes(forbidden)) {
+    errors.push(`${source}: contains stale or forbidden content ${JSON.stringify(forbidden)}`);
+  }
+}
+
+const catalogPath = "modules/catalog.json";
+await requirePath(catalogPath);
+if (reportAndExit()) process.exit();
+
+const catalog = await readJson(catalogPath);
+if (!catalog) {
+  reportAndExit();
+  process.exit();
+}
+
+if (catalog.schema_version !== 1) {
+  errors.push("modules/catalog.json: schema_version must be 1");
+}
+
+if (catalog.repository_version !== "0.2.0-dev") {
+  errors.push("modules/catalog.json: repository_version must be 0.2.0-dev");
+}
+
+if (catalog.latest_reviewed_release !== "v0.1.0") {
+  errors.push("modules/catalog.json: latest_reviewed_release must be v0.1.0");
+}
+
+if (!Array.isArray(catalog.modules)) {
+  errors.push("modules/catalog.json: modules must be an array");
+}
+
+const moduleEntries = Array.isArray(catalog.modules) ? catalog.modules : [];
+const focusedModules = moduleEntries.filter((entry) => entry.kind === "focused");
+const compositeModules = moduleEntries.filter((entry) => entry.kind === "composite");
+
+if (focusedModules.length !== 6) {
+  errors.push("modules/catalog.json: exactly six focused modules are required");
+}
+
+if (compositeModules.length !== 1) {
+  errors.push("modules/catalog.json: exactly one composite module is required");
+}
+
+const seenSlugs = new Set();
+const seenIds = new Set();
+
+for (const entry of moduleEntries) {
+  if (!entry || typeof entry !== "object") {
+    errors.push("modules/catalog.json: every module entry must be an object");
+    continue;
+  }
+
+  const requiredFields = [
+    "slug",
+    "id",
+    "title",
+    "kind",
+    "released_in",
+    "remote_install",
+  ];
+
+  for (const field of requiredFields) {
+    if (!(field in entry)) {
+      errors.push(`modules/catalog.json: ${entry.id ?? "unknown"} missing ${field}`);
+    }
+  }
+
+  if (seenSlugs.has(entry.slug)) {
+    errors.push(`modules/catalog.json: duplicate slug ${entry.slug}`);
+  }
+  seenSlugs.add(entry.slug);
+
+  if (seenIds.has(entry.id)) {
+    errors.push(`modules/catalog.json: duplicate id ${entry.id}`);
+  }
+  seenIds.add(entry.id);
+
+  if (entry.id !== `dwi-${entry.slug}`) {
+    errors.push(`modules/catalog.json: id must be dwi-${entry.slug}`);
+  }
+
+  if (!["focused", "composite"].includes(entry.kind)) {
+    errors.push(`modules/catalog.json: invalid kind for ${entry.id}`);
+  }
+
+  if (entry.kind === "focused") {
+    if (entry.released_in !== "v0.1.0" || entry.remote_install !== true) {
+      errors.push(
+        `modules/catalog.json: focused module ${entry.id} must be released in v0.1.0 with remote_install true`,
+      );
+    }
+  }
+
+  if (entry.kind === "composite") {
+    if (entry.released_in !== null || entry.remote_install !== false) {
+      errors.push(
+        `modules/catalog.json: composite module ${entry.id} must remain unreleased with remote_install false`,
+      );
+    }
+  }
 }
 
 const requiredPaths = [
@@ -78,7 +209,11 @@ const requiredPaths = [
   "docs/brand.md",
   "docs/license-decision.md",
   "docs/release-checklist.md",
+  "docs/releases/v0.1.0.md",
   "docs/repository-metadata.md",
+  "evidence/compatibility/README.md",
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+  "evidence/compatibility/2026-07-25-claude-code-project-scope.md",
   "assets/ATTRIBUTION.md",
   "assets/brand/lockup.svg",
   "assets/architecture.svg",
@@ -91,6 +226,7 @@ const requiredPaths = [
   ".github/ISSUE_TEMPLATE/support.yml",
   ".github/ISSUE_TEMPLATE/config.yml",
   "scripts/public-release-preflight.mjs",
+  "modules/catalog.json",
 ];
 
 for (const requiredPath of requiredPaths) {
@@ -103,7 +239,6 @@ const forbiddenPaths = [
   "build",
   "worker",
   "public",
-  "exports",
   "index.html",
   "next.config.ts",
   "vite.config.ts",
@@ -130,11 +265,11 @@ if (await exists("docs/public-release-strategy.md")) {
   );
 }
 
-for (const moduleName of modules) {
-  const skillPath = `modules/dwi-${moduleName}/SKILL.md`;
-  const metadataPath = `modules/dwi-${moduleName}/agents/openai.yaml`;
-  const englishGuide = `docs/modules/${moduleName}.md`;
-  const vietnameseGuide = `docs/vi/modules/${moduleName}.md`;
+for (const entry of moduleEntries) {
+  const skillPath = `modules/${entry.id}/SKILL.md`;
+  const metadataPath = `modules/${entry.id}/agents/openai.yaml`;
+  const englishGuide = `docs/modules/${entry.slug}.md`;
+  const vietnameseGuide = `docs/vi/modules/${entry.slug}.md`;
 
   await requirePath(skillPath);
   await requirePath(metadataPath);
@@ -143,7 +278,7 @@ for (const moduleName of modules) {
 
   if (!(await exists(skillPath))) continue;
 
-  const skill = await readFile(path.join(root, skillPath), "utf8");
+  const skill = await readText(skillPath);
   const frontmatter = skill.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!frontmatter) {
     errors.push(`${skillPath}: missing YAML frontmatter`);
@@ -154,6 +289,7 @@ for (const moduleName of modules) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
+
   const keys = frontmatterLines.map((line) => line.split(":", 1)[0]);
   const expectedKeys = ["description", "name"];
 
@@ -168,10 +304,10 @@ for (const moduleName of modules) {
     .find((line) => line.startsWith("name:"))
     ?.slice("name:".length)
     .trim()
-    .replace(/^["']|["']$/g, "");
+    .replace(/^['"]|['"]$/g, "");
 
-  if (declaredName !== `dwi-${moduleName}`) {
-    errors.push(`${skillPath}: name must be dwi-${moduleName}`);
+  if (declaredName !== entry.id) {
+    errors.push(`${skillPath}: name must be ${entry.id}`);
   }
 
   if (skill.includes("TODO")) {
@@ -183,21 +319,88 @@ for (const moduleName of modules) {
   }
 
   if (await exists(metadataPath)) {
-    const metadata = await readFile(path.join(root, metadataPath), "utf8");
-    if (!metadata.includes(`display_name: "Dwi • `)) {
-      errors.push(`${metadataPath}: missing branded display name`);
-    }
-    if (!metadata.includes("allow_implicit_invocation: false")) {
-      errors.push(`${metadataPath}: modules must be explicit-invocation by default`);
+    const metadata = await readText(metadataPath);
+    requireContains(metadata, `display_name: "Dwi • ${entry.title}"`, metadataPath);
+    requireContains(metadata, "allow_implicit_invocation: false", metadataPath);
+  }
+}
+
+const readmeEn = await readText("README.md");
+const readmeVi = await readText("README.vi.md");
+const modulesEn = await readText("MODULES.md");
+const modulesVi = await readText("MODULES.vi.md");
+const examplesEn = await readText("docs/examples.md");
+const examplesVi = await readText("docs/vi/examples.md");
+
+for (const entry of moduleEntries) {
+  requireContains(
+    readmeEn,
+    `(docs/modules/${entry.slug}.md)`,
+    "README.md",
+  );
+  requireContains(
+    readmeVi,
+    `(docs/vi/modules/${entry.slug}.md)`,
+    "README.vi.md",
+  );
+  requireContains(modulesEn, `\`${entry.id}\``, "MODULES.md");
+  requireContains(modulesVi, `\`${entry.id}\``, "MODULES.vi.md");
+  requireContains(examplesEn, `## ${entry.title}`, "docs/examples.md");
+  requireContains(examplesVi, `## ${entry.title}`, "docs/vi/examples.md");
+}
+
+for (const [source, content, expectedCells] of [
+  ["MODULES.md", modulesEn, 5],
+  ["MODULES.vi.md", modulesVi, 4],
+]) {
+  const lines = content.split(/\r?\n/);
+  for (const entry of moduleEntries) {
+    const row = lines.find((line) => line.includes(`\`${entry.id}\``));
+    if (!row) continue;
+    const cells = countMarkdownCells(row);
+    if (cells !== expectedCells) {
+      errors.push(
+        `${source}: module row for ${entry.id} must contain ${expectedCells} table cells, found ${cells}`,
+      );
     }
   }
 }
 
-const checksumManifest = await readFile(
-  path.join(root, "checksums/SHA256SUMS"),
-  "utf8",
-);
+for (const [source, content] of [
+  ["README.md", readmeEn],
+  ["README.vi.md", readmeVi],
+]) {
+  const lines = content.split(/\r?\n/);
+  for (const entry of moduleEntries) {
+    const guidePath =
+      source === "README.md"
+        ? `docs/modules/${entry.slug}.md`
+        : `docs/vi/modules/${entry.slug}.md`;
+    const row = lines.find((line) => line.includes(`(${guidePath})`));
+    if (!row) continue;
+    const cells = countMarkdownCells(row);
+    if (cells !== 3) {
+      errors.push(
+        `${source}: module row for ${entry.id} must contain 3 table cells, found ${cells}`,
+      );
+    }
+  }
+}
+
+for (const issueTemplate of [
+  ".github/ISSUE_TEMPLATE/bug.yml",
+  ".github/ISSUE_TEMPLATE/module-proposal.yml",
+  ".github/ISSUE_TEMPLATE/support.yml",
+]) {
+  const content = await readText(issueTemplate);
+  for (const entry of moduleEntries) {
+    requireContains(content, `        - ${entry.title}`, issueTemplate);
+  }
+}
+
+const checksumManifest = await readText("checksums/SHA256SUMS");
 const checksumEntries = new Map();
+
 for (const line of checksumManifest.split(/\r?\n/).filter(Boolean)) {
   const match = line.match(
     /^([a-f0-9]{64})  (modules\/dwi-[a-z-]+\/SKILL\.md)$/,
@@ -209,12 +412,13 @@ for (const line of checksumManifest.split(/\r?\n/).filter(Boolean)) {
   checksumEntries.set(match[2], match[1]);
 }
 
-for (const moduleName of modules) {
-  const skillPath = `modules/dwi-${moduleName}/SKILL.md`;
+for (const entry of moduleEntries) {
+  const skillPath = `modules/${entry.id}/SKILL.md`;
   const expectedHash = checksumEntries.get(skillPath);
   const actualHash = createHash("sha256")
     .update(await readFile(path.join(root, skillPath)))
     .digest("hex");
+
   if (!expectedHash) {
     errors.push(`checksums/SHA256SUMS: missing ${skillPath}`);
   } else if (actualHash !== expectedHash) {
@@ -222,98 +426,84 @@ for (const moduleName of modules) {
   }
 }
 
-if (checksumEntries.size !== modules.length) {
-  errors.push("checksums/SHA256SUMS: entry count must match module list");
+if (checksumEntries.size !== moduleEntries.length) {
+  errors.push("checksums/SHA256SUMS: entry count must match modules/catalog.json");
 }
 
-const packageJson = JSON.parse(
-  await readFile(path.join(root, "package.json"), "utf8"),
+const packageJson = await readJson("package.json");
+if (packageJson) {
+  const canonicalDescription =
+    "A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission.";
+
+  if (packageJson.version !== catalog.repository_version) {
+    errors.push("package.json: version must match modules/catalog.json");
+  }
+
+  if (packageJson.description !== canonicalDescription) {
+    errors.push("package.json: description must match the canonical repository description");
+  }
+
+  if (packageJson.private !== true) {
+    errors.push("package.json: private must remain true; this is not a registry package");
+  }
+
+  if (packageJson.license !== "Apache-2.0") {
+    errors.push("package.json: license must be Apache-2.0");
+  }
+
+  for (const dependencyField of [
+    "dependencies",
+    "devDependencies",
+    "optionalDependencies",
+    "peerDependencies",
+  ]) {
+    if (
+      packageJson[dependencyField] &&
+      Object.keys(packageJson[dependencyField]).length > 0
+    ) {
+      errors.push(`package.json: ${dependencyField} must remain empty`);
+    }
+  }
+
+  for (const descriptionPath of [
+    "README.md",
+    "CITATION.cff",
+    "docs/brand.md",
+    "docs/repository-metadata.md",
+  ]) {
+    const descriptionContent = await readText(descriptionPath);
+    requireContains(descriptionContent, canonicalDescription, descriptionPath);
+  }
+}
+
+const citation = await readText("CITATION.cff");
+requireContains(
+  citation,
+  `version: "${catalog.repository_version}"`,
+  "CITATION.cff",
 );
 
-const canonicalDescription =
-  "A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission.";
-
-if (packageJson.description !== canonicalDescription) {
-  errors.push("package.json: description must match the canonical repository description");
-}
-
-if (packageJson.private !== true) {
-  errors.push("package.json: private must remain true; this is not a registry package");
-}
-
-if (packageJson.license !== "Apache-2.0") {
-  errors.push("package.json: code license must be Apache-2.0");
-}
-
-const licenseMap = await readFile(path.join(root, "LICENSES.md"), "utf8");
+const licenseMap = await readText("LICENSES.md");
 for (const requiredTerm of ["Apache-2.0", "CC BY 4.0", "TRADEMARKS.md"]) {
-  if (!licenseMap.includes(requiredTerm)) {
-    errors.push(`LICENSES.md: missing license boundary ${requiredTerm}`);
-  }
-}
-
-for (const dependencyField of [
-  "dependencies",
-  "devDependencies",
-  "optionalDependencies",
-  "peerDependencies",
-]) {
-  if (
-    packageJson[dependencyField] &&
-    Object.keys(packageJson[dependencyField]).length > 0
-  ) {
-    errors.push(`package.json: ${dependencyField} must remain empty`);
-  }
-}
-
-if (!(await exists("LICENSE"))) {
-  const readme = await readFile(path.join(root, "README.md"), "utf8");
-  if (!readme.includes("does not grant a reuse license yet")) {
-    errors.push("README.md must disclose the absence of a reuse license");
-  }
-}
-
-for (const descriptionPath of [
-  "README.md",
-  "CITATION.cff",
-  "docs/brand.md",
-  "docs/repository-metadata.md",
-]) {
-  const descriptionContent = await readFile(
-    path.join(root, descriptionPath),
-    "utf8",
-  );
-  if (!descriptionContent.includes(canonicalDescription)) {
-    errors.push(
-      `${descriptionPath}: missing canonical repository description`,
-    );
-  }
+  requireContains(licenseMap, requiredTerm, "LICENSES.md");
 }
 
 for (const installationPath of [
   "docs/installation.md",
   "docs/vi/installation.md",
 ]) {
-  const installationContent = await readFile(
-    path.join(root, installationPath),
-    "utf8",
+  const installationContent = await readText(installationPath);
+
+  requireNotContains(
+    installationContent,
+    "raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/main/",
+    installationPath,
   );
-  if (
-    installationContent.includes(
-      "raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/main/",
-    )
-  ) {
-    errors.push(`${installationPath}: remote install must not use mutable main`);
-  }
-  if (installationContent.includes("rm -rf")) {
-    errors.push(`${installationPath}: removal must not use recursive deletion`);
-  }
+
+  requireNotContains(installationContent, "rm -rf", installationPath);
 }
 
-const architectureAsset = await readFile(
-  path.join(root, "assets/architecture.svg"),
-  "utf8",
-);
+const architectureAsset = await readText("assets/architecture.svg");
 if (
   !architectureAsset.includes('fill="#FF4F2E">{ }</text>') ||
   !architectureAsset.includes('fill="#A8ADB5"')
@@ -323,10 +513,9 @@ if (
   );
 }
 
-const socialPreview = await readFile(
-  path.join(root, "assets/social-preview.png"),
-);
+const socialPreview = await readFile(path.join(root, "assets/social-preview.png"));
 const pngSignature = "89504e470d0a1a0a";
+
 if (
   socialPreview.length < 24 ||
   socialPreview.subarray(0, 8).toString("hex") !== pngSignature ||
@@ -335,6 +524,42 @@ if (
 ) {
   errors.push("assets/social-preview.png: must be a 1280x640 PNG");
 }
+
+const currentOperationalSurfaces = [
+  "README.md",
+  "README.vi.md",
+  "MODULES.md",
+  "MODULES.vi.md",
+  "CHANGELOG.md",
+  "ROADMAP.md",
+  "CONTRIBUTING.md",
+  "docs/release-checklist.md",
+];
+
+const stalePhrases = [
+  "repository is in private Research Preview",
+  "While the repository is private",
+  "No public release tag has been created",
+  "Public release is blocked",
+  "Tested with Claude and Codex",
+  "Khi kho còn private",
+  "Đã test với Claude và Codex",
+];
+
+for (const surface of currentOperationalSurfaces) {
+  const content = await readText(surface);
+  for (const phrase of stalePhrases) {
+    requireNotContains(content, phrase, surface);
+  }
+}
+
+requireContains(readmeEn, "0.2.0-dev", "README.md");
+requireContains(readmeEn, "v0.1.0", "README.md");
+requireContains(readmeVi, "0.2.0-dev", "README.vi.md");
+requireContains(readmeVi, "v0.1.0", "README.vi.md");
+
+const changelog = await readText("CHANGELOG.md");
+requireContains(changelog, "## 0.1.0 - 2026-07-25", "CHANGELOG.md");
 
 const files = await walk(root);
 const legacyAuthorEmail = ["thienhoc.tk", "gmail.com"].join("@");
@@ -348,6 +573,7 @@ const publicTextExtensions = new Set([
   ".yaml",
   ".yml",
 ]);
+
 for (const file of files) {
   if (!publicTextExtensions.has(path.extname(file))) continue;
   const content = await readFile(file, "utf8");
@@ -357,13 +583,16 @@ for (const file of files) {
     );
   }
 }
+
 const markdownFiles = files.filter((file) => file.endsWith(".md"));
 const linkPattern = /!?\[[^\]]*]\(([^)]+)\)/g;
 
 for (const markdownFile of markdownFiles) {
   const content = await readFile(markdownFile, "utf8");
+
   for (const match of content.matchAll(linkPattern)) {
     let target = match[1].trim();
+
     if (
       target.startsWith("http://") ||
       target.startsWith("https://") ||
@@ -390,7 +619,13 @@ for (const markdownFile of markdownFiles) {
       ? path.join(root, decodedTarget.slice(1))
       : path.resolve(path.dirname(markdownFile), decodedTarget);
 
-    if (!resolved.startsWith(root)) {
+    const relative = path.relative(root, resolved);
+    const escapesRoot =
+      relative === ".." ||
+      relative.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relative);
+
+    if (escapesRoot) {
       errors.push(
         `${path.relative(root, markdownFile)}: link escapes repository ${target}`,
       );
@@ -415,6 +650,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Repository contract passed: ${modules.length} modules, EN/VI guides, no website runtime, no package dependencies.`,
+    `Repository contract passed: ${moduleEntries.length} modules (${focusedModules.length} focused, ${compositeModules.length} composite), EN/VI semantic surfaces, release truth, no website runtime, and no package dependencies.`,
   );
 }

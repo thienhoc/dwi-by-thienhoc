@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "repository_version": "0.2.0-dev",
+  "latest_reviewed_release": "v0.1.0",
+  "modules": [
+    {
+      "slug": "conduct",
+      "id": "dwi-conduct",
+      "title": "Conduct",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "lean",
+      "id": "dwi-lean",
+      "title": "Lean",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "budget",
+      "id": "dwi-budget",
+      "title": "Budget",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "bridge",
+      "id": "dwi-bridge",
+      "title": "Bridge",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "arc",
+      "id": "dwi-arc",
+      "title": "Arc",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "evidence",
+      "id": "dwi-evidence",
+      "title": "Evidence",
+      "kind": "focused",
+      "released_in": "v0.1.0",
+      "remote_install": true
+    },
+    {
+      "slug": "all-in-one",
+      "id": "dwi-all-in-one",
+      "title": "All-in-One",
+      "kind": "composite",
+      "released_in": null,
+      "remote_install": false
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Chọn một mô-đun Dwi
 
-Dwi được thiết kế theo mô-đun. Chỉ cài hành vi nhỏ nhất giải quyết được vấn đề bạn đang quan sát.
+Dwi được thiết kế theo mô-đun. Chỉ cài hành vi nhỏ nhất giải quyết được vấn đề đang quan sát.
 
 | Mô-đun | Chọn khi | File bắt buộc | Hướng dẫn |
 | --- | --- | --- | --- |
@@ -10,11 +10,11 @@ Dwi được thiết kế theo mô-đun. Chỉ cài hành vi nhỏ nhất giải
 | `dwi-bridge` | Claude và Codex gốc cần phối hợp với quyền rõ ràng | [`SKILL.md`](modules/dwi-bridge/SKILL.md) | [Bridge](docs/vi/modules/bridge.md) |
 | `dwi-arc` | Nhiều ô công việc tách rời cần quy tắc một người ghi | [`SKILL.md`](modules/dwi-arc/SKILL.md) | [Arc](docs/vi/modules/arc.md) |
 | `dwi-evidence` | Nhận định cần trạng thái, nguồn gốc và điều chưa biết | [`SKILL.md`](modules/dwi-evidence/SKILL.md) | [Evidence](docs/vi/modules/evidence.md) |
-| `dwi-all-in-one` | Nhiều vấn đề lặp lại cùng lúc, cần một mô-đun tổng hợp | [`SKILL.md`](modules/dwi-all-in-one/SKILL.md) | [All-in-One](docs/vi/modules/all-in-one.md) | [All-in-One VI](docs/vi/modules/all-in-one.md) |
+| `dwi-all-in-one` | Nhiều vấn đề lặp lại cùng lúc | [`SKILL.md`](modules/dwi-all-in-one/SKILL.md) | [All-in-One](docs/vi/modules/all-in-one.md) |
 
 ## Hợp đồng độc lập
 
-Mỗi mô-đun:
+Mỗi mô-đun chuyên biệt:
 
 - có một `SKILL.md` tự đủ;
 - không cần mô-đun Dwi khác;
@@ -23,7 +23,7 @@ Mỗi mô-đun:
 - giữ nguyên kiểm soát quyền của lớp công cụ gốc;
 - có đường gỡ chính xác.
 
-`dwi-all-in-one` mạnh hơn một mô-đun chuyên biệt, nên chỉ dùng khi nhiều vấn đề đang lặp lại trong cùng một workflow và đã thấy rõ phần cứng cho từng mô-đun riêng lẻ.
+`dwi-all-in-one` là mô-đun phối hợp tùy chọn. Chỉ dùng khi nhiều vấn đề lặp lại cùng lúc trong cùng workflow. Nó không tạo một lớp quyền mới và không được buộc mọi tác vụ chạy đủ sáu lớp.
 
 `agents/openai.yaml` chỉ bổ sung metadata giao diện tùy chọn cho Codex. Hành vi cốt lõi vẫn nằm trong `SKILL.md`.
 
@@ -38,6 +38,9 @@ Lần thử đầu nên dùng phạm vi dự án. Xem [hướng dẫn cài và g
 
 ## Tham chiếu phiên bản
 
-Nhánh `main` chỉ dùng để xem trước, không phải tham chiếu cài đặt bất biến. Khi kho còn private, hãy cài từ checkout cục bộ đã được phép. Sau khi có bản phát hành đã duyệt, URL cài từ xa phải dùng thẻ phiên bản hoặc mã commit chính xác.
-
-Hiện tại chỉ các module chuyên biệt được gắn vào `v0.1.0`. `dwi-all-in-one` hiện có trong checkout đã duyệt hiện tại và sẽ được ghim trong bản phát hành sau khi có preflight tiếp theo.
+- `v0.1.0` là bản phát hành đã duyệt gần nhất và chứa sáu mô-đun chuyên biệt.
+- `main` là trạng thái phát triển chưa phát hành `0.2.0-dev`.
+- `dwi-all-in-one` hiện chỉ có trong trạng thái phát triển chưa phát hành.
+- Không cài trực tiếp từ nhánh `main` có thể thay đổi.
+- Tham chiếu cài từ xa phải dùng tag đã duyệt hoặc commit chính xác đã review.
+- Danh tính và trạng thái phát hành của mô-đun được ghi trong [`modules/catalog.json`](modules/catalog.json).

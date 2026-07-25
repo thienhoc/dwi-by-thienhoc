@@ -12,30 +12,11 @@ Dwi is intentionally modular. Install the smallest behavior that addresses a pro
 | `dwi-evidence` | Claims need status, provenance, and visible uncertainty | [`SKILL.md`](modules/dwi-evidence/SKILL.md) | [Evidence](docs/modules/evidence.md) | [Evidence VI](docs/vi/modules/evidence.md) |
 | `dwi-all-in-one` | Multiple observed issues recur together and you want one module | [`SKILL.md`](modules/dwi-all-in-one/SKILL.md) | [All-in-One](docs/modules/all-in-one.md) | [All-in-One VI](docs/vi/modules/all-in-one.md) |
 
-## Independence contract
-
-Every module:
-
-- has one self-contained `SKILL.md`;
-- can be installed without another Dwi module;
-- declares what it changes and what it does not change;
-- requires no separate Dwi runtime, daemon, package dependency, MCP server, or website;
-- preserves native harness permission checks;
-- has an exact removal path.
-
-`dwi-all-in-one` is a heavier module than a focused module. It is optional and should be used only after reviewing the focused module options above.
-
-`agents/openai.yaml` adds optional Codex interface metadata. The core behavior remains in `SKILL.md`, following the open Agent Skills format.
-
-## Installation scope
-
-| Harness | Project scope | User scope |
-| --- | --- | --- |
-| Codex | `.agents/skills/<module>/SKILL.md` | `~/.agents/skills/<module>/SKILL.md` |
-| Claude Code | `.claude/skills/<module>/SKILL.md` | `~/.claude/skills/<module>/SKILL.md` |
-
-Project scope is recommended for the first trial. See [the complete installation and removal guide](docs/installation.md) and [small expected-output examples](docs/examples.md).
-
 ## Version references
 
-The `main` branch is a preview reference, not an installation reference or reproducible release. While only `v0.1.0` is tagged, remote install links there are for the six focused modules only. `dwi-all-in-one` is available from the reviewed current checkout and will be added in a later reviewed release tag with an immutable URL.
+- `v0.1.0` is the latest reviewed release and contains the six focused modules.
+- `main` is unreleased development version `0.2.0-dev`.
+- `dwi-all-in-one` exists only in the unreleased development state.
+- Do not install from mutable `main`.
+- A remote install reference must use a reviewed tag or exact reviewed commit.
+- Module identity and release availability are recorded in [`modules/catalog.json`](modules/catalog.json).

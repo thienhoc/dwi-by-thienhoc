@@ -47,3 +47,9 @@
 **Đầu vào:** "Kiểm tra báo cáo hoàn thành này."
 
 **Kết quả mong đợi:** mỗi nhận định quan trọng được gắn `VERIFIED (ĐÃ XÁC MINH)`, `OBSERVED (ĐÃ QUAN SÁT)`, `ESTIMATED (ƯỚC TÍNH)`, `TARGET (MỤC TIÊU)` hoặc `UNKNOWN (CHƯA BIẾT)`, cùng phép kiểm tra còn thiếu.
+
+## All-in-One
+
+**Đầu vào:** "Áp dụng Dwi cho thay đổi nhỏ, có thể hoàn tác trong một file. Không thêm nghi thức."
+
+**Kết quả mong đợi:** chỉ chọn các lớp thật sự liên quan, dùng đường thực hiện nhanh im lặng, chạy một phép kiểm tra vừa đủ, nêu giả định sau khi làm và dừng mà không in checklist sáu mục.

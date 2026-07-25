@@ -5,6 +5,16 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const results = [];
+const catalog = JSON.parse(
+  readFileSync(path.join(root, "modules/catalog.json"), "utf8"),
+);
+const moduleCount = catalog.modules.length;
+const focusedModuleCount = catalog.modules.filter(
+  (entry) => entry.kind === "focused",
+).length;
+const compositeModuleCount = catalog.modules.filter(
+  (entry) => entry.kind === "composite",
+).length;
 
 function run(command, args) {
   return spawnSync(command, args, {
@@ -50,7 +60,7 @@ const validator = run(process.execPath, ["scripts/validate-repo.mjs"]);
 recordCommand(
   "Repository contract",
   validator,
-  "Six modules, EN/VI documentation, links, and no website runtime passed.",
+  `${moduleCount} modules (${focusedModuleCount} focused, ${compositeModuleCount} composite), EN/VI documentation, links, release truth, and no website runtime passed.`,
 );
 
 recordCommand(
