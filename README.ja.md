@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Research Preview 0.2.1</strong> · ドキュメント更新 · 6つの専門モジュール + 任意の All-in-One
+  <strong>Research Preview 0.2.0</strong> · 最新の審査済みリポジトリリリース: v0.2.2 · 6つの専門モジュール + 任意の All-in-One
 </p>
 
 <p align="center">
@@ -48,9 +48,11 @@ Dwi は新しいランタイム、デーモン、MCP サーバーではありま
 
 ## ステータス
 
-- Research Preview: `0.2.1`
-- ランタイム変更: なし
-- このパッチ: 日本語・韓国語・簡体字中国語・フランス語・ヒンディー語の入口ドキュメントを追加
+- モジュール内容の Research Preview ベースライン: `0.2.0`
+- 最新の審査済みリポジトリリリース: `v0.2.2`
+- このパッチ: Codex と Claude Code の明示呼び出し専用インストール契約を修正
+- 標準モジュール本文と SHA-256: `v0.2.0` から変更なし
 - インストール可能なモジュール: 6つの専門モジュール + 任意の All-in-One
+- 正確なインストールコマンドは英語版またはベトナム語版を参照
 
 連絡先: [hoc@wi.works](mailto:hoc@wi.works)
