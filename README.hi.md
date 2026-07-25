@@ -6,7 +6,7 @@
 
 <p align="center">अत्यधिक योजना, टोकन की बर्बादी, संदर्भ खोने और स्पष्ट अनुमति के बिना की गई कार्रवाइयों को कम करने वाली एक मॉड्यूलर मानव परत।</p>
 
-<p align="center"><strong>Research Preview 0.2.1</strong> · documentation patch · 6 focused modules + 1 optional All-in-One</p>
+<p align="center"><strong>Research Preview 0.2.0</strong> · नवीनतम reviewed repository release: v0.2.2 · 6 focused modules + 1 optional All-in-One</p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.fr.md">Français</a></p>
 
@@ -42,9 +42,11 @@ Dwi कोई नया runtime, daemon या MCP server नहीं है।
 
 ## स्थिति
 
-- Research Preview: `0.2.1`
-- Runtime change: कोई नहीं
-- इस patch में Japanese, Korean, Simplified Chinese, French और Hindi entry documentation जोड़ी गई है
+- Module-content Research Preview baseline: `0.2.0`
+- नवीनतम reviewed repository release: `v0.2.2`
+- यह patch Codex और Claude Code के explicit-only installation contract को ठीक करता है
+- Canonical module bodies और SHA-256: `v0.2.0` से अपरिवर्तित
 - Installable content: 6 focused modules + optional All-in-One
+- सटीक installation commands के लिए English या Vietnamese documentation का उपयोग करें
 
 संपर्क: [hoc@wi.works](mailto:hoc@wi.works)
