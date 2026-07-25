@@ -1,8 +1,10 @@
 # Languages
 
-Dwi keeps English as the canonical operational documentation and Vietnamese as the first complete translation. Documentation patch `v0.2.1` added localized entry points for five additional languages. Installation-contract patch `v0.2.2` updates their release status while keeping exact operational commands in English and Vietnamese.
+Dwi keeps English as the canonical operational documentation and Vietnamese as the first complete translation. Documentation release `v0.2.1` added localized entry points for five additional languages. Installation-contract release `v0.2.3` updates their release status while keeping exact operational commands in English and Vietnamese.
 
-| Language | Entry point | Current coverage in v0.2.2 |
+The existing `v0.2.2` tag is a preserved non-release ref to a pre-patch commit. It is not the installation-contract release.
+
+| Language | Entry point | Current coverage in v0.2.3 |
 | --- | --- | --- |
 | English | [README.md](README.md) | Canonical operational documentation and corrected installation path |
 | Vietnamese | [README.vi.md](README.vi.md) | Complete translated documentation surface and corrected installation path |
