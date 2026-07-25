@@ -55,21 +55,25 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 4. Gọi mô-đun một cách rõ ràng rồi so sánh với cách làm thường ngày.
 5. Xóa thư mục mô-đun nếu không hữu ích. Bạn không cần xin lỗi hoặc tiếp tục thử.
 
-Giữ checkout Dwi đã kiểm tra tách biệt với dự án nhận mô-đun:
+Chuẩn hóa checkout Dwi đã kiểm tra và dự án đích thành đường dẫn vật lý, rồi từ chối target nằm trong checkout Dwi:
 
 ```bash
-DWI_ROOT="/duong-dan-tuyet-doi/toi/dwi-by-thienhoc"
-PROJECT_ROOT="/duong-dan-tuyet-doi/toi/du-an-cua-ban"
+DWI_ROOT="$(cd "/duong-dan-tuyet-doi/toi/dwi-by-thienhoc" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
 MODULE="dwi-conduct"
-test "$DWI_ROOT" != "$PROJECT_ROOT"
-cd "$DWI_ROOT"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT phải nằm ngoài DWI_ROOT sau khi chuẩn hóa đường dẫn" >&2
+    exit 1
+    ;;
+esac
 ```
 
 Với Codex:
 
 ```bash
 TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
-node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 ```
@@ -78,7 +82,7 @@ Với Claude Code:
 
 ```bash
 TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
-node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
