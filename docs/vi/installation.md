@@ -11,7 +11,7 @@ Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ s
 
 Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, model có thể tự chọn mô-đun Dwi dựa trên phần mô tả dù người dùng chưa gọi rõ. Đây là lỗi đóng gói và tài liệu. Lỗi này không tự cấp thêm quyền dùng công cụ, không vượt sandbox và không bỏ qua cơ chế phê duyệt gốc.
 
-Các ví dụ cũ còn `cd` vào checkout Dwi rồi dùng target tương đối như `.agents/skills/...`. Trừ khi checkout Dwi chính là dự án chủ ý dùng để thử, cách đó cài mô-đun vào repo nguồn Dwi thay vì dự án thật của người dùng. Ví dụ đã sửa tách riêng `DWI_ROOT` và `PROJECT_ROOT`.
+Các ví dụ cũ còn `cd` vào checkout Dwi rồi dùng target tương đối như `.agents/skills/...`. Trừ khi checkout Dwi chính là dự án chủ ý dùng để thử, cách đó cài mô-đun vào repo nguồn Dwi thay vì dự án thật của người dùng. Ví dụ đã sửa tách riêng `DWI_ROOT` và `PROJECT_ROOT`, chuẩn hóa đường dẫn vật lý trước khi so sánh và từ chối target nằm trong checkout source Dwi.
 
 Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. Cho đến khi có tag vá lỗi đã được duyệt, hãy dùng đúng commit đã được kiểm tra có chứa `scripts/install-module.mjs`. Một commit phát triển chính xác chỉ định source đang được kiểm tra, không tự biến nó thành bản phát hành.
 
@@ -27,18 +27,22 @@ Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào 
 
 ## Cài từ checkout đã ghim
 
-Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay hai đường dẫn mẫu dưới đây bằng đường dẫn tuyệt đối trên máy của bạn:
+Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay hai đường dẫn mẫu dưới đây bằng các thư mục đã tồn tại. `pwd -P` giải quyết cách viết đường dẫn khác nhau và bí danh symlink trước khi kiểm tra quan hệ chứa:
 
 ```bash
-DWI_ROOT="/duong-dan-tuyet-doi/toi/dwi-by-thienhoc"
-PROJECT_ROOT="/duong-dan-tuyet-doi/toi/du-an-cua-ban"
+DWI_ROOT="$(cd "/duong-dan-tuyet-doi/toi/dwi-by-thienhoc" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
-test -d "$PROJECT_ROOT"
-test "$DWI_ROOT" != "$PROJECT_ROOT"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT phải nằm ngoài DWI_ROOT sau khi chuẩn hóa đường dẫn" >&2
+    exit 1
+    ;;
+esac
 node --version
 ```
 
-Trình cài cục bộ cần Node.js 20 trở lên, từ chối ghi đè thư mục mô-đun đang có và dựng đủ artifact trước khi chuyển vào vị trí đích. Không đặt `PROJECT_ROOT` bằng `DWI_ROOT` trừ khi bạn chủ ý thử Dwi ngay bên trong repo source của chính Dwi.
+Trình cài cục bộ cần Node.js 20 trở lên, từ chối ghi đè thư mục mô-đun đang có, dựng đủ artifact trước khi chuyển vào vị trí đích, chuẩn hóa target dự kiến và từ chối target trỏ tới checkout source Dwi hoặc bất kỳ thư mục con nào của nó. Kiểm tra này cũng bao phủ bí danh symlink.
 
 ## Codex
 
@@ -169,7 +173,7 @@ Bản phát hành sửa lỗi tiếp theo phải ghim đầy đủ đường cà
 
 ## Sửa một bản cài cũ chỉ có một file
 
-Trước hết, xác định dự án thực sự đang chứa `SKILL.md` đã cài. Dùng thư mục đó làm `PROJECT_ROOT`; không mặc định checkout Dwi là nơi nhận mô-đun.
+Trước hết, xác định dự án thực sự đang chứa `SKILL.md` đã cài. Dùng thư mục đó làm `PROJECT_ROOT`; không mặc định checkout Dwi là nơi nhận mô-đun. Chuẩn hóa cả hai root bằng khối lệnh đường dẫn vật lý ở trên trước khi sửa bất kỳ file nào.
 
 ### Sửa bản cài Codex
 
@@ -193,20 +197,22 @@ Sau đó mở một phiên Codex mới từ `PROJECT_ROOT`.
 
 Cách kiểm soát nhanh và có thể hoàn tác là mở `/skills` từ dự án bị ảnh hưởng, chọn mô-đun Dwi, chuyển trạng thái sang `user-invocable-only` rồi lưu. Claude Code ghi override cục bộ đó vào `.claude/settings.local.json`.
 
-Để sửa trực tiếp bằng artifact mới, giữ thư mục cũ làm bản sao lưu, cài bản đã được render, kiểm tra rồi chỉ xóa bản sao sau khi xác minh:
+Để sửa trực tiếp bằng artifact mới, chuyển thư mục cũ ra ngoài `.claude/skills/` trước khi kiểm thử. Việc này ngăn Claude Code phát hiện bản sao lưu vẫn còn khả năng được model tự gọi bên cạnh artifact đã sửa:
 
 ```bash
 MODULE="dwi-conduct"
 OLD="${PROJECT_ROOT}/.claude/skills/${MODULE}"
-BACKUP="${PROJECT_ROOT}/.claude/skills/${MODULE}.before-explicit-only"
+BACKUP_ROOT="${PROJECT_ROOT}/.claude/dwi-skill-backups"
+BACKUP="${BACKUP_ROOT}/${MODULE}.before-explicit-only"
 test -d "$OLD"
 test ! -e "$BACKUP"
+install -d "$BACKUP_ROOT"
 mv "$OLD" "$BACKUP"
 node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$OLD"
 grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-Sau đó mở một phiên Claude Code mới từ `PROJECT_ROOT`. Giữ bản sao lưu cho đến khi kiểm tra gọi rõ đã PASS.
+`BACKUP_ROOT` nằm ngoài `.claude/skills/`, nên mô-đun cũ không thuộc thư mục discovery của project skill trong lúc kiểm thử phiên mới. Giữ bản sao lưu cho đến khi cả negative test và kiểm tra gọi rõ đều PASS. Sau đó kiểm tra rồi xóa đúng bản sao lưu, hoặc chỉ chuyển nó trở lại khi chủ ý rollback.
 
 ## Gỡ mô-đun
 
