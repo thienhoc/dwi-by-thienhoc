@@ -10,6 +10,7 @@ Dwi is intentionally modular. Install the smallest behavior that addresses a pro
 | `dwi-bridge` | Native Claude and Codex workflows need explicit coordination | [`SKILL.md`](modules/dwi-bridge/SKILL.md) | [Bridge](docs/modules/bridge.md) | [Bridge VI](docs/vi/modules/bridge.md) |
 | `dwi-arc` | Multiple bounded work cells need one-writer discipline | [`SKILL.md`](modules/dwi-arc/SKILL.md) | [Arc](docs/modules/arc.md) | [Arc VI](docs/vi/modules/arc.md) |
 | `dwi-evidence` | Claims need status, provenance, and visible uncertainty | [`SKILL.md`](modules/dwi-evidence/SKILL.md) | [Evidence](docs/modules/evidence.md) | [Evidence VI](docs/vi/modules/evidence.md) |
+| `dwi-all-in-one` | Multiple observed issues recur together and you want one module | [`SKILL.md`](modules/dwi-all-in-one/SKILL.md) | [All-in-One](docs/modules/all-in-one.md) | [All-in-One VI](docs/vi/modules/all-in-one.md) |
 
 ## Independence contract
 
@@ -21,6 +22,8 @@ Every module:
 - requires no separate Dwi runtime, daemon, package dependency, MCP server, or website;
 - preserves native harness permission checks;
 - has an exact removal path.
+
+`dwi-all-in-one` is a heavier module than a focused module. It is optional and should be used only after reviewing the focused module options above.
 
 `agents/openai.yaml` adds optional Codex interface metadata. The core behavior remains in `SKILL.md`, following the open Agent Skills format.
 
@@ -35,4 +38,4 @@ Project scope is recommended for the first trial. See [the complete installation
 
 ## Version references
 
-The `main` branch is a preview reference, not an installation reference or reproducible release. While the repository is private, install from an authorized local checkout. After a reviewed release tag exists, remote installation links must use that tag or an exact commit instead of `main`.
+The `main` branch is a preview reference, not an installation reference or reproducible release. While only `v0.1.0` is tagged, remote install links there are for the six focused modules only. `dwi-all-in-one` is available from the reviewed current checkout and will be added in a later reviewed release tag with an immutable URL.

@@ -4,7 +4,7 @@ Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phâ
 
 ## Trước khi cài
 
-1. Chọn đúng một mô-đun trong [MODULES.vi.md](../../MODULES.vi.md).
+1. Chọn một mô-đun trong [MODULES.vi.md](../../MODULES.vi.md).
 2. Đọc `SKILL.md` ngay trong kho.
 3. Kiểm tra tác dụng, điều mô-đun không làm, ranh giới quyền hạn và cách gỡ.
 4. Lần thử đầu nên cài trong phạm vi dự án.
@@ -12,9 +12,11 @@ Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phâ
 
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
-## Cài từ checkout đã duyệt
+## Cài từ một checkout đã duyệt
 
-Chạy các lệnh sau từ checkout `v0.1.0` đã duyệt, sau khi kiểm tra `pwd -P` đúng thư mục.
+Chạy các lệnh sau từ checkout đã duyệt sau khi xác nhận `pwd -P` đúng thư mục.
+
+Nếu cần cài một mô-đun chưa có trong `v0.1.0`, chỉ cài từ checkout đã duyệt.
 
 ## Codex
 
@@ -54,7 +56,7 @@ cmp "$SOURCE" "$TARGET/SKILL.md"
 
 Sau đó mở phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu lớp công cụ dùng kỹ năng vừa cài.
 
-## Các tên mô-đun còn lại
+## Các tên mô-đun khác
 
 Thay `dwi-conduct` trong đường dẫn và thư mục đích bằng:
 
@@ -64,11 +66,31 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
+dwi-all-in-one
 ```
 
-## Bản phát hành công khai: URL cố định cho từng mô-đun
+## All-in-One từ checkout đã duyệt (hiện tại chưa có trong v0.1.0)
 
-Mỗi mô-đun có một URL nguồn riêng, cố định tại thẻ phiên bản `v0.1.0`:
+`dwi-all-in-one` là mô-đun tổng hợp tùy chọn và chưa có trong `v0.1.0`.
+
+Chỉ dùng khi đang làm việc trên checkout đã duyệt và module đã có trong đó:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-all-in-one/SKILL.md"
+TARGET=".agents/skills/dwi-all-in-one"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Với Claude Code, dùng cùng nguồn nhưng đích là `.claude/skills/dwi-all-in-one`.
+
+## URL cài đặt đã ghim cho bản phát hành
+
+Mỗi mô-đun chuyên biệt có URL nguồn cố định tại `v0.1.0`:
 
 | Mô-đun | Nguồn đã duyệt |
 | --- | --- |
@@ -78,6 +100,8 @@ Mỗi mô-đun có một URL nguồn riêng, cố định tại thẻ phiên b�
 | Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-bridge/SKILL.md) |
 | Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-arc/SKILL.md) |
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-evidence/SKILL.md) |
+
+`dwi-all-in-one` chưa có URL cài ghim.
 
 Tải file đã chọn cùng manifest (danh sách mã kiểm tra), xác minh SHA-256, đọc nội dung rồi mới cài:
 

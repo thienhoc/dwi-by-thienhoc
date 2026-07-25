@@ -5,7 +5,15 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
-const modules = ["conduct", "lean", "budget", "bridge", "arc", "evidence"];
+const modules = [
+  "conduct",
+  "lean",
+  "budget",
+  "bridge",
+  "arc",
+  "evidence",
+  "all-in-one",
+];
 
 async function exists(relativePath) {
   try {
@@ -191,7 +199,9 @@ const checksumManifest = await readFile(
 );
 const checksumEntries = new Map();
 for (const line of checksumManifest.split(/\r?\n/).filter(Boolean)) {
-  const match = line.match(/^([a-f0-9]{64})  (modules\/dwi-[a-z]+\/SKILL\.md)$/);
+  const match = line.match(
+    /^([a-f0-9]{64})  (modules\/dwi-[a-z-]+\/SKILL\.md)$/,
+  );
   if (!match) {
     errors.push(`checksums/SHA256SUMS: malformed line ${line}`);
     continue;
@@ -213,7 +223,7 @@ for (const moduleName of modules) {
 }
 
 if (checksumEntries.size !== modules.length) {
-  errors.push("checksums/SHA256SUMS: must contain exactly six module entries");
+  errors.push("checksums/SHA256SUMS: entry count must match module list");
 }
 
 const packageJson = JSON.parse(
@@ -405,6 +415,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Repository contract passed: ${modules.length} independent modules, EN/VI guides, no website runtime, no package dependencies.`,
+    `Repository contract passed: ${modules.length} modules, EN/VI guides, no website runtime, no package dependencies.`,
   );
 }

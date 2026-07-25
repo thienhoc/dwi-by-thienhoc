@@ -1,0 +1,7 @@
+interface:
+  display_name: "Dwi • All-in-One"
+  short_description: "Apply all six lenses together with a bounded adherence loop"
+  brand_color: "#FF4F2E"
+  default_prompt: "Use $dwi-all-in-one when multiple Dwi failure patterns co-occur in one workflow."
+policy:
+  allow_implicit_invocation: false

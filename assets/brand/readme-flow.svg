@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-labelledby="title desc">
+  <title id="title">Dwi human-layer workflow</title>
+  <desc id="desc">Red-orange braces open into six connected modular nodes, then converge through a human layer before a controlled output.</desc>
+
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".58"/>
+      <stop offset=".5" stop-color="#E7E4DE" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#7E858F" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6F7680" stop-opacity=".42"/>
+      <stop offset=".5" stop-color="#F7F4EE" stop-opacity=".68"/>
+      <stop offset="1" stop-color="#6F7680" stop-opacity=".42"/>
+    </linearGradient>
+    <radialGradient id="ember" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#FFD5B8"/>
+      <stop offset=".34" stop-color="#FF8A4C"/>
+      <stop offset="1" stop-color="#FF4F2E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- The braces are the native entry structure, not a detached logo card. -->
+  <g fill="none" stroke="#FF4F2E" stroke-width="10" stroke-linecap="round">
+    <path d="M134 101 C82 101 101 189 52 210 C101 231 82 319 134 319"/>
+    <path d="M224 101 C276 101 257 189 306 210 C257 231 276 319 224 319"/>
+  </g>
+  <circle cx="179" cy="210" r="18" fill="url(#ember)"/>
+  <circle cx="179" cy="210" r="7" fill="#FFF4E9" fill-opacity=".9"/>
+  <circle cx="344" cy="210" r="7" fill="#A8ADB5"/>
+
+  <!-- Three bounded lanes express modular work before convergence. -->
+  <g fill="none" stroke="#7E858F" stroke-width="2.8" stroke-linecap="round" vector-effect="non-scaling-stroke">
+    <path d="M306 210 H388 C426 210 426 100 472 100 H1010"/>
+    <path d="M306 210 H472 H1010"/>
+    <path d="M306 210 H388 C426 210 426 320 472 320 H1010"/>
+    <path d="M1010 100 C1052 100 1043 210 1080 210"/>
+    <path d="M1010 210 H1080"/>
+    <path d="M1010 320 C1052 320 1043 210 1080 210"/>
+  </g>
+  <g fill="none" stroke="#A8ADB5" stroke-width="2" stroke-dasharray="3 10" stroke-linecap="round" opacity=".62" vector-effect="non-scaling-stroke">
+    <path d="M438 60 C628 18 884 18 1040 72"/>
+    <path d="M438 360 C628 402 884 402 1040 348"/>
+  </g>
+
+  <!-- Six independent glass nodes. -->
+  <g stroke="#8C929B" stroke-width="2.4" vector-effect="non-scaling-stroke">
+    <circle cx="570" cy="100" r="47" fill="url(#glass)"/>
+    <circle cx="820" cy="100" r="47" fill="url(#glass)"/>
+    <circle cx="570" cy="210" r="47" fill="url(#glass)"/>
+    <circle cx="820" cy="210" r="47" fill="url(#glass)"/>
+    <circle cx="570" cy="320" r="47" fill="url(#glass)"/>
+    <circle cx="820" cy="320" r="47" fill="url(#glass)"/>
+  </g>
+
+  <!-- Conduct: an answerable exchange. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M548 85 H592 V110 H568 L555 121 V110 H548 Z"/>
+    <path d="M558 96 H582"/>
+  </g>
+
+  <!-- Lean: narrow to the smallest sufficient path. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M794 82 L814 100 L794 118"/>
+    <path d="M846 82 L826 100 L846 118"/>
+    <path d="M815 100 H825"/>
+  </g>
+
+  <!-- Budget: a bounded resource dial. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round">
+    <circle cx="570" cy="210" r="24"/>
+    <path d="M570 210 L584 197"/>
+    <path d="M554 230 H586"/>
+  </g>
+
+  <!-- Bridge: two sides connected without collapsing authority. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M790 226 V203 C790 187 850 187 850 203 V226"/>
+    <path d="M786 226 H854"/>
+    <path d="M802 226 V207 M838 226 V207"/>
+  </g>
+
+  <!-- Arc: bounded cells around one coordinated center. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round">
+    <circle cx="570" cy="320" r="9"/>
+    <circle cx="542" cy="340" r="7"/>
+    <circle cx="598" cy="340" r="7"/>
+    <path d="M563 327 L548 335 M577 327 L592 335"/>
+  </g>
+
+  <!-- Evidence: provenance that survives the handoff. -->
+  <g fill="none" stroke="#626A74" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M820 292 L846 306 V334 L820 348 L794 334 V306 Z"/>
+    <path d="M806 320 L816 330 L835 310"/>
+  </g>
+
+  <!-- Dots make sequence and handoff explicit. -->
+  <g fill="#A8ADB5">
+    <circle cx="442" cy="100" r="6"/><circle cx="496" cy="100" r="5"/>
+    <circle cx="644" cy="100" r="6"/><circle cx="746" cy="100" r="5"/>
+    <circle cx="894" cy="100" r="6"/><circle cx="958" cy="100" r="5"/>
+    <circle cx="442" cy="210" r="6"/><circle cx="496" cy="210" r="5"/>
+    <circle cx="644" cy="210" r="6"/><circle cx="746" cy="210" r="5"/>
+    <circle cx="894" cy="210" r="6"/><circle cx="958" cy="210" r="5"/>
+    <circle cx="442" cy="320" r="6"/><circle cx="496" cy="320" r="5"/>
+    <circle cx="644" cy="320" r="6"/><circle cx="746" cy="320" r="5"/>
+    <circle cx="894" cy="320" r="6"/><circle cx="958" cy="320" r="5"/>
+  </g>
+  <g fill="#FF4F2E">
+    <circle cx="388" cy="210" r="6"/>
+    <circle cx="1010" cy="100" r="6"/>
+    <circle cx="1010" cy="210" r="6"/>
+    <circle cx="1010" cy="320" r="6"/>
+  </g>
+
+  <!-- A restrained material gate leads to the human layer. -->
+  <rect x="1080" y="157" width="38" height="106" rx="19" fill="url(#metal)" stroke="#8C929B" stroke-width="2.4"/>
+  <path d="M1099 173 V247" stroke="#FF6A3D" stroke-width="3" stroke-linecap="round"/>
+
+  <g fill="url(#glass)" stroke="#8C929B" stroke-width="2.6" vector-effect="non-scaling-stroke">
+    <rect x="1144" y="121" width="148" height="178" rx="74"/>
+    <circle cx="1218" cy="171" r="27"/>
+    <ellipse cx="1218" cy="240" rx="38" ry="43"/>
+  </g>
+  <ellipse cx="1218" cy="210" rx="88" ry="106" fill="none" stroke="#FF6A3D" stroke-width="2" stroke-opacity=".72"/>
+  <ellipse cx="1218" cy="210" rx="102" ry="120" fill="none" stroke="#A8ADB5" stroke-width="2" stroke-dasharray="3 9" stroke-opacity=".66"/>
+
+  <!-- Controlled output remains explicit and finite. -->
+  <path d="M1292 210 H1382" fill="none" stroke="#7E858F" stroke-width="2.8" stroke-linecap="round"/>
+  <circle cx="1324" cy="210" r="5" fill="#A8ADB5"/>
+  <circle cx="1354" cy="210" r="6" fill="#FF6A3D"/>
+  <circle cx="1392" cy="210" r="18" fill="url(#ember)"/>
+  <circle cx="1392" cy="210" r="7" fill="#FFF4E9" fill-opacity=".9"/>
+</svg>

@@ -14,7 +14,9 @@ Do not pipe an unreviewed remote script into a shell.
 
 ## Install from a reviewed checkout
 
-Run these commands from the reviewed `v0.1.0` checkout after confirming `pwd -P` points to that checkout.
+Run these commands from the reviewed checkout after confirming `pwd -P` points to that checkout.
+
+If you need to use a module that is not in `v0.1.0`, install it from the reviewed checkout only.
 
 ## Codex
 
@@ -64,11 +66,31 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
+dwi-all-in-one
 ```
+
+## All-in-One from reviewed checkout (current commit, not in v0.1.0)
+
+`dwi-all-in-one` is an optional consolidated module and is not yet available under `v0.1.0`.
+
+Use only from the reviewed checkout where it is present:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-all-in-one/SKILL.md"
+TARGET=".agents/skills/dwi-all-in-one"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+For Claude Code, use the same source with target `.claude/skills/dwi-all-in-one`.
 
 ## Public release: pinned module URLs
 
-Each module has its own immutable `v0.1.0` source URL:
+Each focused module has its own immutable `v0.1.0` source URL:
 
 | Module | Reviewed source |
 | --- | --- |
@@ -78,6 +100,8 @@ Each module has its own immutable `v0.1.0` source URL:
 | Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-bridge/SKILL.md) |
 | Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-arc/SKILL.md) |
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.1.0/modules/dwi-evidence/SKILL.md) |
+
+`dwi-all-in-one` is not yet included in a tagged install URL.
 
 Download the selected file and the release checksum manifest, verify SHA-256, inspect the file, and only then install:
 

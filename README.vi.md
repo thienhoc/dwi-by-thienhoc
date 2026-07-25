@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/lockup.svg" width="560" alt="{ } • Dwi by thienhoc">
+  <img src="assets/brand/readme-flow.svg" width="960" alt="Workflow Dwi: sáu hướng mô-đun hội tụ qua một lớp tính người trước khi hành động có kiểm soát">
 </p>
 
 <h1 align="center">Lớp tính người cho tác nhân AI</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Bản thử nghiệm nghiên cứu 0.1.0</strong> · 6 mô-đun độc lập · Apache-2.0 cho mã · CC BY 4.0 cho tài liệu và tài sản gốc
+  <strong>Bản thử nghiệm nghiên cứu 0.1.0</strong> · 6 mô-đun độc lập + tùy chọn All-in-One · Apache-2.0 cho mã · CC BY 4.0 cho tài liệu và tài sản gốc
 </p>
 
 <p align="center">
@@ -41,6 +41,7 @@ Dwi không thay thế lớp công cụ gốc. Mỗi mô-đun là một bộ hư�
 | Claude và Codex cần phối hợp | [Dwi • Bridge](docs/vi/modules/bridge.md) | Tách lời khuyên, thẩm quyền, tác động và bằng chứng giữa các lớp công cụ gốc |
 | Nhiều tác nhân cần làm chung có cấu trúc | [Dwi • Arc](docs/vi/modules/arc.md) | Chia thành ô công việc có giới hạn, mỗi phạm vi chỉ có một tác nhân ghi và một cổng độc lập |
 | Kết quả nghe chắc chắn nhưng chưa rõ chứng cứ | [Dwi • Evidence](docs/vi/modules/evidence.md) | Phân biệt đã xác minh, đã quan sát, ước tính, mục tiêu và chưa biết |
+| Nhiều lỗi cùng một lúc trong cùng workflow | [Dwi • All-in-One](docs/vi/modules/all-in-one.md) | Áp dụng cả sáu lớp cho các vấn đề đồng thời, với cơ chế tuân thủ có biên an toàn |
 
 Mỗi mô-đun hoạt động độc lập. Bạn không phải cài lõi Dwi, tiến trình chạy nền, máy chủ kết nối công cụ hay website.
 
@@ -69,6 +70,21 @@ cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 ```
 
 Với Claude Code, dùng cùng nguồn đã duyệt và đổi thư mục đích thành `.claude/skills/dwi-conduct`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
+
+Nếu nhiều vấn đề lặp lại cùng nhau (phạm vi trôi, quyền chưa rõ, token lãng phí, thiếu bằng chứng), cài All-in-One từ checkout đã được duyệt:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-all-in-one/SKILL.md"
+TARGET=".agents/skills/dwi-all-in-one"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Claude Code dùng cùng nguồn cho `.claude/skills/dwi-all-in-one`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
 
 [Mở hướng dẫn cài đặt theo nguyên tắc xem trước →](docs/vi/installation.md)
 

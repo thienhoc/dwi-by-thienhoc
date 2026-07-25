@@ -16,6 +16,7 @@ All notable repository changes will be recorded here.
 - Added pinned per-module install URLs, SHA-256 verification, and overwrite-safe installation.
 - Added a Vietnamese evidence policy, a support issue form, tag-gated release preflight, and a reproducible social-preview export.
 - Refined launch copy and GitHub metadata for clearer discovery without adding website runtime.
+- Added optional All-in-One module packaging (`dwi-all-in-one`) with a bounded adherence loop for recurring multi-lens workflows, and updated module/installation docs plus validator expectations.
 
 ### Removed
 

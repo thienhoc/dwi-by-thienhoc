@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/brand/lockup.svg" width="560" alt="{ } • Dwi by thienhoc">
+  <img src="assets/brand/readme-flow.svg" width="960" alt="Dwi workflow: six modular paths converge through a human layer before a controlled action">
 </p>
 
 <h1 align="center">The Human Layer for AI Agents</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Research Preview 0.1.0</strong> · 6 independent modules · Apache-2.0 code · CC BY 4.0 docs and assets
+  <strong>Research Preview 0.1.0</strong> · 6 focused modules + optional All-in-One · Apache-2.0 code · CC BY 4.0 docs and assets
 </p>
 
 <p align="center">
@@ -41,6 +41,7 @@ Dwi does not replace the harness. Each module is a small, inspectable set of age
 | Claude and Codex need to coordinate | [Dwi • Bridge](docs/modules/bridge.md) | Separates advice, authority, effects, and evidence across native harnesses |
 | Several agents need a shared structure | [Dwi • Arc](docs/modules/arc.md) | Creates bounded cells with one writer per scope and an independent gate |
 | A result sounds certain but the proof is unclear | [Dwi • Evidence](docs/modules/evidence.md) | Labels verified, observed, estimated, target, and unknown claims |
+| The same workflow repeatedly hits multiple issues | [Dwi • All-in-One](docs/modules/all-in-one.md) | Applies all six lenses with one bounded adherence loop when issues co-occur |
 
 Every module stands alone. You do not need to install a Dwi core, daemon, MCP server, or website.
 
@@ -68,7 +69,20 @@ install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 ```
 
-Claude Code uses the same reviewed source with target `.claude/skills/dwi-conduct`. The full guide includes checksum verification, every module URL, and exact removal.
+If multiple failure modes recur together (scope drift, vague authority, wasted tokens, and evidence gaps), install All-in-One from a reviewed checkout:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-all-in-one/SKILL.md"
+TARGET=".agents/skills/dwi-all-in-one"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in-one`. The full guide includes checksum verification, every module URL, and exact removal.
 
 [Open the inspect-first installation guide →](docs/installation.md)
 
