@@ -1,8 +1,8 @@
-# Release checklist for Dwi v0.2.2
+# Release checklist for Dwi v0.2.3
 
 Repository visibility, a development branch, a release tag, and a GitHub Release are separate states.
 
-The current release candidate is `v0.2.2`. The `v0.2.0` module-content record and `v0.2.1` documentation record remain historical.
+The current release candidate is `v0.2.3`. The `v0.2.0` module-content record and `v0.2.1` documentation release remain historical. Tag `v0.2.2` is preserved as a non-release historical ref because it already pointed to a pre-patch commit.
 
 Run:
 
@@ -12,10 +12,12 @@ npm run preflight:public
 
 The command checks automatable gates and lists manual GitHub or human gates. Static validation does not replace runtime evidence.
 
-## Blocking gates for v0.2.2
+## Blocking gates for v0.2.3
 
-- [x] `v0.2.2` has a versioned release record.
+- [x] `v0.2.3` has a versioned release record prepared as the final publication commit.
 - [x] Published tags `v0.1.0`, `v0.2.0`, and `v0.2.1` remain immutable.
+- [x] Existing tag `v0.2.2` is recorded as a non-release tag at pre-patch commit `4fdecbcccb2caf092a145517b2bdcc84e431de27` and is not moved.
+- [x] No GitHub Release is created for `v0.2.2`.
 - [x] Codex installation includes `SKILL.md` and `agents/openai.yaml` with `allow_implicit_invocation: false`.
 - [x] Claude Code installation contains exactly one `disable-model-invocation: true` field.
 - [x] Canonical module bodies remain provider-neutral and unchanged.
@@ -28,11 +30,13 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by Wi on 2026-07-26.
 - [x] Both actionable review threads on PR #5 were addressed and resolved.
 - [x] English and Vietnamese installation meaning is aligned.
+- [x] Localized entry documentation identifies `v0.2.3` as the current reviewed repository release.
 - [x] Canonical module checksums remain current and unchanged from `v0.2.0`.
 - [x] Release notes preserve bounded evidence wording and make no universal compatibility claim.
-- [x] Wi gives final copy approval for `v0.2.2`.
-- [x] Wi gives explicit merge, tag, and GitHub Release approval for `v0.2.2`.
-- [x] Release automation creates the immutable tag only from the merged `main` commit after checks pass.
+- [x] Wi explicitly requested publication of this installation-contract patch on 2026-07-26.
+- [x] The version advances from the occupied `v0.2.2` tag to `v0.2.3` without changing approved release scope.
+- [x] Release automation creates the immutable tag only from the exact triggering `main` commit after checks pass.
+- [x] The release record contains `Release status: approved for publication` before automation may create a tag.
 
 ## Blocking gates for v0.2.0
 
@@ -64,7 +68,7 @@ This historical section is retained for the existing public-release preflight co
 - [x] The approved 1280x640 social preview is configured on GitHub
 - [x] Issues and Discussions have an owner response policy
 - [x] Existing reviewed tags point to their exact approved commits
-- [x] The `v0.2.2` workflow uses `contents: write` only for the reviewed tag and GitHub Release operation
+- [x] The publication job uses `contents: write` only for the reviewed tag and GitHub Release operation
 
 ## Release truth
 
