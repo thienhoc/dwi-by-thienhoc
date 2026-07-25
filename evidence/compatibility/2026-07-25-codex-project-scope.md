@@ -1,10 +1,12 @@
 # Codex project-scope compatibility observation
 
-Claim: A project-scoped Dwi installation, explicit activation, and removal completed successfully in one Codex trial.
+Claim: Repository history recorded one bounded Codex project-scope installation, activation, and removal trial as PASS.
 
 Status: `OBSERVED`
 
-Source or producer: Maintainer-run trial recorded in repository history before `v0.1.0`.
+Historical source commit: `694246fff0217c20a212d0342b55a0b9bfc4a6d2`
+
+Source wording retained: `Codex project-scope install, activation, and removal PASS`
 
 Observation date: `2026-07-25`
 
@@ -22,23 +24,19 @@ Shell: `UNKNOWN`
 
 Module or modules exercised: `UNKNOWN`
 
-Scope: Project-scoped installation, explicit activation, and removal
+Scope: Project-scope installation, activation, and removal
 
-Method:
+Method retained in source: Project-scope installation, activation, and removal.
 
-1. Install a Dwi module into the project skill directory.
-2. Start a fresh Codex session.
-3. Invoke the installed module explicitly.
-4. Remove the installed file and empty module directory.
-5. Start a fresh session after removal.
+Exact commands, session sequence, tested module, task, and environment: `UNKNOWN`
 
-Result: Historical repository wording recorded the bounded trial as PASS.
+Result: Repository history recorded the bounded trial as PASS.
 
 Exclusions and failures:
 
 - No raw transcript is published.
 - No exact harness version is retained.
-- No operating-system or shell evidence is retained.
+- No model, operating-system, or shell evidence is retained.
 - No user-scope installation evidence is retained.
 - No claim is made for every focused module.
 - No claim is made for All-in-One.
@@ -49,5 +47,6 @@ Remaining unknown:
 - Exact tested module
 - Exact task
 - Exact expected and observed model behavior
+- Exact commands and session sequence
 - Exact runtime environment
 - Repeatability on current Codex versions

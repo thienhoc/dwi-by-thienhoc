@@ -12,6 +12,30 @@ Dwi is intentionally modular. Install the smallest behavior that addresses a pro
 | `dwi-evidence` | Claims need status, provenance, and visible uncertainty | [`SKILL.md`](modules/dwi-evidence/SKILL.md) | [Evidence](docs/modules/evidence.md) | [Evidence VI](docs/vi/modules/evidence.md) |
 | `dwi-all-in-one` | Multiple observed issues recur together and you want one module | [`SKILL.md`](modules/dwi-all-in-one/SKILL.md) | [All-in-One](docs/modules/all-in-one.md) | [All-in-One VI](docs/vi/modules/all-in-one.md) |
 
+## Independence contract
+
+Each focused module:
+
+- has one self-contained `SKILL.md`;
+- can be installed without another Dwi module;
+- declares what it changes and what it does not change;
+- requires no separate Dwi runtime, daemon, package dependency, MCP server, or website;
+- preserves native harness permission checks;
+- has an exact removal path.
+
+`dwi-all-in-one` is an optional composition module. Use it only when multiple observed problems recur in the same workflow. It adds no new authority layer and must not force all six lenses onto every task.
+
+`agents/openai.yaml` adds optional Codex interface metadata. The core behavior remains in `SKILL.md`, following the open Agent Skills format.
+
+## Installation scope
+
+| Harness | Project scope | User scope |
+| --- | --- | --- |
+| Codex | `.agents/skills/<module>/SKILL.md` | `~/.agents/skills/<module>/SKILL.md` |
+| Claude Code | `.claude/skills/<module>/SKILL.md` | `~/.claude/skills/<module>/SKILL.md` |
+
+Project scope is recommended for the first trial. See [the complete installation and removal guide](docs/installation.md) and [small expected-output examples](docs/examples.md).
+
 ## Version references
 
 - `v0.1.0` is the latest reviewed release and contains the six focused modules.

@@ -1,10 +1,12 @@
-# Claude Code project-scope compatibility observation
+# Claude Code bounded compatibility observation
 
-Claim: A project-scoped Dwi trial completed successfully in one Claude Code session using an Opus model.
+Claim: Repository history recorded one Claude Code trial using an Opus model as PASS.
 
 Status: `OBSERVED`
 
-Source or producer: Maintainer-run trial recorded in repository history before `v0.1.0`.
+Historical source commit: `694246fff0217c20a212d0342b55a0b9bfc4a6d2`
+
+Source wording retained: `Claude Code with Opus PASS`
 
 Observation date: `2026-07-25`
 
@@ -24,33 +26,30 @@ Shell: `UNKNOWN`
 
 Module or modules exercised: `UNKNOWN`
 
-Scope: Bounded project-scope trial
+Scope: `UNKNOWN`
 
-Method:
+Method: `UNKNOWN`
 
-1. Install a Dwi module into the project skill directory.
-2. Start a fresh Claude Code session.
-3. Invoke or request use of the installed module.
-4. Observe the bounded result.
-5. Remove the installed module through the exact file-level removal path.
+Result: Repository history recorded the bounded trial as PASS.
 
-Result: Historical repository wording recorded the Claude Code with Opus trial as PASS.
+Historical exclusion: `Claude Fable 5 NOT TESTED because usage credits were unavailable`
 
 Exclusions and failures:
 
-- Claude Fable 5 was not tested because usage credits were unavailable.
 - No raw transcript is published.
 - No exact harness version is retained.
 - No operating-system or shell evidence is retained.
-- No user-scope installation evidence is retained.
+- Project scope, user scope, installation method, invocation method, and removal method are not retained.
 - No claim is made for every focused module.
 - No claim is made for All-in-One.
 - No universal compatibility claim is supported.
 
 Remaining unknown:
 
+- Installation scope
 - Exact tested module
 - Exact task
+- Exact invocation and removal behavior
 - Exact expected and observed model behavior
 - Exact runtime environment
 - Repeatability on current Claude Code versions

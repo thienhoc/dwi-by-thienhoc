@@ -86,8 +86,7 @@ Do not emit a six-item checklist, formal plan, evidence record, budget table, or
 An action is material when it:
 
 - writes files or mutable systems;
-- commits, pushes, merges, tags, releases, deploys, deletes, discloses, transfers, or changes visibility;
-- discloses private information;
+- commits, pushes, merges, tags, releases, deploys, deletes, pays, publishes, discloses private information, or changes visibility;
 - changes a shared schema, branch, environment, account, or external service;
 - creates an irreversible or difficult-to-reverse effect;
 - transfers execution authority across harnesses.

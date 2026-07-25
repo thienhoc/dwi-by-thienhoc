@@ -182,7 +182,13 @@ if (codeLicense) {
 
 if (existsSync(path.join(root, "LICENSES.md"))) {
   const licenseMap = readFileSync(path.join(root, "LICENSES.md"), "utf8");
-  const requiredTerms = ["Apache-2.0", "CC BY 4.0", "TRADEMARKS.md"];
+  const requiredTerms = [
+    "Apache-2.0",
+    "CC BY 4.0",
+    "TRADEMARKS.md",
+    "`evals/**`",
+    "`evidence/**`",
+  ];
   const missingTerms = requiredTerms.filter((term) => !licenseMap.includes(term));
   if (missingTerms.length === 0) {
     pass("License mapping", "LICENSES.md maps code, documentation, assets, and brand.");
@@ -247,9 +253,13 @@ const checklist = readFileSync(
   "utf8",
 );
 const blockingSection =
-  checklist.split("## Blocking gates")[1]?.split("## Repository settings")[0] ??
-  "";
-if (blockingSection.includes("- [ ]")) {
+  checklist
+    .split("## Blocking gates for v0.2.0")[1]
+    ?.split("## Repository settings to confirm manually before release")[0] ?? "";
+
+if (!blockingSection.trim()) {
+  fail("Blocking checklist", "The v0.2.0 blocking section could not be parsed.");
+} else if (blockingSection.includes("- [ ]")) {
   fail("Blocking checklist", "One or more blocking release gates remain open.");
 } else {
   pass("Blocking checklist", "All blocking release gates are checked.");
@@ -257,7 +267,7 @@ if (blockingSection.includes("- [ ]")) {
 
 manual(
   "GitHub visibility and access",
-  "Confirm the repository is public only after explicit Wi approval.",
+  "Confirm current repository visibility and access match the approved release plan.",
 );
 manual(
   "GitHub discovery settings",

@@ -213,7 +213,7 @@ const requiredPaths = [
   "docs/repository-metadata.md",
   "evidence/compatibility/README.md",
   "evidence/compatibility/2026-07-25-codex-project-scope.md",
-  "evidence/compatibility/2026-07-25-claude-code-project-scope.md",
+  "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
   "evals/README.md",
   "evals/conduct/one-blocking-question.md",
   "evals/lean/direct-small-task.md",
@@ -248,6 +248,7 @@ const forbiddenPaths = [
   "build",
   "worker",
   "public",
+  "exports",
   "index.html",
   "next.config.ts",
   "vite.config.ts",
@@ -340,6 +341,84 @@ const modulesEn = await readText("MODULES.md");
 const modulesVi = await readText("MODULES.vi.md");
 const examplesEn = await readText("docs/examples.md");
 const examplesVi = await readText("docs/vi/examples.md");
+const installationEn = await readText("docs/installation.md");
+const installationVi = await readText("docs/vi/installation.md");
+const codexEvidence = await readText(
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+);
+const claudeEvidence = await readText(
+  "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
+);
+
+for (const [source, content, requiredHeadings] of [
+  [
+    "MODULES.md",
+    modulesEn,
+    ["## Independence contract", "## Installation scope", "## Version references"],
+  ],
+  [
+    "MODULES.vi.md",
+    modulesVi,
+    ["## Hợp đồng độc lập", "## Phạm vi cài", "## Tham chiếu phiên bản"],
+  ],
+]) {
+  for (const heading of requiredHeadings) {
+    requireContains(content, heading, source);
+  }
+  requireContains(content, ".agents/skills/<module>/SKILL.md", source);
+  requireContains(content, ".claude/skills/<module>/SKILL.md", source);
+}
+
+const historicalSourceCommit =
+  "694246fff0217c20a212d0342b55a0b9bfc4a6d2";
+
+requireContains(
+  codexEvidence,
+  `Historical source commit: \`${historicalSourceCommit}\``,
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+);
+requireContains(
+  codexEvidence,
+  "Scope: Project-scope installation, activation, and removal",
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+);
+requireContains(
+  codexEvidence,
+  "Exact commands, session sequence, tested module, task, and environment: `UNKNOWN`",
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+);
+requireNotContains(
+  codexEvidence,
+  "1. Install a Dwi module",
+  "evidence/compatibility/2026-07-25-codex-project-scope.md",
+);
+
+requireContains(
+  claudeEvidence,
+  `Historical source commit: \`${historicalSourceCommit}\``,
+  "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
+);
+requireContains(
+  claudeEvidence,
+  "Scope: `UNKNOWN`",
+  "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
+);
+requireContains(
+  claudeEvidence,
+  "Method: `UNKNOWN`",
+  "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
+);
+for (const unsupportedClaim of [
+  "project-scoped Dwi trial",
+  "Project-scoped Dwi trial",
+  "1. Install a Dwi module",
+]) {
+  requireNotContains(
+    claudeEvidence,
+    unsupportedClaim,
+    "evidence/compatibility/2026-07-25-claude-code-bounded-trial.md",
+  );
+}
 
 for (const entry of moduleEntries) {
   requireContains(
@@ -493,7 +572,13 @@ requireContains(
 );
 
 const licenseMap = await readText("LICENSES.md");
-for (const requiredTerm of ["Apache-2.0", "CC BY 4.0", "TRADEMARKS.md"]) {
+for (const requiredTerm of [
+  "Apache-2.0",
+  "CC BY 4.0",
+  "TRADEMARKS.md",
+  "`evals/**`",
+  "`evidence/**`",
+]) {
   requireContains(licenseMap, requiredTerm, "LICENSES.md");
 }
 
@@ -510,7 +595,49 @@ for (const installationPath of [
   );
 
   requireNotContains(installationContent, "rm -rf", installationPath);
+  requireNotContains(installationContent, "reviewed checkout", installationPath);
+  requireNotContains(installationContent, "checkout đã duyệt", installationPath);
 }
+
+const focusedInstallEn =
+  installationEn
+    .split("## Install a different focused module")[1]
+    ?.split("## All-in-One development trial")[0] ?? "";
+const focusedInstallVi =
+  installationVi
+    .split("## Cài một mô-đun chuyên biệt khác")[1]
+    ?.split("## Thử All-in-One trong môi trường phát triển")[0] ?? "";
+
+if (!focusedInstallEn.trim()) {
+  errors.push("docs/installation.md: focused-module install section is missing");
+} else {
+  requireNotContains(
+    focusedInstallEn,
+    "dwi-all-in-one",
+    "docs/installation.md focused-module section",
+  );
+}
+
+if (!focusedInstallVi.trim()) {
+  errors.push("docs/vi/installation.md: focused-module install section is missing");
+} else {
+  requireNotContains(
+    focusedInstallVi,
+    "dwi-all-in-one",
+    "docs/vi/installation.md focused-module section",
+  );
+}
+
+requireContains(
+  installationEn,
+  "## All-in-One development trial (not in v0.1.0)",
+  "docs/installation.md",
+);
+requireContains(
+  installationVi,
+  "## Thử All-in-One trong môi trường phát triển (không có trong v0.1.0)",
+  "docs/vi/installation.md",
+);
 
 const architectureAsset = await readText("assets/architecture.svg");
 if (
