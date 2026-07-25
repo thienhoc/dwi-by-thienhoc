@@ -19,8 +19,8 @@
   },
   "type": "module",
   "scripts": {
-    "check": "node scripts/validate-repo.mjs",
-    "test": "node scripts/validate-repo.mjs",
+    "check": "node scripts/validate-repo.mjs && node scripts/validate-install-contract.mjs",
+    "test": "npm run check",
     "preflight:public": "node scripts/public-release-preflight.mjs"
   },
   "engines": {
