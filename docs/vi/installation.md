@@ -27,7 +27,7 @@ dwi-evidence
 
 ## Thử All-in-One trong môi trường phát triển (không có trong v0.1.0)
 
-`dwi-all-in-one` là nội dung phát triển chưa phát hành. Mô-đun chưa có tag phát hành đã duyệt hoặc URL cài bất biến.
+`dwi-all-in-one` là nội dung phát triển chưa phát hành. Mô-đun chưa có tag phát hành đã duyệt hoặc URL cài phiên bản hóa.
 
 Không cài từ nhánh `main` có thể thay đổi. Người đóng góp chỉ được xem và thử từ checkout cục bộ ghim vào một commit chính xác. Branch hoặc commit của pull request không phải bản phát hành đã duyệt.
 

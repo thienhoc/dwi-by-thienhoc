@@ -15,7 +15,7 @@ The command checks automatable gates and lists manual GitHub or human gates. A f
 ## Blocking gates for v0.2.0
 
 - [x] Development version is distinct from `v0.1.0`
-- [x] `v0.1.0` has an immutable release record
+- [x] `v0.1.0` has a versioned historical release record
 - [x] All-in-One is marked unreleased
 - [x] A machine-readable module catalog exists
 - [x] English and Vietnamese module surfaces include All-in-One
@@ -40,7 +40,7 @@ The command checks automatable gates and lists manual GitHub or human gates. A f
 - [ ] The approved 1280x640 social preview is configured on GitHub
 - [ ] Issues and Discussions have an owner response policy
 - [ ] A reviewed `v0.2.0` tag points to the exact approved commit
-- [ ] All-in-One install documentation points only to the immutable reviewed tag
+- [ ] All-in-One install documentation points only to the versioned reviewed tag
 
 ## Release truth
 

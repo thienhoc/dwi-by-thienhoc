@@ -27,7 +27,7 @@ dwi-evidence
 
 ## All-in-One development trial (not in v0.1.0)
 
-`dwi-all-in-one` is unreleased development content. It has no reviewed release tag or immutable install URL.
+`dwi-all-in-one` is unreleased development content. It has no reviewed release tag or versioned install URL.
 
 Do not install it from mutable `main`. A contributor may inspect and test it only from a local checkout pinned to an exact commit. A pull-request branch or commit is not a reviewed release.
 
