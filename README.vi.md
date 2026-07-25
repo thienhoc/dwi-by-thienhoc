@@ -55,26 +55,34 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 4. Gọi mô-đun một cách rõ ràng rồi so sánh với cách làm thường ngày.
 5. Xóa thư mục mô-đun nếu không hữu ích. Bạn không cần xin lỗi hoặc tiếp tục thử.
 
-Từ một checkout đã được xem xét có chứa trình cài đã sửa, có thể thử Dwi Conduct trong phạm vi dự án Codex như sau:
+Giữ checkout Dwi đã kiểm tra tách biệt với dự án nhận mô-đun:
 
 ```bash
+DWI_ROOT="/duong-dan-tuyet-doi/toi/dwi-by-thienhoc"
+PROJECT_ROOT="/duong-dan-tuyet-doi/toi/du-an-cua-ban"
 MODULE="dwi-conduct"
-TARGET=".agents/skills/${MODULE}"
+test "$DWI_ROOT" != "$PROJECT_ROOT"
+cd "$DWI_ROOT"
+```
+
+Với Codex:
+
+```bash
+TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
 node scripts/install-module.mjs codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 ```
 
-Với Claude Code, dùng bộ render dành cho Claude thay vì sao chép nguyên `SKILL.md` chuẩn:
+Với Claude Code:
 
 ```bash
-MODULE="dwi-conduct"
-TARGET=".claude/skills/${MODULE}"
+TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
 node scripts/install-module.mjs claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ. Xem hướng dẫn cài đặt để biết chính xác ảnh hưởng, cách sửa bản cài cũ, cách cài thủ công tương đương và lệnh gỡ.
+Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ và có thể đặt skill bên trong checkout Dwi thay vì dự án chủ ý cài. Xem hướng dẫn cài đặt để biết chính xác ảnh hưởng, cách sửa bản cài cũ, cách cài thủ công tương đương và lệnh gỡ.
 
 All-in-One là mô-đun phối hợp tùy chọn đã phát hành trong `v0.2.0`. Chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
