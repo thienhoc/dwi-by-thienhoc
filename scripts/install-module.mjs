@@ -58,6 +58,64 @@ function isSameOrDescendant(parentPath, candidatePath) {
   );
 }
 
+export function validateCodexMetadata(source, sourcePath) {
+  if (typeof source !== "string") {
+    throw new TypeError(`${sourcePath}: metadata must be UTF-8 text`);
+  }
+
+  const lines = source.split(/\r?\n/);
+  const policyIndexes = [];
+  const invocationDeclarations = [];
+
+  for (const [index, line] of lines.entries()) {
+    if (/^policy:\s*(?:#.*)?$/.test(line)) {
+      policyIndexes.push(index);
+    }
+
+    if (/^\s*allow_implicit_invocation\s*:/.test(line)) {
+      invocationDeclarations.push({ index, line });
+    }
+  }
+
+  if (policyIndexes.length !== 1) {
+    throw new Error(
+      `${sourcePath}: expected exactly one top-level policy block`,
+    );
+  }
+
+  if (invocationDeclarations.length !== 1) {
+    throw new Error(
+      `${sourcePath}: expected exactly one active allow_implicit_invocation declaration`,
+    );
+  }
+
+  const policyStart = policyIndexes[0];
+  let policyEnd = lines.length;
+
+  for (let index = policyStart + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (/^\s*(?:#.*)?$/.test(line)) continue;
+    if (/^[^\s]/.test(line)) {
+      policyEnd = index;
+      break;
+    }
+  }
+
+  const declaration = invocationDeclarations[0];
+  const exactFalsePolicy =
+    /^  allow_implicit_invocation:\s*false\s*(?:#.*)?$/;
+
+  if (
+    declaration.index <= policyStart ||
+    declaration.index >= policyEnd ||
+    !exactFalsePolicy.test(declaration.line)
+  ) {
+    throw new Error(
+      `${sourcePath}: policy.allow_implicit_invocation must be declared exactly once as false`,
+    );
+  }
+}
+
 function renderClaudeSkill(source, sourcePath) {
   const match = source.match(/^---(\r?\n)([\s\S]*?)(\r?\n)---(\r?\n|$)/);
   if (!match) {
@@ -139,11 +197,7 @@ async function main() {
         "openai.yaml",
       );
       const sourceMetadata = await readFile(sourceMetadataPath, "utf8");
-      if (!sourceMetadata.includes("allow_implicit_invocation: false")) {
-        throw new Error(
-          `${sourceMetadataPath}: missing allow_implicit_invocation: false`,
-        );
-      }
+      validateCodexMetadata(sourceMetadata, sourceMetadataPath);
 
       await mkdir(path.join(staging, "agents"));
       await writeFile(path.join(staging, "SKILL.md"), sourceSkill, { mode: 0o644 });
@@ -168,6 +222,11 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  fail(error instanceof Error ? error.message : String(error));
-});
+const isDirectRun =
+  Boolean(process.argv[1]) && path.resolve(process.argv[1]) === scriptPath;
+
+if (isDirectRun) {
+  main().catch((error) => {
+    fail(error instanceof Error ? error.message : String(error));
+  });
+}
