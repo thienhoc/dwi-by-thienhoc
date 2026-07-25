@@ -44,6 +44,8 @@ jobs:
     needs: repository-contract
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -151,6 +153,25 @@ jobs:
             --notes-file "$RELEASE_RECORD"
 
           gh release view "$TAG"
+
+      - name: Report reviewed release publication result
+        if: always() && steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          body_file="$(mktemp)"
+          {
+            printf '### Reviewed release publication\n\n'
+            printf -- '- Tag: `%s`\n' "$TAG"
+            printf -- '- Job status: `%s`\n' "$JOB_STATUS"
+            printf -- '- Workflow run ID: `%s`\n' "$GITHUB_RUN_ID"
+            printf -- '- Commit: `%s`\n' "$GITHUB_SHA"
+          } > "$body_file"
+          gh pr comment 5 --body-file "$body_file"
 
   public-release-preflight:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
