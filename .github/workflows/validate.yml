@@ -121,14 +121,14 @@ jobs:
 
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
             test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
-            npm run preflight:public
+            npm run preflight:public 2>&1 | tee /tmp/dwi-public-release-preflight.log
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "$TAG" "$GITHUB_SHA" -m "Dwi $TAG"
-          npm run preflight:public
+          npm run preflight:public 2>&1 | tee /tmp/dwi-public-release-preflight.log
           git push origin "refs/tags/$TAG"
 
       - name: Publish GitHub Release
@@ -170,6 +170,11 @@ jobs:
             printf -- '- Job status: `%s`\n' "$JOB_STATUS"
             printf -- '- Workflow run ID: `%s`\n' "$GITHUB_RUN_ID"
             printf -- '- Commit: `%s`\n' "$GITHUB_SHA"
+            if [ -f /tmp/dwi-public-release-preflight.log ]; then
+              printf '\n<details><summary>Public-release preflight tail</summary>\n\n```text\n'
+              tail -n 100 /tmp/dwi-public-release-preflight.log
+              printf '\n```\n</details>\n'
+            fi
           } > "$body_file"
           gh pr comment 5 --body-file "$body_file"
 
