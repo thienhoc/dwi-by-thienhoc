@@ -13,7 +13,7 @@ Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, mod
 
 Các ví dụ cũ còn `cd` vào checkout Dwi rồi dùng target tương đối như `.agents/skills/...`. Trừ khi checkout Dwi chính là dự án chủ ý dùng để thử, cách đó cài mô-đun vào repo nguồn Dwi thay vì dự án thật của người dùng. Ví dụ đã sửa tách riêng `DWI_ROOT` và `PROJECT_ROOT`, chuẩn hóa đường dẫn vật lý trước khi so sánh và từ chối target nằm trong checkout source Dwi.
 
-Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. Cho đến khi có tag vá lỗi đã được duyệt, hãy dùng đúng commit đã được kiểm tra có chứa `scripts/install-module.mjs`. Một commit phát triển chính xác chỉ định source đang được kiểm tra, không tự biến nó thành bản phát hành.
+Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. `v0.2.2` là bản phát hành đã duyệt đầu tiên có trình cài đầy đủ theo từng lớp công cụ và hướng dẫn target dự án đã sửa.
 
 ## Trước khi cài
 
@@ -27,10 +27,18 @@ Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào 
 
 ## Cài từ checkout đã ghim
 
-Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay hai đường dẫn mẫu dưới đây bằng các thư mục đã tồn tại. `pwd -P` giải quyết cách viết đường dẫn khác nhau và bí danh symlink trước khi kiểm tra quan hệ chứa:
+Clone bản phát hành bất biến đã sửa:
 
 ```bash
-DWI_ROOT="$(cd "/duong-dan-tuyet-doi/toi/dwi-by-thienhoc" && pwd -P)" || exit 1
+git clone --depth 1 --branch v0.2.2 \
+  https://github.com/thienhoc/dwi-by-thienhoc.git \
+  dwi-by-thienhoc-v0.2.2
+```
+
+Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay đường dẫn dự án đích dưới đây bằng một thư mục đã tồn tại. `pwd -P` giải quyết cách viết đường dẫn khác nhau và bí danh symlink trước khi kiểm tra quan hệ chứa:
+
+```bash
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.2" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
 case "$PROJECT_ROOT/" in
@@ -157,7 +165,7 @@ dwi-all-in-one
 
 ## URL cài đặt đã ghim cho bản phát hành
 
-Các URL source thô bất biến dưới đây vẫn hữu ích để kiểm tra, nhưng đường cài một file của `v0.2.0` không phải gói explicit-only hoàn chỉnh. Không chỉ sao chép `SKILL.md` nếu thời điểm kích hoạt là một yêu cầu quan trọng.
+`v0.2.2` chứa trình cài hoàn chỉnh theo từng lớp công cụ. Các URL source thô bất biến dưới đây vẫn ghim vào baseline nội dung mô-đun `v0.2.0` vì nội dung mô-đun và mã SHA-256 không thay đổi trong `v0.2.2`. Các URL một file này hữu ích để kiểm tra, nhưng không phải một gói cài explicit-only hoàn chỉnh.
 
 | Mô-đun | Source chuẩn bất biến |
 | --- | --- |
@@ -169,7 +177,7 @@ Các URL source thô bất biến dưới đây vẫn hữu ích để kiểm tr
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
 | All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-Bản phát hành sửa lỗi tiếp theo phải ghim đầy đủ đường cài theo từng lớp công cụ và PASS `scripts/validate-install-contract.mjs` trước khi công bố.
+Bản phát hành `v0.2.2` ghim đầy đủ đường cài và đã PASS `scripts/validate-install-contract.mjs` trước khi công bố.
 
 ## Sửa một bản cài cũ chỉ có một file
 
