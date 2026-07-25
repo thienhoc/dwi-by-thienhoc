@@ -1,23 +1,38 @@
 # Cài một mô-đun, xem trước khi dùng
 
-Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phân phối dưới dạng hướng dẫn gốc cho tác nhân; lớp công cụ hỗ trợ định dạng Agent Skills sẽ nạp hành vi bắt buộc từ `SKILL.md`. Không có dịch vụ cài đặt, tiến trình chạy nền, gói chạy Dwi riêng, máy chủ kết nối công cụ hoặc phụ thuộc website. Vẫn cần một lớp công cụ tác nhân lập trình được hỗ trợ.
+Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phân phối dưới dạng hướng dẫn gốc cho tác nhân. Không có tiến trình Dwi chạy nền, dịch vụ cài đặt riêng, máy chủ MCP hoặc phụ thuộc website. Vẫn cần một lớp công cụ lập trình AI được hỗ trợ như Codex hoặc Claude Code.
+
+## Đính chính quan trọng về chính sách kích hoạt
+
+Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ sao chép `SKILL.md`. Cách đó đủ để lớp công cụ nhận ra mô-đun, nhưng không giữ được hợp đồng chỉ kích hoạt khi người dùng gọi rõ:
+
+- Codex còn cần `agents/openai.yaml` với `allow_implicit_invocation: false`.
+- Claude Code cần `disable-model-invocation: true` trong YAML frontmatter của `SKILL.md` đã cài.
+
+Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, model có thể tự chọn mô-đun Dwi dựa trên phần mô tả dù người dùng chưa gọi rõ. Đây là lỗi đóng gói và tài liệu. Lỗi này không tự cấp thêm quyền dùng công cụ, không vượt sandbox và không bỏ qua cơ chế phê duyệt gốc.
+
+Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. Cho đến khi có tag vá lỗi đã được duyệt, hãy dùng đúng commit đã được xem xét có chứa `scripts/install-module.mjs`. Một commit phát triển chính xác chỉ định source đang được kiểm tra, không tự biến nó thành bản phát hành.
 
 ## Trước khi cài
 
 1. Chọn một mô-đun trong [MODULES.vi.md](../../MODULES.vi.md).
-2. Đọc `SKILL.md` ngay trong kho.
-3. Kiểm tra tác dụng, điều mô-đun không làm, ranh giới quyền hạn và cách gỡ.
+2. Đọc `SKILL.md` chuẩn ngay trong kho.
+3. Kiểm tra tác dụng, điều mô-đun không làm, ranh giới quyền hạn, chính sách kích hoạt và cách gỡ.
 4. Lần thử đầu nên cài trong phạm vi dự án.
 5. Chọn một việc có thể hoàn tác, không chứa bí mật và không tạo tác động bên ngoài.
 
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
+## Cài từ checkout đã được xem xét
 
-## Cài từ checkout đã ghim
+Xác nhận `pwd -P` trỏ tới checkout đã được xem xét. Trình cài cục bộ cần Node.js 20 trở lên, đúng với runtime phát triển mà kho này công bố.
 
-Khi cài cục bộ, hãy ghim checkout Dwi vào tag phát hành đã được duyệt hoặc commit chính xác mà bạn muốn kiểm tra, rồi xác nhận `pwd -P` trỏ tới checkout đó.
+```bash
+pwd -P
+node --version
+```
 
-Với sáu mô-đun chuyên biệt được chuyển tiếp từ `v0.1.0` và All-in-One tùy chọn được phát hành trong `v0.2.0`, dùng tag `v0.2.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
+Trình cài từ chối ghi đè thư mục mô-đun đang có và dựng đủ artifact trước khi chuyển vào vị trí đích.
 
 ## Codex
 
@@ -26,17 +41,40 @@ Codex nhận kỹ năng của dự án tại `.agents/skills/` và kỹ năng c�
 Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
-pwd -P
-SOURCE="modules/dwi-conduct/SKILL.md"
-TARGET=".agents/skills/dwi-conduct"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".agents/skills/${MODULE}"
+node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
 ```
 
-Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`.
+Cấu trúc sau khi cài là:
+
+```text
+.agents/skills/dwi-conduct/
+├── SKILL.md
+└── agents/
+    └── openai.yaml
+```
+
+Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không nhắc `$dwi-conduct` không nên tự kích hoạt mô-đun.
+
+### Cách cài Codex thủ công tương đương
+
+```bash
+MODULE="dwi-conduct"
+SOURCE="modules/${MODULE}"
+TARGET=".agents/skills/${MODULE}"
+test -f "$SOURCE/SKILL.md"
+test -f "$SOURCE/agents/openai.yaml"
+test ! -e "$TARGET"
+install -d "$TARGET/agents"
+install -m 0644 "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+install -m 0644 "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+cmp "$SOURCE/SKILL.md" "$TARGET/SKILL.md"
+cmp "$SOURCE/agents/openai.yaml" "$TARGET/agents/openai.yaml"
+```
 
 ## Claude Code
 
@@ -45,21 +83,26 @@ Claude Code nhận kỹ năng của dự án tại `.claude/skills/` và kỹ n�
 Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
-pwd -P
-SOURCE="modules/dwi-conduct/SKILL.md"
-TARGET=".claude/skills/dwi-conduct"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+TARGET=".claude/skills/${MODULE}"
+node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+test -f "$TARGET/SKILL.md"
+grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.
+Trình cài tạo artifact Claude từ `SKILL.md` chuẩn, trung lập với nhà cung cấp, rồi thêm đúng một trường frontmatter riêng cho Claude Code:
+
+```yaml
+disable-model-invocation: true
+```
+
+Sau đó mở một phiên Claude Code mới và gọi rõ `/dwi-conduct`. Một yêu cầu có nội dung phù hợp nhưng không gọi `/dwi-conduct` không nên khiến Claude tự nạp mô-đun.
+
+Nếu không có Node.js, hãy sao chép `SKILL.md` chuẩn, thêm `disable-model-invocation: true` vào YAML frontmatter mở đầu, rồi xác nhận phần còn lại của file không thay đổi trước khi mở phiên mới.
 
 ## Cài một mô-đun khác
 
-Với URL nguồn đã phát hành hoặc đường dẫn cục bộ của mô-đun chuyên biệt, thay `dwi-conduct` bằng một trong các tên sau:
+Thay `dwi-conduct` bằng một trong các tên sau:
 
 ```text
 dwi-lean
@@ -70,66 +113,68 @@ dwi-evidence
 dwi-all-in-one
 ```
 
-## URL cài đặt đã ghim cho bản phát hành
+`dwi-all-in-one` là mô-đun phối hợp tùy chọn. Chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
-Mỗi mô-đun đã phát hành có URL nguồn cố định tại `v0.2.0`:
+## Sửa một bản cài cũ chỉ có một file
 
-| Mô-đun | Nguồn đã duyệt |
-| --- | --- |
-| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
-| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
-| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
-| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
-| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
-| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
-| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
+### Sửa bản cài Codex
 
-`dwi-all-in-one` là mô-đun phối hợp tùy chọn; chỉ cài khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
-
-Tải file đã chọn cùng manifest (danh sách mã kiểm tra), xác minh SHA-256, đọc nội dung rồi mới cài:
+Nếu thư mục đã cài hiện chỉ có `SKILL.md`, thêm metadata còn thiếu mà không thay thế skill:
 
 ```bash
-RELEASE_REF="v0.2.0"
 MODULE="dwi-conduct"
-TMP_SKILL="/tmp/${MODULE}.SKILL.md"
-TMP_SUMS="/tmp/dwi-${RELEASE_REF}-SHA256SUMS"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/modules/${MODULE}/SKILL.md" \
-  -o "$TMP_SKILL"
-curl -fsSL \
-  "https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/${RELEASE_REF}/checksums/SHA256SUMS" \
-  -o "$TMP_SUMS"
-EXPECTED="$(awk -v file="modules/${MODULE}/SKILL.md" '$2 == file {print $1}' "$TMP_SUMS")"
-ACTUAL="$(shasum -a 256 "$TMP_SKILL" | awk '{print $1}')"
-test -n "$EXPECTED"
-test "$ACTUAL" = "$EXPECTED"
-less "$TMP_SKILL"
+SOURCE="modules/${MODULE}/agents/openai.yaml"
+TARGET=".agents/skills/${MODULE}/agents/openai.yaml"
+test -f ".agents/skills/${MODULE}/SKILL.md"
+test -f "$SOURCE"
+test ! -e "$TARGET"
+install -d "$(dirname "$TARGET")"
+install -m 0644 "$SOURCE" "$TARGET"
+cmp "$SOURCE" "$TARGET"
 ```
 
-Sau khi đọc, cài mà không ghi đè kỹ năng đang có:
+Sau đó mở một phiên Codex mới.
+
+### Sửa bản cài Claude Code
+
+Cách kiểm soát nhanh và có thể hoàn tác là mở `/skills`, chọn mô-đun Dwi, chuyển trạng thái sang `user-invocable-only` rồi lưu. Claude Code ghi override cục bộ đó vào `.claude/settings.local.json`.
+
+Để sửa trực tiếp bằng artifact mới, giữ thư mục cũ làm bản sao lưu, cài bản đã được render, kiểm tra rồi chỉ xóa bản sao sau khi xác minh:
 
 ```bash
-TARGET=".agents/skills/${MODULE}"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$TMP_SKILL" "$TARGET/SKILL.md"
-cmp "$TMP_SKILL" "$TARGET/SKILL.md"
+MODULE="dwi-conduct"
+OLD=".claude/skills/${MODULE}"
+BACKUP=".claude/skills/${MODULE}.before-explicit-only"
+test -d "$OLD"
+test ! -e "$BACKUP"
+mv "$OLD" "$BACKUP"
+node scripts/install-module.mjs claude "$MODULE" "$OLD"
+grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-Với Claude Code, chỉ đổi gốc thư mục đích thành `.claude/skills/`.
+Sau đó mở một phiên Claude Code mới. Giữ bản sao lưu cho đến khi kiểm tra gọi rõ đã PASS.
+
+## Các URL source thô đã phát hành
+
+Các URL `SKILL.md` thô tại `v0.1.0`, `v0.2.0` và `v0.2.1` vẫn là nguồn bất biến hợp lệ để xem xét, nhưng không phải gói cài explicit-only hoàn chỉnh. Không cài các bản đó bằng cách chỉ sao chép `SKILL.md` nếu thời điểm kích hoạt là một yêu cầu quan trọng.
+
+Bản vá đã duyệt tiếp theo phải ghim đầy đủ đường cài theo từng lớp công cụ và PASS `scripts/validate-install-contract.mjs` trước khi công bố.
 
 ## Gỡ mô-đun
 
-Chỉ xóa file do hướng dẫn này đã cài, rồi xóa thư mục nếu thư mục thật sự rỗng:
+Với Codex, chỉ xóa hai file do hướng dẫn này cài, rồi chỉ xóa thư mục khi rỗng:
 
 ```bash
 TARGET=".agents/skills/dwi-conduct"
 test -f "$TARGET/SKILL.md"
+test -f "$TARGET/agents/openai.yaml"
+rm "$TARGET/agents/openai.yaml"
+rmdir "$TARGET/agents"
 rm "$TARGET/SKILL.md"
 rmdir "$TARGET"
 ```
 
-hoặc:
+Với Claude Code:
 
 ```bash
 TARGET=".claude/skills/dwi-conduct"
@@ -142,4 +187,4 @@ rmdir "$TARGET"
 
 ## Khi nào nên dừng
 
-Dừng thử nếu mô-đun đòi quyền lớn hơn nhu cầu thật, che giấu tác động bên ngoài, xung đột với kiểm soát của lớp công cụ gốc hoặc làm quy trình khó hiểu hơn. Gỡ bỏ là một kết quả hợp lệ; bạn không phải xin lỗi hoặc tiếp tục.
+Dừng thử nếu mô-đun đòi quyền lớn hơn nhu cầu thật, che giấu tác động bên ngoài, xung đột với kiểm soát của lớp công cụ gốc, tự kích hoạt khi chưa được gọi rõ hoặc làm quy trình khó hiểu hơn. Gỡ bỏ là một kết quả hợp lệ; bạn không phải xin lỗi hoặc tiếp tục.
