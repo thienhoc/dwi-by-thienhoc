@@ -24,6 +24,16 @@ Con người vẫn phải:
 
 Phần việc này hiếm khi xuất hiện trong câu trả lời cuối cùng. Nó xuất hiện thành sự mệt mỏi, gánh nặng kiểm tra và bất định.
 
+## Vùng quan sát
+
+> Hơn 20 tỷ token tổng gộp trong hoạt động AI được tác giả ghi nhận và có hồ sơ nguồn.
+
+Trên các bề mặt sử dụng Codex và Claude Code do tác giả xác định, hồ sơ bằng chứng đối chiếu hai giá trị hiển thị là `13,6 tỷ` và `11,7539 tỷ` token tổng gộp. Tuyên bố công khai được làm tròn xuống và không coi hoạt động cache là khoản tiết kiệm, cũng không coi quy mô sử dụng là bằng chứng về hiệu quả sản phẩm.
+
+[Đọc hồ sơ bằng chứng sử dụng do tác giả ghi nhận](../../evidence/author-reported/ai-usage-observation-surface.md).
+
+Con số mô tả quy mô sử dụng và quan sát cá nhân lặp lại. Nó không phải benchmark được kiểm toán độc lập, không phải tuyên bố hiệu năng phổ quát và không chứng minh Dwi đã tạo ra mức tiết kiệm token.
+
 ## Nguyên tắc đầu tiên
 
 Dwi bắt đầu từ một ý tưởng đơn giản:
