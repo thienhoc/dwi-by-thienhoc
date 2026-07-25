@@ -9,6 +9,8 @@ All notable repository changes are recorded here.
 - Corrected the installation contract so Codex receives `agents/openai.yaml` with `allow_implicit_invocation: false` instead of receiving only `SKILL.md`.
 - Corrected the Claude Code installation contract so the installed artifact contains `disable-model-invocation: true` while the canonical provider-neutral `SKILL.md` remains unchanged.
 - Corrected project-scoped examples to keep the inspected Dwi source checkout separate from the target project; the earlier relative target could place the module inside the Dwi repository instead of the intended project.
+- Canonicalized prospective install targets and made the installer reject direct paths and symlink aliases that resolve inside the Dwi source checkout.
+- Moved Claude repair backups outside `.claude/skills/` so the old implicitly invocable artifact cannot remain discoverable during fresh-session verification.
 - Replaced the incomplete one-file installation path with a harness-aware local installer that refuses to overwrite an existing module directory.
 - Added an installed-artifact regression test for all focused modules and All-in-One across both Codex and Claude Code.
 
