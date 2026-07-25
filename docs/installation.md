@@ -11,7 +11,7 @@ The installation examples published in `v0.1.0` through `v0.2.1` copied only `SK
 
 Without those harness-specific controls, the model may select a Dwi module from its description even when the person did not invoke it explicitly. This is a packaging and documentation defect. It does not grant the module extra tool permissions or bypass the native sandbox and approval system.
 
-The earlier examples also changed into the Dwi checkout before using a relative target such as `.agents/skills/...`. Unless the Dwi checkout was intentionally the project under test, that installed the module into the source checkout rather than the person's actual project. The corrected examples keep `DWI_ROOT` and `PROJECT_ROOT` separate.
+The earlier examples also changed into the Dwi checkout before using a relative target such as `.agents/skills/...`. Unless the Dwi checkout was intentionally the project under test, that installed the module into the source checkout rather than the person's actual project. The corrected examples keep `DWI_ROOT` and `PROJECT_ROOT` separate, resolve physical paths before comparing them, and reject a target inside the Dwi source checkout.
 
 Published release tags remain immutable. Do not rewrite them. Until a corrected patch release is tagged, use an exact inspected commit containing `scripts/install-module.mjs`; an exact development commit identifies source under inspection but is not itself a release.
 
@@ -27,18 +27,22 @@ Do not pipe an unreviewed remote script into a shell.
 
 ## Install from a pinned checkout
 
-Keep the inspected Dwi source checkout separate from the project receiving the module. Replace both example paths below with absolute paths on your machine:
+Keep the inspected Dwi source checkout separate from the project receiving the module. Replace both example paths below with directories that already exist. `pwd -P` resolves alternate spellings and symlink aliases before the containment check:
 
 ```bash
-DWI_ROOT="/absolute/path/to/dwi-by-thienhoc"
-PROJECT_ROOT="/absolute/path/to/your-project"
+DWI_ROOT="$(cd "/absolute/path/to/dwi-by-thienhoc" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
-test -d "$PROJECT_ROOT"
-test "$DWI_ROOT" != "$PROJECT_ROOT"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT must resolve outside DWI_ROOT" >&2
+    exit 1
+    ;;
+esac
 node --version
 ```
 
-The local helper requires Node.js 20 or later, refuses to overwrite an existing module directory, and stages the complete artifact before moving it into place. Do not set `PROJECT_ROOT` to `DWI_ROOT` unless you intentionally want to test Dwi inside its own source repository.
+The local helper requires Node.js 20 or later, refuses to overwrite an existing module directory, stages the complete artifact before moving it into place, canonicalizes the prospective target, and rejects targets that resolve to the Dwi source checkout or any directory inside it. This last check also covers symlink aliases.
 
 ## Codex
 
@@ -169,7 +173,7 @@ The next corrected release must pin the complete per-harness installation path a
 
 ## Repair an existing one-file install
 
-First identify the project that actually contains the installed `SKILL.md`. Use that directory as `PROJECT_ROOT`; do not assume the Dwi checkout is the destination.
+First identify the project that actually contains the installed `SKILL.md`. Use that directory as `PROJECT_ROOT`; do not assume the Dwi checkout is the destination. Resolve both roots with the physical-path block above before repairing anything.
 
 ### Codex repair
 
@@ -193,20 +197,22 @@ Start a fresh Codex session from `PROJECT_ROOT` afterward.
 
 The quickest reversible control is to open `/skills` from the affected project, select the Dwi module, cycle its state to `user-invocable-only`, and save. Claude Code records that local override in `.claude/settings.local.json`.
 
-For a file-based repair, keep the old directory as a backup, install a newly rendered artifact, inspect it, and remove the backup only after verification:
+For a file-based repair, move the old directory outside `.claude/skills/` before testing. This prevents Claude Code from discovering the implicitly invocable backup beside the corrected artifact:
 
 ```bash
 MODULE="dwi-conduct"
 OLD="${PROJECT_ROOT}/.claude/skills/${MODULE}"
-BACKUP="${PROJECT_ROOT}/.claude/skills/${MODULE}.before-explicit-only"
+BACKUP_ROOT="${PROJECT_ROOT}/.claude/dwi-skill-backups"
+BACKUP="${BACKUP_ROOT}/${MODULE}.before-explicit-only"
 test -d "$OLD"
 test ! -e "$BACKUP"
+install -d "$BACKUP_ROOT"
 mv "$OLD" "$BACKUP"
 node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$OLD"
 grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
-Start a fresh Claude Code session from `PROJECT_ROOT` afterward. Keep the backup until the explicit invocation test passes.
+`BACKUP_ROOT` is outside `.claude/skills/`, so the old module is not part of the project skill discovery root during the fresh-session test. Keep the backup until both the negative test and explicit invocation test pass. Inspect and remove the exact backup afterward, or move it back only when intentionally rolling back.
 
 ## Remove a module
 
