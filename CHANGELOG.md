@@ -4,6 +4,18 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+### Fixed
+
+- Corrected the installation contract so Codex receives `agents/openai.yaml` with `allow_implicit_invocation: false` instead of receiving only `SKILL.md`.
+- Corrected the Claude Code installation contract so the installed artifact contains `disable-model-invocation: true` while the canonical provider-neutral `SKILL.md` remains unchanged.
+- Replaced the incomplete one-file installation path with a harness-aware local installer that refuses to overwrite an existing module directory.
+- Added an installed-artifact regression test for all focused modules and All-in-One across both Codex and Claude Code.
+
+### Known affected releases
+
+- The one-file installation examples in `v0.1.0`, `v0.2.0`, and `v0.2.1` did not preserve the intended explicit-only invocation controls.
+- Published tags remain immutable. The correction will be included in the next reviewed patch release.
+
 ## 0.2.1 - 2026-07-26
 
 ### Added
