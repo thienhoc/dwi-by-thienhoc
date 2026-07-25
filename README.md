@@ -13,7 +13,17 @@
 </p>
 
 <p align="center">
+  <a href="README.md">English</a> ·
   <a href="README.vi.md">Tiếng Việt</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.hi.md">हिन्दी</a> ·
+  <a href="LANGUAGES.md">All languages</a>
+</p>
+
+<p align="center">
   <a href="MODULES.md">Choose a module</a> ·
   <a href="docs/installation.md">Install</a> ·
   <a href="docs/safety.md">Safety</a>
