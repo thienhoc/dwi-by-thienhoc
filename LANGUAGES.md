@@ -1,20 +1,20 @@
 # Languages
 
-Dwi keeps English as the canonical operational documentation and Vietnamese as the first complete translation. Documentation patch `0.2.1` adds localized entry points for five additional languages.
+Dwi keeps English as the canonical operational documentation and Vietnamese as the first complete translation. Documentation patch `v0.2.1` added localized entry points for five additional languages. Installation-contract patch `v0.2.2` updates their release status while keeping exact operational commands in English and Vietnamese.
 
-| Language | Entry point | Coverage in 0.2.1 |
+| Language | Entry point | Current coverage in v0.2.2 |
 | --- | --- | --- |
-| English | [README.md](README.md) | Canonical operational documentation |
-| Vietnamese | [README.vi.md](README.vi.md) | Complete translated documentation surface |
-| Japanese | [README.ja.md](README.ja.md) | Localized introduction, module selection, safe-trial guidance, and status |
-| Korean | [README.ko.md](README.ko.md) | Localized introduction, module selection, safe-trial guidance, and status |
-| Simplified Chinese | [README.zh-CN.md](README.zh-CN.md) | Localized introduction, module selection, safe-trial guidance, and status |
-| French | [README.fr.md](README.fr.md) | Localized introduction, module selection, safe-trial guidance, and status |
-| Hindi | [README.hi.md](README.hi.md) | Localized introduction, module selection, safe-trial guidance, and status |
+| English | [README.md](README.md) | Canonical operational documentation and corrected installation path |
+| Vietnamese | [README.vi.md](README.vi.md) | Complete translated documentation surface and corrected installation path |
+| Japanese | [README.ja.md](README.ja.md) | Localized introduction, module selection, safe-trial guidance, and current release status |
+| Korean | [README.ko.md](README.ko.md) | Localized introduction, module selection, safe-trial guidance, and current release status |
+| Simplified Chinese | [README.zh-CN.md](README.zh-CN.md) | Localized introduction, module selection, safe-trial guidance, and current release status |
+| French | [README.fr.md](README.fr.md) | Localized introduction, module selection, safe-trial guidance, and current release status |
+| Hindi | [README.hi.md](README.hi.md) | Localized introduction, module selection, safe-trial guidance, and current release status |
 
 ## Translation boundary
 
-The five new language entry points are intentionally bounded. Until deeper documentation is translated and reviewed, use English for exact installation commands, paths, hashes, module contracts, safety language, architecture, evidence policy, and release procedures.
+The five localized entry points are intentionally bounded. Until deeper documentation is translated and reviewed, use English or Vietnamese for exact installation commands, paths, hashes, module contracts, safety language, architecture, evidence policy, and release procedures.
 
 Do not translate or localize:
 
