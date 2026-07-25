@@ -14,7 +14,7 @@ Dwi is intentionally modular. Install the smallest behavior that addresses a pro
 
 ## Independence contract
 
-Every module:
+Each focused module:
 
 - has one self-contained `SKILL.md`;
 - can be installed without another Dwi module;
@@ -23,7 +23,7 @@ Every module:
 - preserves native harness permission checks;
 - has an exact removal path.
 
-`dwi-all-in-one` is a heavier module than a focused module. It is optional and should be used only after reviewing the focused module options above.
+`dwi-all-in-one` is an optional composition module. Use it only when multiple observed problems recur in the same workflow. It adds no new authority layer and must not force all six lenses onto every task.
 
 `agents/openai.yaml` adds optional Codex interface metadata. The core behavior remains in `SKILL.md`, following the open Agent Skills format.
 
@@ -38,4 +38,9 @@ Project scope is recommended for the first trial. See [the complete installation
 
 ## Version references
 
-The `main` branch is a preview reference, not an installation reference or reproducible release. While only `v0.1.0` is tagged, remote install links there are for the six focused modules only. `dwi-all-in-one` is available from the reviewed current checkout and will be added in a later reviewed release tag with an immutable URL.
+- `v0.1.0` is the latest reviewed release and contains the six focused modules.
+- `main` is unreleased development version `0.2.0-dev`.
+- `dwi-all-in-one` exists only in the unreleased development state.
+- Do not install from mutable `main`.
+- A remote install reference must use a reviewed tag or exact reviewed commit.
+- Module identity and release availability are recorded in [`modules/catalog.json`](modules/catalog.json).

@@ -47,3 +47,9 @@ This example is explanatory copy, not a benchmark or a claim about every model.
 **Input:** "Audit this completion report."
 
 **Expected shape:** each material claim labeled `VERIFIED`, `OBSERVED`, `ESTIMATED`, `TARGET`, or `UNKNOWN`, with the missing check named.
+
+## All-in-One
+
+**Input:** "Apply Dwi to this small, reversible one-file change. Do not add ceremony."
+
+**Expected shape:** select only the relevant lenses, take the silent fast path, use one proportionate check, disclose any assumption afterward, and stop without printing a six-item control checklist.

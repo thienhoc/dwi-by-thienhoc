@@ -16,6 +16,7 @@ body:
         - Bridge
         - Arc
         - Evidence
+        - All-in-One
     validations:
       required: true
   - type: textarea

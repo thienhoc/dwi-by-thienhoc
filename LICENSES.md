@@ -9,6 +9,7 @@ The [Apache License 2.0](LICENSE) applies to:
 - `modules/**`
 - `scripts/**`
 - `.github/**`
+- `evals/**`
 - `package.json`, `.gitignore`, and `CITATION.cff`
 
 Keep the root `LICENSE` and `NOTICE` with redistributed code. Mark modified files as required by Apache-2.0.
@@ -19,6 +20,7 @@ The [Creative Commons Attribution 4.0 International license](LICENSES/CC-BY-4.0.
 
 - `README.md`, `README.vi.md`, and `MODULES*.md`
 - `docs/**`
+- `evidence/**`
 - `CHANGELOG.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `GOVERNANCE.md`, `ROADMAP.md`, `SECURITY.md`, and `SUPPORT.md`
 - original project assets under `assets/**`
 

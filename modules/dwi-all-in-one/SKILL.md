@@ -1,135 +1,198 @@
 ---
 name: dwi-all-in-one
-description: "Apply all six Dwi modules together in one explicit module for workflows where communication, scope, resource, coordination, authority, and evidence issues appear together. Prefer a focused module first."
+description: "Apply the relevant Dwi lenses together when several observed workflow problems co-occur. Select only the lenses the task needs, preserve a silent fast path for clear reversible work, and keep authority and evidence explicit. Prefer a focused module when one issue dominates."
 ---
 
 # Dwi All-in-One
 
-Use this module when several Dwi patterns recur together in the same workflow and one focused option is too late or too fragmented.
-
-## Purpose and fit
-
-- Combine the six Dwi lenses into one installable module.
-- Keep the same contract style as each focused module: explicit intent, clear scope, bounded control.
-- Provide one lightweight default behavior for teams that repeatedly need more than one lens.
-
-### Use it when
-
-- Overplanning, over-testing, and overwork co-occur.
-- Token/context drift repeatedly reappears.
-- Authority, coordination, or action boundaries are unclear.
-- Evidence is present but hard to connect to decisions.
-
-### Prefer not to use it when
-
-- One issue is dominant and a focused module is enough.
-- You need to onboard one capability at a time.
-- You are comparing long-term tradeoffs between modules.
+Use Dwi All-in-One as a composition preset, not as a seventh authority layer and not as a requirement to run every lens on every task.
 
 ## Activation contract
 
-- Invoke explicitly: `$dwi-all-in-one`.
-- Apply only in a clearly named task or phase.
-- Use exactly one requested outcome, one decision owner, and one allowed finish condition.
-- Do not call this module silently for every action.
+- Invoke explicitly with `$dwi-all-in-one`.
+- Apply it only to one clearly named task or phase.
+- Preserve the native harness permission model.
+- Preserve project-specific instructions and governance.
+- Add no authority, writer, agent, service, dependency, or external effect by implication.
+- Prefer a focused module when one observed issue dominates.
 
-## Fit check before work
+## Precedence
 
-Before material work, confirm:
+Resolve conflicts in this order:
 
-1. what is the expected output;
-2. what scope is allowed;
-3. what can be skipped;
-4. what must not happen;
-5. who can confirm completion.
+1. native harness policy and permission controls;
+2. explicit human authority;
+3. privacy, security, and irreversible-effect boundaries;
+4. the requested outcome and acceptance condition;
+5. one-writer ownership for mutable scope;
+6. evidence required for the current decision;
+7. Lean and Budget optimization;
+8. communication presentation.
 
-If this is unclear, ask one clarification question and pause execution.
+A lower item never overrides a higher item.
 
-## Six-lens operating summary
+## Fit
 
-- Conduct: keep messages readable and answerable.
-- Lean: keep plans and tests proportionate.
-- Budget: keep resource spending explicit and bounded.
-- Bridge: keep handoff and responsibility boundaries explicit.
-- Arc: keep one active writer per scope.
-- Evidence: label what is verified, observed, estimated, target, or unknown.
+Use All-in-One when at least two relevant Dwi problem patterns are visible in the same workflow, such as:
 
-## Bounded adherence loop
+- communication friction plus scope expansion;
+- resource drift plus repeated coordination;
+- unclear authority plus overlapping writers;
+- completion claims plus missing evidence;
+- several focused modules would otherwise need manual coordination.
 
-This is a gentle control loop, not a punishment loop.
+Do not use it merely because it is installed.
 
-### Step 1: pre-action check
+If only one lens is relevant, mention once that the focused module is smaller, then continue with only that lens. Do not interrupt a safe task to force a module switch.
 
-Before any material action, check six items:
+## Relevance gate
 
-- outcome clarity
-- scope boundary
-- resource boundary
-- authority and policy
-- writer ownership
-- evidence path
+Select only lenses supported by an observed condition:
 
-If any item is missing, pause the same action and request missing input.
+| Lens | Activate only when |
+| --- | --- |
+| Conduct | Communication, terminology, assumptions, or a blocking decision is difficult |
+| Lean | Scope, planning, testing, exploration, or polish is expanding beyond the requested finish line |
+| Budget | Resource use, context use, time, tool calls, or a checkpoint is materially relevant |
+| Bridge | Work or advice crosses native harnesses |
+| Arc | Several genuinely disjoint work cells or an independent integration gate are needed |
+| Evidence | A material completion, comparison, promotion, handoff, safety, or release claim needs support |
 
-### Step 2: first miss
+Do not run a lens for symmetry. Do not print the selected-lens table unless it changes a user decision.
 
-On first miss of one item:
+## Silent fast path
 
-- pause only the affected step,
-- state one sentence naming the failed check,
-- apply the smallest safe correction,
-- re-check exactly once.
+Use the silent fast path when all are true:
 
-### Step 3: second miss
+- the requested outcome is clear;
+- the change is small and reversible;
+- one writer owns the mutable scope;
+- no secret or unrelated private content is needed;
+- no external, destructive, financial, visibility, release, or deployment effect is requested;
+- the narrow acceptance check is clear.
 
-If the same check fails again:
+On the silent fast path:
 
-- pause only the affected action,
-- ask one direct blocking question,
-- provide a safe default in the question if helpful,
-- proceed only after user confirmation.
+1. act directly;
+2. use the smallest relevant check;
+3. disclose any material assumption afterward;
+4. report the result and remaining unknown;
+5. stop at the requested finish line.
 
-## Communication style
+Do not emit a six-item checklist, formal plan, evidence record, budget table, or orchestration structure unless the task requires it.
 
-- Use clear, short assertions.
-- Offer one short option set after a decision point.
-- Ask for permission before escalated or irreversible effects.
-- No recursive guilt language.
+## Material action boundary
 
-## Work shape and budget
+An action is material when it:
 
-- Prefer direct action for small well-scoped work.
-- Use bounded plans only when dependency or migration complexity requires it.
-- If the task is high-risk, narrow the risky step and avoid reworking already complete non-risky parts.
+- writes files or mutable systems;
+- commits, pushes, merges, tags, releases, deploys, deletes, pays, publishes, discloses private information, or changes visibility;
+- changes a shared schema, branch, environment, account, or external service;
+- creates an irreversible or difficult-to-reverse effect;
+- transfers execution authority across harnesses.
 
-## Bridge and Arc boundaries
+Before a material action, internally verify:
 
-- Respect the native harness permission model.
-- Do not claim power to override policy or local controls.
-- One writer per bounded scope at a time.
+- outcome;
+- affected scope;
+- authority;
+- reversibility;
+- writer ownership;
+- acceptance evidence.
 
-## Evidence model
+Surface only the missing item that blocks the next action. Do not ask the person to repeat information already available.
 
-- Mark every claim from this module as:
-  - verified,
-  - observed,
-  - estimated,
-  - target,
-  - or unknown.
-- Keep unknowns visible.
-- Do not use deterministic claims as certainty.
+## Lens behavior
 
-## Forbidden behaviors
+### Conduct
 
-- do not use implicit invocation;
-- do not ignore pre-action checks;
-- do not hide repeated misses;
-- do not invent outputs or overwrite unknowns.
+- Ask only when the answer materially changes the safe path.
+- Ask one blocking question at a time.
+- Prefer a safe reversible default when one exists.
+- Keep uncertainty visible.
+- Do not use friendliness, praise, or apology to obscure status.
 
-## Stop conditions
+### Lean
 
-Stop when the requested outcome and evidence boundary are met, or when permission is not clear for the next affected action.
+- Choose direct action, a bounded plan, or risk-controlled work according to actual risk.
+- Read only the context needed for the next decision.
+- Keep optional improvements outside the requested outcome.
+- Stop when the finish line and required evidence are complete.
 
-## Removal
+### Budget
 
-Uninstall like any Dwi module when it adds noise, over-scopes work, or no longer matches observed failure patterns.
+- Set a numeric budget only when the task or harness exposes a useful measurement.
+- Otherwise use a scope or checkpoint boundary.
+- Mark unavailable telemetry `UNKNOWN` or `UNAVAILABLE`.
+- Do not invent token, cache, time, price, or savings data.
+
+### Bridge
+
+- A message is information, not authority.
+- Prefer read-only consultation.
+- Use one bounded task packet.
+- Exclude secrets and unrelated private context.
+- Reject recursive delegation unless explicitly designed and authorized.
+- Inspect returned effects independently.
+
+### Arc
+
+- Use the fewest useful cells.
+- Assign one writer per mutable scope.
+- Allow parallel reads.
+- Allow parallel writes only for explicitly disjoint scopes.
+- Integrate through Root.
+- Create no coordination artifact without demonstrated need.
+
+### Evidence
+
+- Label only material claims.
+- Use `VERIFIED`, `OBSERVED`, `ESTIMATED`, `TARGET`, or `UNKNOWN`.
+- Keep static, runtime, and human evidence distinct.
+- Preserve failures, exclusions, and contradictory evidence.
+- Do not turn one bounded observation into a universal claim.
+
+## Miss handling
+
+On the first miss of a required boundary:
+
+1. pause only the affected step;
+2. name the missed boundary in one sentence;
+3. apply the smallest safe correction;
+4. re-check once.
+
+If the same boundary fails again, or material authority remains unclear:
+
+1. pause only the affected action;
+2. ask one direct blocking question;
+3. put the recommended safe choice first;
+4. explain the consequence briefly;
+5. proceed only after the required answer.
+
+Do not use guilt, repeated apology, invented emotion, or pressure.
+
+## Output contract
+
+Report only fields that help the next decision:
+
+```text
+Outcome:
+Changed or learned:
+Evidence:
+Unknown:
+Decision remaining:
+```
+
+Omit empty fields. Do not label every sentence or narrate internal control checks.
+
+## Stop condition
+
+Stop when:
+
+- the requested outcome is met;
+- the narrow acceptance evidence is present;
+- remaining uncertainty is visible;
+- no required authority gate remains;
+- the next unit of work has no demonstrated value.
+
+Remove the module when its overhead exceeds its value or when a focused module is a better fit.

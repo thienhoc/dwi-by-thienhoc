@@ -20,6 +20,7 @@ body:
         - Bridge
         - Arc
         - Evidence
+        - All-in-One
         - Installation or repository
     validations:
       required: true

@@ -20,6 +20,7 @@ body:
         - Bridge
         - Arc
         - Evidence
+        - All-in-One
         - Repository or documentation
     validations:
       required: true

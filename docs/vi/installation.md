@@ -12,17 +12,18 @@ Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phâ
 
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
-## Cài từ một checkout đã duyệt
 
-Chạy các lệnh sau từ checkout đã duyệt sau khi xác nhận `pwd -P` đúng thư mục.
+## Cài từ checkout đã ghim
 
-Nếu cần cài một mô-đun chưa có trong `v0.1.0`, chỉ cài từ checkout đã duyệt.
+Khi cài cục bộ, hãy ghim checkout Dwi vào tag phát hành đã được duyệt hoặc commit chính xác mà bạn muốn kiểm tra, rồi xác nhận `pwd -P` trỏ tới checkout đó.
+
+Với sáu mô-đun chuyên biệt được phát hành trong `v0.1.0`, dùng tag `v0.1.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
 
 ## Codex
 
 Codex nhận kỹ năng của dự án tại `.agents/skills/` và kỹ năng của người dùng tại `~/.agents/skills/`.
 
-Ví dụ cài Conduct trong dự án:
+Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
 pwd -P
@@ -35,13 +36,13 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-Sau đó mở phiên Codex mới và gọi rõ `$dwi-conduct`.
+Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`.
 
 ## Claude Code
 
 Claude Code nhận kỹ năng của dự án tại `.claude/skills/` và kỹ năng của người dùng tại `~/.claude/skills/`.
 
-Ví dụ cài Conduct trong dự án:
+Ví dụ cài Conduct trong phạm vi dự án:
 
 ```bash
 pwd -P
@@ -54,11 +55,11 @@ install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
 cmp "$SOURCE" "$TARGET/SKILL.md"
 ```
 
-Sau đó mở phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu lớp công cụ dùng kỹ năng vừa cài.
+Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.
 
-## Các tên mô-đun khác
+## Cài một mô-đun chuyên biệt khác
 
-Thay `dwi-conduct` trong đường dẫn và thư mục đích bằng:
+Với URL nguồn đã phát hành hoặc đường dẫn cục bộ của mô-đun chuyên biệt, thay `dwi-conduct` bằng một trong các tên sau:
 
 ```text
 dwi-lean
@@ -66,14 +67,15 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
-dwi-all-in-one
 ```
 
-## All-in-One từ checkout đã duyệt (hiện tại chưa có trong v0.1.0)
+## Thử All-in-One trong môi trường phát triển (không có trong v0.1.0)
 
-`dwi-all-in-one` là mô-đun tổng hợp tùy chọn và chưa có trong `v0.1.0`.
+`dwi-all-in-one` là nội dung phát triển chưa phát hành. Mô-đun chưa có tag phát hành đã duyệt hoặc URL cài phiên bản hóa.
 
-Chỉ dùng khi đang làm việc trên checkout đã duyệt và module đã có trong đó:
+Không cài từ nhánh `main` có thể thay đổi. Người đóng góp chỉ được xem và thử từ checkout cục bộ ghim vào một commit chính xác. Branch hoặc commit của pull request không phải bản phát hành đã duyệt.
+
+Từ checkout cục bộ đã ghim:
 
 ```bash
 pwd -P

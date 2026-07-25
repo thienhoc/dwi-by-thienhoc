@@ -1,68 +1,74 @@
 # Dwi • All-in-One
 
-**Một mô-đun tùy chọn cho các vấn đề đan chéo lặp lại nhiều chiều.**
+**Mô-đun phối hợp có cổng liên quan cho các vấn đề nhiều lớp lặp lại.**
 
 [Mở `SKILL.md` để cài](../../../modules/dwi-all-in-one/SKILL.md) · [English guide](../../modules/all-in-one.md)
 
 ## Chọn All-in-One khi
 
-- cùng workflow lặp đi lặp lại các biểu hiện của nhiều mô-đun;
-- phạm vi, chi phí và trách nhiệm kéo trôi cùng lúc;
-- các mô-đun riêng lẻ có ích nhưng điều phối thủ công quá phức tạp;
-- bạn muốn khởi động nhanh một cách có ranh giới cho công việc lặp lại nhiều ma sát.
+Dùng khi ít nhất hai dạng vấn đề Dwi đã được quan sát trong cùng workflow, ví dụ:
+
+- giao tiếp khó và phạm vi phình ra;
+- tài nguyên trôi và phối hợp lặp lại;
+- quyền chưa rõ và người ghi chồng lấn;
+- tuyên bố hoàn thành nhưng thiếu bằng chứng.
+
+Ưu tiên mô-đun chuyên biệt khi chỉ có một vấn đề nổi trội.
 
 ## Điều sẽ thay đổi
 
-All-in-One gom 6 lớp của Dwi trong một mô-đun riêng: truyền thông, kích thước kế hoạch, kiểm soát nguồn lực, phối hợp, một người viết cho từng ô công việc, và nhãn bằng chứng.
+All-in-One chỉ chọn các lớp Dwi thật sự liên quan tới tác vụ hiện tại.
 
-Nó giữ cùng ranh giới rõ ràng và thêm cơ chế tuân thủ có biên để kiểm soát sai sót lặp lại trước khi leo thang.
+Nó bổ sung:
+
+- thứ tự ưu tiên rõ;
+- cổng chọn lớp liên quan;
+- đường thực hiện nhanh im lặng cho việc rõ, có thể hoàn tác và chỉ có một người ghi;
+- ranh giới hành động quan trọng;
+- cơ chế xử lý sai lệch có giới hạn.
+
+Nó không buộc mọi tác vụ chạy đủ sáu lớp.
+
+## Đường thực hiện nhanh im lặng
+
+Với việc nhỏ, có thể hoàn tác, quyền rõ và một người ghi, All-in-One phải:
+
+1. thực hiện trực tiếp;
+2. dùng phép kiểm tra nhỏ nhất phù hợp;
+3. nêu giả định quan trọng sau khi làm;
+4. báo điều còn chưa biết;
+5. dừng.
+
+Không in checklist sáu mục, không dựng cấu trúc nhiều tác nhân và không tạo hồ sơ bằng chứng nếu các việc đó không thay đổi quyết định.
+
+## Hành động quan trọng
+
+Trước khi ghi file, commit, push, merge, phát hành, triển khai, xóa, tiết lộ, thanh toán, đổi hiển thị, đổi schema dùng chung hoặc chuyển quyền thực thi sang lớp công cụ khác, All-in-One kiểm tra phạm vi, quyền, khả năng hoàn tác, người ghi và đường bằng chứng.
+
+Chỉ nêu phần còn thiếu thật sự chặn bước tiếp theo.
 
 ## Điều không thay đổi
 
-- Không thay thế ranh giới quyền của lớp công cụ gốc.
-- Không tuyên bố tương thích toàn phần hay tiết kiệm chắc chắn.
-- Không bỏ xác nhận người dùng khi hành động có ảnh hưởng lớn.
-- Không lấn quyền so với quản trị dự án.
+- Quyền của lớp công cụ gốc vẫn là chuẩn.
+- Tin nhắn không tự trở thành quyền.
+- Quản trị riêng của dự án vẫn là chuẩn.
+- `CHƯA BIẾT` vẫn là trạng thái bằng chứng hợp lệ.
+- All-in-One không tạo runtime, tiến trình nền, đầu nối, dịch vụ, người ghi hoặc tác nhân mới.
+- All-in-One không hứa tương thích toàn phần hoặc tiết kiệm chắc chắn.
 
-## Khi nên chọn mô-đun chuyên biệt
+## Lần thử nhỏ
 
-Dùng mô-đun riêng trước khi chọn All-in-One khi vấn đề nổi trội chỉ ở một điểm:
+1. Khi All-in-One chưa phát hành, chỉ cài từ commit chính xác đã review.
+2. Chọn một thay đổi có thể hoàn tác trong một file.
+3. Gọi `$dwi-all-in-one`.
+4. Xác nhận mô-đun dùng đường thực hiện nhanh im lặng.
+5. Xác nhận chỉ các lớp liên quan được dùng.
+6. Gỡ nếu phần kiểm soát thêm không cải thiện quyết định hoặc kết quả.
 
-- chỉ khó giao tiếp: `dwi-conduct`
-- chỉ lan man kế hoạch/kiểm thử: `dwi-lean`
-- chỉ thiếu ranh giới nguồn lực: `dwi-budget`
-- chỉ phối hợp lộn xộn: `dwi-bridge`
-- chỉ ranh giới người ghi/phiên làm việc: `dwi-arc`
-- chỉ tình trạng bằng chứng/mức tin cậy: `dwi-evidence`
+## Kết quả tốt
 
-## Cài đặt và thử
-
-1. Cài từ checkout đã duyệt (hoặc URL ghim cho các mô-đun chuyên biệt).
-2. Chạy một tác vụ có thể hoàn tác.
-3. So sánh kết quả theo độ rõ mục tiêu, ranh giới và hành vi token/ngữ cảnh.
-4. Giữ hoặc gỡ sau một lần thử rõ ràng.
-
-Xem hướng dẫn cài đặt trong [docs/vi/installation.md](../installation.md).
-
-## Kiểm tra phù hợp nhanh
-
-Yêu cầu tác vụ chỉ ra:
-
-1. mục tiêu rõ;
-2. phạm vi ranh giới;
-3. điểm kết thúc;
-4. bằng chứng cần có;
-5. người chốt quyết định.
-
-Nếu thiếu các mục này, dừng trước khi thao tác tiếp.
-
-## Cơ chế tuân thủ có biên trong thực tế
-
-- lần trượt đầu: dừng đúng bước đang ảnh hưởng, nêu rõ lỗi kiểm tra, sửa ở mức nhỏ nhất, kiểm tra lại đúng một lần;
-- lần trượt hai: dừng hành động đó, đặt một câu hỏi xác nhận trực tiếp, và đưa tùy chọn mặc định an toàn.
-
-Nếu người dùng yêu cầu dừng, gỡ mô-đun ngay.
+Kết quả người dùng được hoàn thành với quyền rõ, mức nỗ lực vừa đủ, một người ghi, bằng chứng đủ dùng và ít nghi thức hơn việc điều phối thủ công cả sáu mô-đun.
 
 ## An toàn và cách gỡ
 
-Đọc mô hình an toàn trước. Làm theo cách cài/gỡ chính xác trong [hướng dẫn cài](../installation.md), gồm xác minh checksum và xóa đúng file đã cài.
+Đọc [mô hình an toàn](../safety.md). Làm theo quy trình cài và gỡ chính xác trong [hướng dẫn cài](../installation.md). Mở phiên mới sau khi gỡ.

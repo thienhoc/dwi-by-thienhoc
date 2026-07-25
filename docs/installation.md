@@ -12,11 +12,12 @@ Dwi is a modular human layer. Each module is distributed as agent-native instruc
 
 Do not pipe an unreviewed remote script into a shell.
 
-## Install from a reviewed checkout
 
-Run these commands from the reviewed checkout after confirming `pwd -P` points to that checkout.
+## Install from a pinned checkout
 
-If you need to use a module that is not in `v0.1.0`, install it from the reviewed checkout only.
+For local installation, pin the Dwi checkout to the reviewed release tag or exact commit you intend to inspect, then confirm `pwd -P` points to that checkout.
+
+For the six focused modules released in `v0.1.0`, use the `v0.1.0` tag when reproducibility matters. An exact development commit identifies source under test; it does not make that source a release.
 
 ## Codex
 
@@ -56,9 +57,9 @@ cmp "$SOURCE" "$TARGET/SKILL.md"
 
 Then start a fresh Claude Code session and invoke `/dwi-conduct` or ask the harness to use the installed skill.
 
-## Install a different module
+## Install a different focused module
 
-Replace `dwi-conduct` in the URL and destination with one of:
+For a released remote source URL or a local focused-module path, replace `dwi-conduct` with one of:
 
 ```text
 dwi-lean
@@ -66,14 +67,15 @@ dwi-budget
 dwi-bridge
 dwi-arc
 dwi-evidence
-dwi-all-in-one
 ```
 
-## All-in-One from reviewed checkout (current commit, not in v0.1.0)
+## All-in-One development trial (not in v0.1.0)
 
-`dwi-all-in-one` is an optional consolidated module and is not yet available under `v0.1.0`.
+`dwi-all-in-one` is unreleased development content. It has no reviewed release tag or versioned install URL.
 
-Use only from the reviewed checkout where it is present:
+Do not install it from mutable `main`. A contributor may inspect and test it only from a local checkout pinned to an exact commit. A pull-request branch or commit is not a reviewed release.
+
+From that pinned local checkout:
 
 ```bash
 pwd -P

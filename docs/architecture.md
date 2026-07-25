@@ -22,6 +22,10 @@ Dwi sits between human intent and a native coding-agent harness as inspectable i
 - Arc structures multiple bounded work cells.
 - Evidence protects the result interface.
 
+## Composition, not a seventh layer
+
+All-in-One is an optional composition preset over the six focused modules. It selects relevant lenses for one task and adds no new permission, authority, runtime, coordinator, or architectural layer. A small reversible task should still take the silent fast path.
+
 ## One-writer rule
 
 Parallel reading is usually safe. Parallel mutation is safe only when scopes are explicitly disjoint. Each mutable scope has one owner, one acceptance contract, and one handoff point. The root integrator decides what enters the shared result.
