@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Research Preview 0.2.0</strong> · latest reviewed repository release: v0.2.2 · 6 focused modules + 1 optional All-in-One
+  <strong>Research Preview 0.2.0</strong> · latest reviewed repository release: v0.2.3 · 6 focused modules + 1 optional All-in-One
 </p>
 
 <p align="center">
@@ -68,10 +68,10 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 Clone the corrected immutable release, resolve the Dwi checkout and target project to physical paths, then reject a target inside the Dwi checkout:
 
 ```bash
-git clone --depth 1 --branch v0.2.2 \
+git clone --depth 1 --branch v0.2.3 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.2
-DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.2" && pwd -P)" || exit 1
+  dwi-by-thienhoc-v0.2.3
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.3" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
 MODULE="dwi-conduct"
 case "$PROJECT_ROOT/" in
@@ -99,7 +99,7 @@ node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy and could place the skill inside the Dwi checkout rather than the intended project. `v0.2.2` corrects that installation contract. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
+The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy and could place the skill inside the Dwi checkout rather than the intended project. `v0.2.3` corrects that installation contract. The existing `v0.2.2` tag identifies a pre-patch commit, was not published as this release, and must not be used for the corrected installation. See the installation guide for the exact impact, repair steps, manual equivalents, and removal commands.
 
 All-in-One is an optional composition module first released in `v0.2.0`. Use it only when multiple observed issues recur in the same workflow.
 
@@ -156,13 +156,15 @@ This repository intentionally contains no landing-page runtime. The human-layer 
 ## Status
 
 - Research Preview module-content baseline: `0.2.0`
-- Latest reviewed repository release: `v0.2.2`, correcting explicit-only installation for Codex and Claude Code
+- Latest reviewed repository release: `v0.2.3`, correcting explicit-only installation for Codex and Claude Code
+- Existing `v0.2.2` tag: preserved non-release ref to a pre-patch commit; do not use for corrected installation
 - Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
 - Included modules: six focused modules and optional All-in-One
 - Bounded compatibility observations: [Codex and Claude Code evidence records](evidence/compatibility/README.md)
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
 - Release checklist: [release checklist](docs/release-checklist.md)
-- Release record: [v0.2.2](docs/releases/v0.2.2.md)
+- Release record: [v0.2.3](docs/releases/v0.2.3.md)
+- Non-release tag record: [v0.2.2](docs/releases/v0.2.2.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Changes: [CHANGELOG.md](CHANGELOG.md)
 
