@@ -65,21 +65,25 @@ New to these terms? Open the [plain-language glossary](docs/glossary.md).
 4. Invoke the module explicitly and compare the result with your normal workflow.
 5. Remove the module folder if it does not help. No apology or continued trial is required.
 
-Keep the inspected Dwi checkout separate from the project receiving the module:
+Resolve the inspected Dwi checkout and target project to physical paths, then reject a target inside the Dwi checkout:
 
 ```bash
-DWI_ROOT="/absolute/path/to/dwi-by-thienhoc"
-PROJECT_ROOT="/absolute/path/to/your-project"
+DWI_ROOT="$(cd "/absolute/path/to/dwi-by-thienhoc" && pwd -P)" || exit 1
+PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
 MODULE="dwi-conduct"
-test "$DWI_ROOT" != "$PROJECT_ROOT"
-cd "$DWI_ROOT"
+case "$PROJECT_ROOT/" in
+  "$DWI_ROOT/"*)
+    printf '%s\n' "PROJECT_ROOT must resolve outside DWI_ROOT" >&2
+    exit 1
+    ;;
+esac
 ```
 
 For Codex:
 
 ```bash
 TARGET="${PROJECT_ROOT}/.agents/skills/${MODULE}"
-node scripts/install-module.mjs codex "$MODULE" "$TARGET"
+node "$DWI_ROOT/scripts/install-module.mjs" codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 ```
@@ -88,7 +92,7 @@ For Claude Code:
 
 ```bash
 TARGET="${PROJECT_ROOT}/.claude/skills/${MODULE}"
-node scripts/install-module.mjs claude "$MODULE" "$TARGET"
+node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
