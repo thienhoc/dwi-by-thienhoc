@@ -7,7 +7,7 @@
 ## Chọn Bridge khi
 
 - một lớp công cụ cần góc nhìn độc lập, chỉ đọc từ lớp còn lại;
-- Wi giao rõ một bước thực hiện cho công cụ gốc khác;
+- người có thẩm quyền giao rõ một bước thực hiện cho lớp công cụ gốc khác;
 - cần tách lời khuyên, quyền, tác động và bằng chứng.
 
 ## Điều sẽ thay đổi

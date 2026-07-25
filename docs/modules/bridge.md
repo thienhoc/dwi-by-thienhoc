@@ -7,7 +7,7 @@
 ## Choose Bridge when
 
 - one harness needs a bounded independent review from the other;
-- Wi explicitly assigns an implementation step to another native harness;
+- the authorized decision owner explicitly assigns an implementation step to another native harness;
 - advice, authority, effects, and evidence need to remain separate.
 
 ## What changes

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Bản thử nghiệm nghiên cứu 0.1.0</strong> · 6 mô-đun độc lập + tùy chọn All-in-One · Apache-2.0 cho mã · CC BY 4.0 cho tài liệu và tài sản gốc
+  <strong>Bản phát triển xem trước 0.2.0-dev</strong> · bản phát hành đã duyệt gần nhất: v0.1.0 · 6 mô-đun chuyên biệt + All-in-One chưa phát hành
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 
 ## Não của bạn cũng có một vùng ngữ cảnh
 
-Một lớp tính người dạng mô-đun giúp giảm lập kế hoạch quá mức, lãng phí token, thất lạc ngữ cảnh và hành động được thực hiện khi chưa có quyền rõ ràng.
+Các công cụ lập trình AI đã kiểm soát quyền dùng công cụ. Dwi bổ sung những kiểm soát con người có thể kiểm tra nhưng thường bị để ngầm: mục đích, phạm vi, mức nỗ lực vừa đủ, quyền ghi và bằng chứng.
 
 Codex và Claude Code là các công cụ lập trình AI chạy tác nhân và kiểm soát quyền dùng công cụ. Dwi tập trung vào lớp tính người bên trong workflow đó: người dùng thực sự muốn gì, tác nhân AI được phép sửa gì, mức nỗ lực nào là vừa đủ, ai được quyền ghi và bằng chứng nào hỗ trợ kết quả.
 
@@ -71,20 +71,9 @@ cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 
 Với Claude Code, dùng cùng nguồn đã duyệt và đổi thư mục đích thành `.claude/skills/dwi-conduct`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
 
-Nếu nhiều vấn đề lặp lại cùng nhau (phạm vi trôi, quyền chưa rõ, token lãng phí, thiếu bằng chứng), cài All-in-One từ checkout đã được duyệt:
+All-in-One hiện chỉ có trong trạng thái phát triển chưa phát hành `0.2.0-dev`. Không cài từ nhánh `main` có thể thay đổi. Cho tới khi một tag đã duyệt chứa mô-đun này, chỉ dùng từ checkout được ghim vào một commit chính xác đã review và phải xác minh checksum cục bộ trước khi cài.
 
-```bash
-pwd -P
-SOURCE="modules/dwi-all-in-one/SKILL.md"
-TARGET=".agents/skills/dwi-all-in-one"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
-```
-
-Claude Code dùng cùng nguồn cho `.claude/skills/dwi-all-in-one`. Hướng dẫn đầy đủ có bước kiểm tra SHA-256, URL riêng cho từng mô-đun và cách gỡ chính xác.
+Claude Code dùng cùng nguồn với đích `.claude/skills/dwi-all-in-one`. Hướng dẫn đầy đủ có bước xác minh checksum, tham chiếu phát hành bất biến cho mô-đun đã phát hành và cách gỡ chính xác.
 
 [Mở hướng dẫn cài đặt theo nguyên tắc xem trước →](docs/vi/installation.md)
 
@@ -129,10 +118,13 @@ Kho này chủ động không chứa mã chạy website. Trang giới thiệu v�
 
 ## Trạng thái
 
-- Giai đoạn sản phẩm: Bản thử nghiệm nghiên cứu `0.1.0`
-- Đã test với Claude và Codex.
+- Nhánh phát triển: `0.2.0-dev`
+- Bản phát hành đã duyệt gần nhất: `v0.1.0`, gồm sáu mô-đun chuyên biệt
+- All-in-One: nội dung phát triển chưa phát hành; chưa có URL cài bất biến
+- Quan sát tương thích có giới hạn: [hồ sơ bằng chứng Codex và Claude Code](evidence/compatibility/README.md)
 - Giấy phép: [Apache-2.0 cho mã; CC BY 4.0 cho tài liệu và tài sản gốc](LICENSES.md)
-- Quy trình phát hành: [checklist lịch sử, quyền riêng tư, quyền sử dụng và bằng chứng](docs/release-checklist.md)
+- Cổng cho bản phát hành kế tiếp: [checklist phát hành](docs/release-checklist.md)
+- Hồ sơ phát hành: [v0.1.0](docs/releases/v0.1.0.md)
 - Lộ trình: [ROADMAP.md](ROADMAP.md)
 - Liên hệ: [hoc@wi.works](mailto:hoc@wi.works)
 

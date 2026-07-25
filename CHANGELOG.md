@@ -1,32 +1,52 @@
 # Changelog
 
-All notable repository changes will be recorded here.
+All notable repository changes are recorded here.
 
 ## Unreleased
 
+### Added
+
+- Added an optional All-in-One composition module on the development branch.
+- Added a repository module catalog as the single machine-readable module inventory.
+- Added bounded compatibility evidence records for Codex and Claude Code.
+- Added behavioral regression fixtures for focused modules and All-in-One.
+
 ### Changed
 
-- Reframed Dwi as a repository-first, human-first operating layer for coding agents.
-- Replaced the landing-page package with six independent Agent Skills.
-- Split English and Vietnamese entry documentation.
+- Marked `main` as development version `0.2.0-dev`.
+- Separated the reviewed `v0.1.0` release truth from unreleased All-in-One development.
+- Refactored All-in-One to select only relevant lenses and preserve a silent fast path.
+- Expanded repository validation to cover semantic module surfaces, EN/VI parity, release truth, issue forms, examples, and table shape.
+- Replaced project-specific actor wording in public Bridge guidance with an authorized decision-owner role.
+
+### Fixed
+
+- Corrected stale private/public, tag, license, roadmap, and contribution status.
+- Corrected the malformed All-in-One row and wording in `MODULES.vi.md`.
+- Removed the unsupported umbrella claim that Dwi was generally "tested with Claude and Codex".
+- Added the missing All-in-One examples and issue-form options.
+
+## 0.1.0 - 2026-07-25
+
+### Added
+
+- Published six independent focused Agent Skills: Conduct, Lean, Budget, Bridge, Arc, and Evidence.
+- Added English and Vietnamese entry documentation.
 - Added inspect-first installation, exact removal, safety, evidence, brand, governance, support, and contribution guidance.
 - Added original SVG brand sources and a repository-only architecture diagram.
-- Added a dependency-free offline repository contract checker and least-privilege CI configuration.
-- Selected Apache-2.0 for code and operational files, CC BY 4.0 for documentation and original assets, and a separate trademark policy.
-- Added pinned per-module install URLs, SHA-256 verification, and overwrite-safe installation.
-- Added a Vietnamese evidence policy, a support issue form, tag-gated release preflight, and a reproducible social-preview export.
-- Refined launch copy and GitHub metadata for clearer discovery without adding website runtime.
-- Added optional All-in-One module packaging (`dwi-all-in-one`) with a bounded adherence loop for recurring multi-lens workflows, and updated module/installation docs plus validator expectations.
+- Added a dependency-free offline repository contract checker.
+- Added least-privilege GitHub Actions validation.
+- Added Apache-2.0 for code and operational files, CC BY 4.0 for documentation and original assets, and a separate trademark policy.
+- Added pinned per-module install URLs and SHA-256 verification for the six focused modules.
+- Added a reproducible social-preview export receipt.
 
 ### Removed
 
-- Next.js, Vite, Cloudflare, static landing-page, and Sites hosting code.
-- Website HTML, CSS, JavaScript, deployment tests, telemetry screenshots, generated landing audits, and old banner exports.
+- Removed Next.js, Vite, Cloudflare, static landing-page, Sites hosting, deployment, telemetry, and generated website audit material from the public repository boundary.
 
-### Security
+### Release truth
 
-- Public release is blocked on full-history privacy review and a separately approved publication path.
-
-## 0.1.0
-
-Research concept baseline. No public release tag has been created.
+- Release tag: `v0.1.0`
+- Included installable modules: six focused modules
+- Excluded from the release: `dwi-all-in-one`
+- Release record: [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md)

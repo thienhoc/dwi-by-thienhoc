@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Research Preview 0.1.0</strong> · 6 focused modules + optional All-in-One · Apache-2.0 code · CC BY 4.0 docs and assets
+  <strong>Development Preview 0.2.0-dev</strong> · latest reviewed release: v0.1.0 · 6 focused modules + optional unreleased All-in-One
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 
 ## Your brain is a context window too
 
-A modular human layer that helps reduce overplanning, token waste, context loss, and actions taken without clear permission.
+AI coding tools already control tool access. Dwi adds inspectable human controls that are often left implicit: intent, scope, proportionate effort, writer ownership, and evidence.
 
 Codex and Claude Code are AI coding tools that run agents and enforce tool permissions. Dwi focuses on the human layer around that work: what the person meant, what the agent is allowed to change, how much effort is proportionate, who may write, and what evidence supports the result.
 
@@ -69,20 +69,9 @@ install -m 0644 modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 cmp modules/dwi-conduct/SKILL.md "$TARGET/SKILL.md"
 ```
 
-If multiple failure modes recur together (scope drift, vague authority, wasted tokens, and evidence gaps), install All-in-One from a reviewed checkout:
+All-in-One is present only on the unreleased `0.2.0-dev` branch state. Do not install it from mutable `main`. Until a reviewed release tag includes it, use it only from a checkout pinned to an exact reviewed commit and verify the local checksum before installation.
 
-```bash
-pwd -P
-SOURCE="modules/dwi-all-in-one/SKILL.md"
-TARGET=".agents/skills/dwi-all-in-one"
-test -f "$SOURCE"
-test ! -e "$TARGET/SKILL.md"
-install -d "$TARGET"
-install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
-cmp "$SOURCE" "$TARGET/SKILL.md"
-```
-
-Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in-one`. The full guide includes checksum verification, every module URL, and exact removal.
+Claude Code uses the same reviewed source with target `.claude/skills/dwi-all-in-one`. The full guide includes checksum verification, immutable release references for released modules, and exact removal.
 
 [Open the inspect-first installation guide →](docs/installation.md)
 
@@ -127,10 +116,13 @@ This repository intentionally contains no landing-page runtime. The human-layer 
 
 ## Status
 
-- Product stage: Research Preview `0.1.0`
-- Tested with Claude and Codex.
+- Development branch: `0.2.0-dev`
+- Latest reviewed release: `v0.1.0`, containing the six focused modules
+- All-in-One: unreleased development content; no immutable install URL yet
+- Bounded compatibility observations: [Codex and Claude Code evidence records](evidence/compatibility/README.md)
 - License: [Apache-2.0 code; CC BY 4.0 documentation and original assets](LICENSES.md)
-- Release process: [history, privacy, rights, and evidence checklist](docs/release-checklist.md)
+- Next-release gates: [release checklist](docs/release-checklist.md)
+- Release record: [v0.1.0](docs/releases/v0.1.0.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Changes: [CHANGELOG.md](CHANGELOG.md)
 

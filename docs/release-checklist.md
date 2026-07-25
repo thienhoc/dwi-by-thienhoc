@@ -1,6 +1,8 @@
-# Public release checklist
+# Checklist for the next reviewed release
 
-Public visibility, a release, a tag, and deployment are separate actions. None is authorized by this refactor.
+Repository visibility, a development branch, a release tag, and deployment are separate states.
+
+The current reviewed release is `v0.1.0`. The current `main` branch is development version `0.2.0-dev`.
 
 Run:
 
@@ -8,36 +10,43 @@ Run:
 npm run preflight:public
 ```
 
-The command checks automatable gates and lists the GitHub actions that still require manual evidence.
+The command checks automatable gates and lists manual GitHub or human gates. A failure on a development branch is expected while release gates remain open.
 
-## Blocking gates
+## Blocking gates for v0.2.0
 
-- [x] Wi selects the code, documentation, and asset licenses.
-- [x] Final license texts and notice files are added.
-- [x] The complete Git history is scanned for secrets, private data, website-only artifacts, telemetry, and asset-rights issues.
-- [x] Wi confirms that no legacy private author identity appears in public history or the public tree.
-- [x] Wi chooses between a sanitized new public repository and a reviewed history rewrite.
-- [x] The selected history path is approved.
-- [x] Original brand assets pass provenance and rights review.
-- [x] The approved 1280×640 social preview has a reproducible export receipt.
-- [x] SHA-256 checksums cover all six installable module files.
-- [x] Every numeric promotional claim has a sourceable artifact, method, denominator, scope, and caveat.
-- [x] Codex and Claude Code project-scope installs are tried from a clean environment.
-- [x] Removal is tried from a clean environment.
-- [x] English and Vietnamese module guides pass parity review.
-- [x] Wi gives final visual approval.
-- [x] Wi gives final copy approval.
+- [x] Development version is distinct from `v0.1.0`
+- [x] `v0.1.0` has an immutable release record
+- [x] All-in-One is marked unreleased
+- [x] A machine-readable module catalog exists
+- [x] English and Vietnamese module surfaces include All-in-One
+- [x] Public issue forms include All-in-One
+- [x] All-in-One has a relevance gate and silent fast path
+- [x] Behavioral regression fixtures exist
+- [x] Installable module checksums are current
+- [ ] Current All-in-One revision passes a clean Codex project-scope install, invocation, and removal trial
+- [ ] Current All-in-One revision passes a clean Claude Code project-scope install, invocation, and removal trial
+- [ ] Current English and Vietnamese user-facing meaning passes human parity review
+- [ ] Current visual assets pass human review for the intended release
+- [ ] All current promotional claims have sourceable evidence and scoped wording
+- [ ] Wi gives final copy approval for `v0.2.0`
+- [ ] Wi gives explicit release and tag approval for `v0.2.0`
 
-## Repository settings after the gates pass
+## Repository settings to confirm manually before release
 
-- [ ] Keep the default branch protected.
-- [ ] Require the repository validation check before merge.
-- [ ] Enable secret scanning and push protection when available.
-- [ ] Set the About description, website, and topics from [repository-metadata.md](repository-metadata.md).
-- [ ] Upload the approved 1280×640 raster at `assets/social-preview.png`.
-- [ ] Enable issues and discussions only with an owner response policy.
-- [ ] Create a reviewed version tag; update install links from `main` to that tag.
+- [ ] Default branch protection is active
+- [ ] Repository validation is required before merge
+- [ ] Secret scanning and push protection are enabled when available
+- [ ] About description, website, and topics match `docs/repository-metadata.md`
+- [ ] The approved 1280x640 social preview is configured on GitHub
+- [ ] Issues and Discussions have an owner response policy
+- [ ] A reviewed `v0.2.0` tag points to the exact approved commit
+- [ ] All-in-One install documentation points only to the immutable reviewed tag
 
 ## Release truth
 
-A clean `HEAD` does not sanitize prior commits. A passing offline validator does not prove runtime compatibility. A private preview is not a public release. Report each gate separately.
+- A clean working tree does not sanitize prior commits.
+- A passing static validator does not prove runtime behavior.
+- A bounded harness observation does not prove universal compatibility.
+- A development branch is not a release.
+- A public repository is not automatically a supported product.
+- A tag, visibility change, merge, or deployment requires its own authority.
