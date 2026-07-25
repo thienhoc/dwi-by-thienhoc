@@ -13,6 +13,50 @@ Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phâ
 Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào shell.
 
 
+## Cài từ checkout đã ghim
+
+Khi cài cục bộ, hãy ghim checkout Dwi vào tag phát hành đã được duyệt hoặc commit chính xác mà bạn muốn kiểm tra, rồi xác nhận `pwd -P` trỏ tới checkout đó.
+
+Với sáu mô-đun chuyên biệt được phát hành trong `v0.1.0`, dùng tag `v0.1.0` khi cần khả năng tái lập. Một commit phát triển chính xác chỉ xác định source đang được kiểm tra; nó không biến source đó thành bản phát hành.
+
+## Codex
+
+Codex nhận kỹ năng của dự án tại `.agents/skills/` và kỹ năng của người dùng tại `~/.agents/skills/`.
+
+Ví dụ cài Conduct trong phạm vi dự án:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".agents/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Sau đó mở một phiên Codex mới và gọi rõ `$dwi-conduct`.
+
+## Claude Code
+
+Claude Code nhận kỹ năng của dự án tại `.claude/skills/` và kỹ năng của người dùng tại `~/.claude/skills/`.
+
+Ví dụ cài Conduct trong phạm vi dự án:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".claude/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.
+
 ## Cài một mô-đun chuyên biệt khác
 
 Với URL nguồn đã phát hành hoặc đường dẫn cục bộ của mô-đun chuyên biệt, thay `dwi-conduct` bằng một trong các tên sau:

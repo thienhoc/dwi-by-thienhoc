@@ -628,6 +628,112 @@ if (!focusedInstallVi.trim()) {
   );
 }
 
+const focusedInstallationContracts = [
+  {
+    source: "docs/installation.md",
+    content: installationEn,
+    pinnedHeading: "## Install from a pinned checkout",
+    codexHeading: "## Codex",
+    claudeHeading: "## Claude Code",
+    focusedHeading: "## Install a different focused module",
+    codexTarget: 'TARGET=".agents/skills/dwi-conduct"',
+    claudeTarget: 'TARGET=".claude/skills/dwi-conduct"',
+    projectExample: "Project-scoped example for Conduct:",
+  },
+  {
+    source: "docs/vi/installation.md",
+    content: installationVi,
+    pinnedHeading: "## Cài từ checkout đã ghim",
+    codexHeading: "## Codex",
+    claudeHeading: "## Claude Code",
+    focusedHeading: "## Cài một mô-đun chuyên biệt khác",
+    codexTarget: 'TARGET=".agents/skills/dwi-conduct"',
+    claudeTarget: 'TARGET=".claude/skills/dwi-conduct"',
+    projectExample: "Ví dụ cài Conduct trong phạm vi dự án:",
+  },
+];
+
+const projectInstallationSignatures = [
+  'SOURCE="modules/dwi-conduct/SKILL.md"',
+  'test -f "$SOURCE"',
+  'test ! -e "$TARGET/SKILL.md"',
+  'install -d "$TARGET"',
+  'install -m 0644 "$SOURCE" "$TARGET/SKILL.md"',
+  'cmp "$SOURCE" "$TARGET/SKILL.md"',
+];
+
+for (const contract of focusedInstallationContracts) {
+  const headingPositions = [
+    contract.pinnedHeading,
+    contract.codexHeading,
+    contract.claudeHeading,
+    contract.focusedHeading,
+  ].map((heading) => contract.content.indexOf(heading));
+
+  if (headingPositions.some((position) => position === -1)) {
+    errors.push(
+      `${contract.source}: missing focused project-scope installation heading`,
+    );
+    continue;
+  }
+
+  const [pinnedPosition, codexPosition, claudePosition, focusedPosition] =
+    headingPositions;
+  if (
+    !(
+      pinnedPosition < codexPosition &&
+      codexPosition < claudePosition &&
+      claudePosition < focusedPosition
+    )
+  ) {
+    errors.push(
+      `${contract.source}: installation sections must be ordered pinned checkout, Codex, Claude Code, focused modules`,
+    );
+    continue;
+  }
+
+  const codexSection = contract.content.slice(codexPosition, claudePosition);
+  const claudeSection = contract.content.slice(
+    claudePosition,
+    focusedPosition,
+  );
+
+  requireContains(
+    codexSection,
+    contract.projectExample,
+    `${contract.source} Codex section`,
+  );
+  requireContains(
+    claudeSection,
+    contract.projectExample,
+    `${contract.source} Claude Code section`,
+  );
+
+  for (const signature of projectInstallationSignatures) {
+    requireContains(
+      codexSection,
+      signature,
+      `${contract.source} Codex section`,
+    );
+    requireContains(
+      claudeSection,
+      signature,
+      `${contract.source} Claude Code section`,
+    );
+  }
+
+  requireContains(
+    codexSection,
+    contract.codexTarget,
+    `${contract.source} Codex section`,
+  );
+  requireContains(
+    claudeSection,
+    contract.claudeTarget,
+    `${contract.source} Claude Code section`,
+  );
+}
+
 requireContains(
   installationEn,
   "## All-in-One development trial (not in v0.1.0)",

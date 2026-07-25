@@ -13,6 +13,50 @@ Dwi is a modular human layer. Each module is distributed as agent-native instruc
 Do not pipe an unreviewed remote script into a shell.
 
 
+## Install from a pinned checkout
+
+For local installation, pin the Dwi checkout to the reviewed release tag or exact commit you intend to inspect, then confirm `pwd -P` points to that checkout.
+
+For the six focused modules released in `v0.1.0`, use the `v0.1.0` tag when reproducibility matters. An exact development commit identifies source under test; it does not make that source a release.
+
+## Codex
+
+Codex discovers repository skills under `.agents/skills/` and user skills under `~/.agents/skills/`.
+
+Project-scoped example for Conduct:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".agents/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Then start a fresh Codex session and invoke `$dwi-conduct` explicitly.
+
+## Claude Code
+
+Claude Code discovers project skills under `.claude/skills/` and user skills under `~/.claude/skills/`.
+
+Project-scoped example for Conduct:
+
+```bash
+pwd -P
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".claude/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+Then start a fresh Claude Code session and invoke `/dwi-conduct` or ask the harness to use the installed skill.
+
 ## Install a different focused module
 
 For a released remote source URL or a local focused-module path, replace `dwi-conduct` with one of:
