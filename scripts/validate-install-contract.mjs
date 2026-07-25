@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import { access, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import {
+  access,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  symlink,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -70,9 +77,10 @@ async function validateDocumentation() {
       required: [
         "## Important activation-policy correction",
         "The installation examples published in `v0.1.0` through `v0.2.1` copied only `SKILL.md`.",
-        "DWI_ROOT=",
-        "PROJECT_ROOT=",
-        "test \"$DWI_ROOT\" != \"$PROJECT_ROOT\"",
+        'DWI_ROOT="$(cd ',
+        'PROJECT_ROOT="$(cd ',
+        'case "$PROJECT_ROOT/" in',
+        "PROJECT_ROOT must resolve outside DWI_ROOT",
         "node \"$DWI_ROOT/scripts/install-module.mjs\" codex",
         "node \"$DWI_ROOT/scripts/install-module.mjs\" claude",
         "allow_implicit_invocation: false",
@@ -80,9 +88,13 @@ async function validateDocumentation() {
         "Do not run the following affected pattern.",
         "## Repair an existing one-file install",
         "user-invocable-only",
+        'BACKUP_ROOT="${PROJECT_ROOT}/.claude/dwi-skill-backups"',
+        "outside `.claude/skills/`",
         "scripts/validate-install-contract.mjs",
       ],
       forbidden: [
+        'test "$DWI_ROOT" != "$PROJECT_ROOT"',
+        'BACKUP="${PROJECT_ROOT}/.claude/skills/${MODULE}.before-explicit-only"',
         "For Claude Code, change only the target root",
         "Then start a fresh Claude Code session and invoke `/dwi-conduct` or ask the harness to use the installed skill.",
       ],
@@ -92,9 +104,10 @@ async function validateDocumentation() {
       required: [
         "## Đính chính quan trọng về chính sách kích hoạt",
         "Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ sao chép `SKILL.md`.",
-        "DWI_ROOT=",
-        "PROJECT_ROOT=",
-        "test \"$DWI_ROOT\" != \"$PROJECT_ROOT\"",
+        'DWI_ROOT="$(cd ',
+        'PROJECT_ROOT="$(cd ',
+        'case "$PROJECT_ROOT/" in',
+        "PROJECT_ROOT phải nằm ngoài DWI_ROOT sau khi chuẩn hóa đường dẫn",
         "node \"$DWI_ROOT/scripts/install-module.mjs\" codex",
         "node \"$DWI_ROOT/scripts/install-module.mjs\" claude",
         "allow_implicit_invocation: false",
@@ -102,9 +115,13 @@ async function validateDocumentation() {
         "Không chạy mẫu dưới đây.",
         "## Sửa một bản cài cũ chỉ có một file",
         "user-invocable-only",
+        'BACKUP_ROOT="${PROJECT_ROOT}/.claude/dwi-skill-backups"',
+        "nằm ngoài `.claude/skills/`",
         "scripts/validate-install-contract.mjs",
       ],
       forbidden: [
+        'test "$DWI_ROOT" != "$PROJECT_ROOT"',
+        'BACKUP="${PROJECT_ROOT}/.claude/skills/${MODULE}.before-explicit-only"',
         "Với Claude Code, chỉ đổi gốc thư mục đích",
         "Sau đó mở một phiên Claude Code mới và gọi `/dwi-conduct` hoặc yêu cầu harness dùng mô-đun đã cài.",
       ],
@@ -128,11 +145,20 @@ async function validateDocumentation() {
 
   for (const [relativePath, expected] of readmeChecks) {
     const content = await readFile(path.join(repositoryRoot, relativePath), "utf8");
-    requireText(content, "DWI_ROOT=", relativePath);
-    requireText(content, "PROJECT_ROOT=", relativePath);
-    requireText(content, 'test "$DWI_ROOT" != "$PROJECT_ROOT"', relativePath);
-    requireText(content, "node scripts/install-module.mjs codex", relativePath);
-    requireText(content, "node scripts/install-module.mjs claude", relativePath);
+    requireText(content, 'DWI_ROOT="$(cd ', relativePath);
+    requireText(content, 'PROJECT_ROOT="$(cd ', relativePath);
+    requireText(content, 'case "$PROJECT_ROOT/" in', relativePath);
+    forbidText(content, 'test "$DWI_ROOT" != "$PROJECT_ROOT"', relativePath);
+    requireText(
+      content,
+      'node "$DWI_ROOT/scripts/install-module.mjs" codex',
+      relativePath,
+    );
+    requireText(
+      content,
+      'node "$DWI_ROOT/scripts/install-module.mjs" claude',
+      relativePath,
+    );
     requireText(content, expected, relativePath);
   }
 }
@@ -247,13 +273,56 @@ try {
     "installer accepted a target whose basename does not match the module id",
   );
 
+  const inRepositoryProbe = path.join(
+    repositoryRoot,
+    ".dwi-install-contract-probe",
+  );
+  const inRepositoryRun = runInstaller(
+    "codex",
+    knownModule,
+    path.join(inRepositoryProbe, knownModule),
+  );
+  assert.notEqual(
+    inRepositoryRun.status,
+    0,
+    "installer accepted a target inside the Dwi source checkout",
+  );
+  assert.match(
+    `${inRepositoryRun.stderr}${inRepositoryRun.stdout}`,
+    /target directory must be outside the Dwi source checkout/,
+    "installer did not explain the source-checkout containment rejection",
+  );
+  assert.equal(
+    await exists(inRepositoryProbe),
+    false,
+    "installer created paths inside the Dwi source checkout before rejecting them",
+  );
+
+  const repositoryAlias = path.join(temporaryRoot, "repository-alias");
+  await symlink(repositoryRoot, repositoryAlias, "dir");
+  const aliasedRepositoryRun = runInstaller(
+    "claude",
+    knownModule,
+    path.join(repositoryAlias, ".claude", "skills", knownModule),
+  );
+  assert.notEqual(
+    aliasedRepositoryRun.status,
+    0,
+    "installer accepted a symlink alias targeting the Dwi source checkout",
+  );
+  assert.match(
+    `${aliasedRepositoryRun.stderr}${aliasedRepositoryRun.stdout}`,
+    /target directory must be outside the Dwi source checkout/,
+    "installer did not canonicalize a symlinked target before containment checking",
+  );
+
   const leftovers = (await readdir(temporaryRoot, { recursive: true })).filter(
     (entry) => String(entry).includes(".dwi-install-"),
   );
   assert.deepEqual(leftovers, [], "installer left a staging directory behind");
 
   console.log(
-    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including documentation and failure-path checks.`,
+    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including documentation, containment, symlink, and failure-path checks.`,
   );
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
