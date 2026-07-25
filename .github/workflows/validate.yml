@@ -111,24 +111,40 @@ jobs:
             exit 1
           fi
 
-      - name: Create immutable tag after preflight
+      - name: Prepare local immutable tag
         if: steps.release.outputs.publish == 'true'
         shell: bash
         env:
           TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
-
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
             test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
-            npm run preflight:public 2>&1 | tee /tmp/dwi-public-release-preflight.log
             exit 0
           fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "$TAG" "$GITHUB_SHA" -m "Dwi $TAG"
+          test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+
+      - name: Run public-release preflight against local tag
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
           npm run preflight:public 2>&1 | tee /tmp/dwi-public-release-preflight.log
+
+      - name: Push immutable release tag
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+            exit 0
+          fi
           git push origin "refs/tags/$TAG"
 
       - name: Publish GitHub Release
@@ -140,18 +156,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release view "$TAG"
             exit 0
           fi
-
           gh release create "$TAG" \
             --verify-tag \
             --latest \
             --title "Dwi $TAG" \
             --notes-file "$RELEASE_RECORD"
-
           gh release view "$TAG"
 
       - name: Report reviewed release publication result
