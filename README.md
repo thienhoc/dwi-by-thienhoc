@@ -29,7 +29,7 @@ Codex and Claude Code are AI coding tools that run agents and enforce tool permi
 
 Dwi is not another AI skill collection. Its modules shape how agents communicate, decide, coordinate, and handle evidence inside existing agent workflows.
 
-Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. Where a supported harness loads the open Agent Skills format, `SKILL.md` is the technical package—not the product category.
+Dwi does not replace the harness. Each module is a small, inspectable set of agent-native instructions that can be installed independently. Where a supported harness loads the open Agent Skills format, `SKILL.md` is the technical package, not the product category.
 
 ## Start with the problem you have
 
@@ -41,7 +41,7 @@ Dwi does not replace the harness. Each module is a small, inspectable set of age
 | Claude and Codex need to coordinate | [Dwi • Bridge](docs/modules/bridge.md) | Separates advice, authority, effects, and evidence across native harnesses |
 | Several agents need a shared structure | [Dwi • Arc](docs/modules/arc.md) | Creates bounded cells with one writer per scope and an independent gate |
 | A result sounds certain but the proof is unclear | [Dwi • Evidence](docs/modules/evidence.md) | Labels verified, observed, estimated, target, and unknown claims |
-| The same workflow repeatedly hits multiple issues | [Dwi • All-in-One](docs/modules/all-in-one.md) | Applies all six lenses with one bounded adherence loop when issues co-occur |
+| The same workflow repeatedly hits multiple issues | [Dwi • All-in-One](docs/modules/all-in-one.md) | Selects only the relevant Dwi lenses and preserves a silent fast path when issues co-occur |
 
 Every module stands alone. You do not need to install a Dwi core, daemon, MCP server, or website.
 
@@ -82,6 +82,13 @@ All-in-One is an optional composition module released in `v0.2.0`. Install it fr
 **Already using AI regularly:** choose the module that matches the friction you can actually observe. Add only one new behavior at a time.
 
 **Building professional agent systems:** begin with Evidence. Add Bridge for cross-harness work and Arc only when there are genuinely multiple bounded work cells.
+
+## Go deeper
+
+- [Read the story behind Dwi](docs/story.md)
+- [See how Dwi works](docs/how-it-works.md)
+- [Review the operating principles](docs/principles.md)
+- [Use the content and publication guidelines](docs/content-guidelines.md)
 
 ## What Dwi will not do
 
