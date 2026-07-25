@@ -119,13 +119,11 @@ jobs:
         run: |
           set -euo pipefail
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
-            test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+            test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" "$GITHUB_SHA" -m "Dwi $TAG"
-          test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+          git update-ref "refs/tags/$TAG" "$GITHUB_SHA"
+          test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
 
       - name: Run public-release preflight against local tag
         if: steps.release.outputs.publish == 'true'
@@ -142,7 +140,7 @@ jobs:
         run: |
           set -euo pipefail
           if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-            test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+            test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
             exit 0
           fi
           git push origin "refs/tags/$TAG"
