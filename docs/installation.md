@@ -11,7 +11,7 @@ The installation examples published in `v0.1.0` through `v0.2.1` copied only `SK
 
 Without those harness-specific controls, the model may select a Dwi module from its description even when the person did not invoke it explicitly. This is a packaging and documentation defect. It does not grant the module extra tool permissions or bypass the native sandbox and approval system.
 
-Published release tags remain immutable. Do not rewrite them. Until a reviewed patch release is tagged, use the exact reviewed commit containing `scripts/install-module.mjs`; an exact development commit identifies source under review but is not itself a release.
+Published release tags remain immutable. Do not rewrite them. Until a corrected patch release is tagged, use an exact inspected commit containing `scripts/install-module.mjs`; an exact development commit identifies source under inspection but is not itself a release.
 
 ## Before installing
 
@@ -23,9 +23,9 @@ Published release tags remain immutable. Do not rewrite them. Until a reviewed p
 
 Do not pipe an unreviewed remote script into a shell.
 
-## Install from a reviewed checkout
+## Install from a pinned checkout
 
-Confirm that `pwd -P` points to the reviewed checkout. The local helper requires Node.js 20 or later, matching this repository's declared development runtime.
+Confirm that `pwd -P` points to the pinned checkout you inspected. The local helper requires Node.js 20 or later, matching this repository's declared development runtime.
 
 ```bash
 pwd -P
@@ -42,7 +42,7 @@ Project-scoped example for Conduct:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".agents/skills/${MODULE}"
+TARGET=".agents/skills/dwi-conduct"
 node scripts/install-module.mjs codex "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
@@ -59,6 +59,22 @@ The installed structure is:
 ```
 
 Then start a fresh Codex session and invoke `$dwi-conduct` explicitly. A matching prompt that does not mention `$dwi-conduct` should not activate the module implicitly.
+
+### Recognize the affected one-file pattern
+
+Do not run the following affected pattern. It is shown verbatim only so that an existing `v0.1.0` through `v0.2.1` installation can be identified:
+
+```text
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".agents/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
+
+If those were the only steps used, add the missing Codex metadata with the repair procedure below.
 
 ### Manual Codex equivalent
 
@@ -84,7 +100,7 @@ Project-scoped example for Conduct:
 
 ```bash
 MODULE="dwi-conduct"
-TARGET=".claude/skills/${MODULE}"
+TARGET=".claude/skills/dwi-conduct"
 node scripts/install-module.mjs claude "$MODULE" "$TARGET"
 test -f "$TARGET/SKILL.md"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
@@ -97,6 +113,20 @@ disable-model-invocation: true
 ```
 
 Then start a fresh Claude Code session and invoke `/dwi-conduct` explicitly. A matching prompt that does not invoke `/dwi-conduct` should not make Claude load the module automatically.
+
+### Recognize the affected one-file pattern
+
+Do not run the following affected pattern. It is shown verbatim only so that an existing `v0.1.0` through `v0.2.1` installation can be identified:
+
+```text
+SOURCE="modules/dwi-conduct/SKILL.md"
+TARGET=".claude/skills/dwi-conduct"
+test -f "$SOURCE"
+test ! -e "$TARGET/SKILL.md"
+install -d "$TARGET"
+install -m 0644 "$SOURCE" "$TARGET/SKILL.md"
+cmp "$SOURCE" "$TARGET/SKILL.md"
+```
 
 If Node.js is unavailable, copy the canonical `SKILL.md`, add `disable-model-invocation: true` inside its opening YAML frontmatter, and verify that the rest of the file is unchanged before starting a fresh session.
 
@@ -114,6 +144,22 @@ dwi-all-in-one
 ```
 
 `dwi-all-in-one` is an optional composition module. Install it only when multiple observed problems recur in the same workflow.
+
+## Public release: pinned module URLs
+
+The immutable raw source URLs below remain useful for inspection, but the `v0.2.0` one-file path is not a complete explicit-only installation package. Do not copy only `SKILL.md` when activation timing matters.
+
+| Module | Immutable canonical source |
+| --- | --- |
+| Conduct | [dwi-conduct/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-conduct/SKILL.md) |
+| Lean | [dwi-lean/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-lean/SKILL.md) |
+| Budget | [dwi-budget/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-budget/SKILL.md) |
+| Bridge | [dwi-bridge/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-bridge/SKILL.md) |
+| Arc | [dwi-arc/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-arc/SKILL.md) |
+| Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
+| All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
+
+The next corrected release must pin the complete per-harness installation path and pass `scripts/validate-install-contract.mjs` before publication.
 
 ## Repair an existing one-file install
 
@@ -153,12 +199,6 @@ grep -Eq '^disable-model-invocation: true$' "$OLD/SKILL.md"
 ```
 
 Start a fresh Claude Code session afterward. Keep the backup until the explicit invocation test passes.
-
-## Released raw source URLs
-
-The `v0.1.0`, `v0.2.0`, and `v0.2.1` raw `SKILL.md` URLs remain valid immutable source references, but they are not complete explicit-only installation packages. Do not install those releases by copying only the raw `SKILL.md` when activation timing matters.
-
-The next reviewed patch release must pin the complete per-harness installation path and pass `scripts/validate-install-contract.mjs` before publication.
 
 ## Remove a module
 
