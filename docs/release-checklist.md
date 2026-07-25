@@ -1,8 +1,8 @@
-# Release checklist for Dwi v0.2.3
+# Release checklist for Dwi v0.2.4
 
 Repository visibility, a development branch, a release tag, and a GitHub Release are separate states.
 
-The current release candidate is `v0.2.3`. The `v0.2.0` module-content record and `v0.2.1` documentation release remain historical. Tag `v0.2.2` is preserved as a non-release historical ref because it already pointed to a pre-patch commit.
+The current release candidate is `v0.2.4`. Release `v0.2.3` remains the valid installation-contract release. This patch hardens installer validation and release-record detection without changing canonical module content or installed artifact shapes.
 
 Run:
 
@@ -12,36 +12,40 @@ npm run preflight:public
 
 The command checks automatable gates and lists manual GitHub or human gates. Static validation does not replace runtime evidence.
 
+## Blocking gates for v0.2.4
+
+- [x] `v0.2.4` has a draft versioned release record.
+- [x] `v0.2.3` remains immutable and valid.
+- [x] Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
+- [x] Codex and Claude installed artifact shapes remain unchanged from `v0.2.3`.
+- [x] The production installer exports and uses one strict Codex metadata validator.
+- [x] The strict validator requires exactly one active `allow_implicit_invocation` declaration.
+- [x] The declaration must be inside the single top-level `policy` block with canonical indentation and boolean value `false`.
+- [x] Regression fixtures reject lookalike keys, commented occurrences, `falsehood`, `true`, duplicate declarations, wrong-block declarations, wrong indentation, and duplicate policy blocks.
+- [x] Importing `scripts/install-module.mjs` does not execute the CLI entrypoint.
+- [x] Release automation remains pinned to the triggering `GITHUB_SHA` before inspecting release records.
+- [x] Release automation compares the triggering commit with its first parent.
+- [x] Regression validation forbids the former commit-only `git diff-tree` release-record scan.
+- [ ] Repository and install contracts pass on Node.js 20 and 24 for the complete candidate.
+- [ ] All actionable late review threads on PR #5 are replied to and resolved.
+- [ ] The v0.2.4 pull request is reviewed, mergeable, and merged after checks pass.
+- [ ] English, Vietnamese, and localized release-status surfaces identify `v0.2.4` consistently.
+- [ ] The final release record contains `Release status: approved for publication` only after all preceding gates pass.
+- [ ] The clean-lineage publication workflow creates and verifies the immutable `v0.2.4` tag and GitHub Release.
+
 ## Blocking gates for v0.2.3
 
-- [x] `v0.2.3` has a versioned release record prepared as the final publication commit.
-- [x] Published tags `v0.1.0`, `v0.2.0`, and `v0.2.1` remain immutable.
-- [x] Existing tag `v0.2.2` is recorded as a non-release tag at pre-patch commit `4fdecbcccb2caf092a145517b2bdcc84e431de27` and is not moved.
-- [x] No GitHub Release is created for `v0.2.2`.
+This historical section records the completed installation-contract release.
+
 - [x] Codex installation includes `SKILL.md` and `agents/openai.yaml` with `allow_implicit_invocation: false`.
 - [x] Claude Code installation contains exactly one `disable-model-invocation: true` field.
-- [x] Canonical module bodies remain provider-neutral and unchanged.
-- [x] The installer refuses to overwrite an existing module directory.
-- [x] The installer rejects destinations that resolve inside the Dwi source checkout, including symlink aliases.
+- [x] The installer rejects overwrites, source-checkout containment, and symlink aliases.
 - [x] Claude repair backups are outside the `.claude/skills/` discovery root.
 - [x] Installed-artifact regression checks cover all seven modules on both harnesses.
-- [x] Repository and install contracts pass on Node.js 20 and 24.
-- [x] Clean Codex fresh-session negative and explicit-invocation tests were reported PASS by Wi on 2026-07-26.
-- [x] Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by Wi on 2026-07-26.
-- [x] Both actionable review threads on PR #5 were addressed and resolved.
-- [x] English and Vietnamese installation meaning is aligned.
-- [x] Localized entry documentation identifies `v0.2.3` as the current reviewed repository release.
-- [x] Canonical module checksums remain current and unchanged from `v0.2.0`.
-- [x] Release notes preserve bounded evidence wording and make no universal compatibility claim.
-- [x] Wi explicitly requested publication of this installation-contract patch on 2026-07-26.
-- [x] The version advances from the occupied `v0.2.2` tag to `v0.2.3` without changing approved release scope.
-- [x] Release automation uses the exact tree SHA of the triggering reviewed `main` commit.
-- [x] Release automation creates one clean publication commit whose only parent is approved boundary `b15a45f00c03c325a12673123f685c32d1ecf8ab`.
-- [x] The clean publication commit uses `Trần Thiện Học <hoc@wi.works>` for both author and committer.
-- [x] The release tag points to the clean publication commit, not to a different content tree.
-- [x] The release workflow verifies tree equality, parent, author, committer, local tag target, remote tag target, and public-release preflight before creating the GitHub Release.
-- [x] The existing `main` history is not rewritten; the clean lineage is used only for the immutable release tag.
-- [x] The release record contains `Release status: approved for publication` before automation may create a tag.
+- [x] Repository and install contracts passed on Node.js 20 and 24.
+- [x] Clean Codex and Claude Code fresh-session tests were reported PASS by Wi on 2026-07-26.
+- [x] The release used a clean publication commit with the exact reviewed tree and approved public identity.
+- [x] Tag `v0.2.3` and its GitHub Release were published successfully.
 
 ## Blocking gates for v0.2.0
 
@@ -79,7 +83,7 @@ This historical section is retained for the existing public-release preflight co
 
 - Wi approved publication of the existing historical author identity through boundary commit `b15a45f00c03c325a12673123f685c32d1ecf8ab` only. Commits after that boundary in the release lineage must use the public release identity.
 - Approved public release identities for new commits are `Trần Thiện Học <hoc@wi.works>` and `Trần Thiện Học <hoctt@icloud.com>`.
-- The `v0.2.3` tag may intentionally point to a clean publication commit whose commit SHA differs from the reviewed `main` commit, but its tree SHA must be identical.
+- A release tag may point to a clean publication commit whose commit SHA differs from the reviewed `main` commit, but its tree SHA must be identical.
 - A clean release lineage does not rewrite or sanitize the existing `main` history.
 - A clean working tree does not sanitize prior commits.
 - A passing static validator does not prove runtime behavior.
