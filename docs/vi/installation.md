@@ -6,14 +6,14 @@ Dwi là một lớp tính người dạng mô-đun. Mỗi mô-đun được phâ
 
 Các ví dụ cài đặt đã phát hành từ `v0.1.0` đến `v0.2.1` chỉ sao chép `SKILL.md`. Cách đó đủ để lớp công cụ nhận ra mô-đun, nhưng không giữ được hợp đồng chỉ kích hoạt khi người dùng gọi rõ:
 
-- Codex còn cần `agents/openai.yaml` với `allow_implicit_invocation: false`.
+- Codex còn cần `agents/openai.yaml` với đúng một khai báo boolean `policy.allow_implicit_invocation` hoạt động và có giá trị `false`.
 - Claude Code cần `disable-model-invocation: true` trong YAML frontmatter của `SKILL.md` đã cài.
 
 Nếu thiếu các điều khiển riêng theo từng lớp công cụ này, model có thể tự chọn mô-đun Dwi dựa trên phần mô tả dù người dùng chưa gọi rõ. Đây là lỗi đóng gói và tài liệu. Lỗi này không tự cấp thêm quyền dùng công cụ, không vượt sandbox và không bỏ qua cơ chế phê duyệt gốc.
 
 Các ví dụ cũ còn `cd` vào checkout Dwi rồi dùng target tương đối như `.agents/skills/...`. Trừ khi checkout Dwi chính là dự án chủ ý dùng để thử, cách đó cài mô-đun vào repo nguồn Dwi thay vì dự án thật của người dùng. Ví dụ đã sửa tách riêng `DWI_ROOT` và `PROJECT_ROOT`, chuẩn hóa đường dẫn vật lý trước khi so sánh và từ chối target nằm trong checkout source Dwi.
 
-Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. `v0.2.3` là bản phát hành đã duyệt có trình cài đầy đủ theo từng lớp công cụ và hướng dẫn target dự án đã sửa. Tag `v0.2.2` hiện có trỏ tới một commit trước bản vá, không được phát hành như bản sửa installation contract và không được dùng cho cách cài đã sửa.
+Các tag đã phát hành phải được giữ bất biến, không sửa ngược lịch sử. `v0.2.3` đã đưa vào trình cài đầy đủ theo từng lớp công cụ và hướng dẫn target dự án đã sửa. `v0.2.4` giữ nguyên nội dung mô-đun và cấu trúc artifact đã cài, đồng thời kiểm tra cấu trúc policy Codex và ghim release automation vào đúng commit đã review. Tag `v0.2.2` hiện có trỏ tới một commit trước bản vá, không được phát hành như bản sửa installation contract và không được dùng cho cách cài đã sửa.
 
 ## Trước khi cài
 
@@ -27,18 +27,18 @@ Không chuyển thẳng một tập lệnh từ xa chưa được xem xét vào 
 
 ## Cài từ checkout đã ghim
 
-Clone bản phát hành bất biến đã sửa:
+Clone bản phát hành bất biến mới nhất:
 
 ```bash
-git clone --depth 1 --branch v0.2.3 \
+git clone --depth 1 --branch v0.2.4 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.3
+  dwi-by-thienhoc-v0.2.4
 ```
 
 Giữ checkout source Dwi đã kiểm tra tách biệt với dự án nhận mô-đun. Thay đường dẫn dự án đích dưới đây bằng một thư mục đã tồn tại. `pwd -P` giải quyết cách viết đường dẫn khác nhau và bí danh symlink trước khi kiểm tra quan hệ chứa:
 
 ```bash
-DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.3" && pwd -P)" || exit 1
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.4" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
 case "$PROJECT_ROOT/" in
@@ -50,7 +50,7 @@ esac
 node --version
 ```
 
-Trình cài cục bộ cần Node.js 20 trở lên, từ chối ghi đè thư mục mô-đun đang có, dựng đủ artifact trước khi chuyển vào vị trí đích, chuẩn hóa target dự kiến và từ chối target trỏ tới checkout source Dwi hoặc bất kỳ thư mục con nào của nó. Kiểm tra này cũng bao phủ bí danh symlink.
+Trình cài cục bộ cần Node.js 20 trở lên, từ chối ghi đè thư mục mô-đun đang có, dựng đủ artifact trước khi chuyển vào vị trí đích, chuẩn hóa target dự kiến và từ chối target trỏ tới checkout source Dwi hoặc bất kỳ thư mục con nào của nó. Kiểm tra này cũng bao phủ bí danh symlink. CLI vẫn chạy đúng khi checkout đã kiểm tra được truy cập qua đường dẫn symlink.
 
 ## Codex
 
@@ -66,6 +66,8 @@ test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
 ```
+
+Trình cài kiểm tra mapping có hiệu lực, không chỉ tìm một đoạn chữ. Nó yêu cầu đúng một block `policy` cấp cao nhất, không dùng quoted key, và đúng một direct child không dùng quoted key tên `allow_implicit_invocation` có giá trị YAML boolean `false`. Trình cài từ chối key tương đương đặt trong dấu nháy, comment giả khai báo, chuỗi gần giống `false`, key trùng, khai báo lồng, thụt dòng sai, flow mapping và block policy trùng.
 
 Cấu trúc sau khi cài là:
 
@@ -165,7 +167,7 @@ dwi-all-in-one
 
 ## URL cài đặt đã ghim cho bản phát hành
 
-`v0.2.3` chứa trình cài hoàn chỉnh theo từng lớp công cụ. Các URL source thô bất biến dưới đây vẫn ghim vào baseline nội dung mô-đun `v0.2.0` vì nội dung mô-đun và mã SHA-256 không thay đổi trong `v0.2.3`. Các URL một file này hữu ích để kiểm tra, nhưng không phải một gói cài explicit-only hoàn chỉnh.
+`v0.2.4` chứa trình cài hoàn chỉnh theo từng lớp công cụ với kiểm tra policy Codex đã được siết chặt. Các URL source thô bất biến dưới đây vẫn ghim vào baseline nội dung mô-đun `v0.2.0` vì nội dung mô-đun và mã SHA-256 không thay đổi trong `v0.2.3` hoặc `v0.2.4`. Các URL một file này hữu ích để kiểm tra, nhưng không phải một gói cài explicit-only hoàn chỉnh.
 
 | Mô-đun | Source chuẩn bất biến |
 | --- | --- |
@@ -177,7 +179,7 @@ dwi-all-in-one
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
 | All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-Bản phát hành `v0.2.3` ghim đầy đủ đường cài và đã PASS `scripts/validate-install-contract.mjs` trước khi công bố. Tag `v0.2.2` hiện có không chứa trình cài này.
+Bản phát hành `v0.2.4` ghim đầy đủ đường cài và PASS `scripts/validate-install-contract.mjs` trước khi công bố. Tag `v0.2.2` hiện có không chứa trình cài này.
 
 ## Sửa một bản cài cũ chỉ có một file
 
