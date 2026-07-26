@@ -90,13 +90,100 @@ function parseYamlMappingEntry(body, sourcePath, lineNumber) {
   return null;
 }
 
-function isYamlBlockMappingValue(rest) {
-  return /^\s*(?:#.*)?$/.test(rest);
+function validateDoubleQuotedScalar(value, sourcePath, lineNumber) {
+  let escaped = false;
+  for (let index = 1; index < value.length; index += 1) {
+    const character = value[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (character === '"') {
+      const trailing = value.slice(index + 1);
+      if (!/^\s*(?:#.*)?$/.test(trailing)) {
+        throw new Error(
+          `${sourcePath}:${lineNumber}: unsupported content after double-quoted scalar`,
+        );
+      }
+      try {
+        JSON.parse(value.slice(0, index + 1));
+      } catch {
+        throw new Error(
+          `${sourcePath}:${lineNumber}: invalid double-quoted YAML scalar`,
+        );
+      }
+      return;
+    }
+  }
+
+  throw new Error(
+    `${sourcePath}:${lineNumber}: multiline double-quoted scalars are not supported`,
+  );
+}
+
+function validateSingleQuotedScalar(value, sourcePath, lineNumber) {
+  for (let index = 1; index < value.length; index += 1) {
+    if (value[index] !== "'") continue;
+    if (value[index + 1] === "'") {
+      index += 1;
+      continue;
+    }
+
+    const trailing = value.slice(index + 1);
+    if (!/^\s*(?:#.*)?$/.test(trailing)) {
+      throw new Error(
+        `${sourcePath}:${lineNumber}: unsupported content after single-quoted scalar`,
+      );
+    }
+    return;
+  }
+
+  throw new Error(
+    `${sourcePath}:${lineNumber}: multiline single-quoted scalars are not supported`,
+  );
+}
+
+function validateYamlSubsetValue(rest, sourcePath, lineNumber) {
+  const value = rest.trimStart();
+  if (value === "" || value.startsWith("#")) {
+    return { blockMapping: true };
+  }
+
+  if (/^[|>]/.test(value)) {
+    throw new Error(
+      `${sourcePath}:${lineNumber}: block scalars are not supported in Codex metadata`,
+    );
+  }
+  if (/^[\[{]/.test(value)) {
+    throw new Error(
+      `${sourcePath}:${lineNumber}: flow collections are not supported in Codex metadata`,
+    );
+  }
+  if (/^[&*!]/.test(value)) {
+    throw new Error(
+      `${sourcePath}:${lineNumber}: anchors, aliases, and custom tags are not supported in Codex metadata`,
+    );
+  }
+
+  if (value.startsWith('"')) {
+    validateDoubleQuotedScalar(value, sourcePath, lineNumber);
+  } else if (value.startsWith("'")) {
+    validateSingleQuotedScalar(value, sourcePath, lineNumber);
+  }
+
+  return { blockMapping: false };
 }
 
 export function validateCodexMetadata(source, sourcePath) {
   if (typeof source !== "string") {
     throw new TypeError(`${sourcePath}: metadata must be UTF-8 text`);
+  }
+  if (source.startsWith("\uFEFF")) {
+    throw new Error(`${sourcePath}: UTF-8 BOM is not supported`);
   }
 
   const lines = source.split(/\r?\n/);
@@ -118,6 +205,20 @@ export function validateCodexMetadata(source, sourcePath) {
     const indent = leadingWhitespace.length;
     const body = line.slice(indent);
 
+    if (
+      indent === 0 &&
+      (/^(?:---|\.\.\.)(?:\s|$)/.test(body) || body.startsWith("%"))
+    ) {
+      throw new Error(
+        `${sourcePath}:${lineNumber}: YAML directives and multiple-document markers are not supported`,
+      );
+    }
+    if (/^(?:-\s|\?\s|:\s)/.test(body)) {
+      throw new Error(
+        `${sourcePath}:${lineNumber}: sequences and explicit mapping keys are not supported`,
+      );
+    }
+
     while (stack.length > 0 && stack.at(-1).indent >= indent) {
       stack.pop();
     }
@@ -126,17 +227,16 @@ export function validateCodexMetadata(source, sourcePath) {
     const entry = parseYamlMappingEntry(body, sourcePath, lineNumber);
 
     if (!entry) {
-      if (
-        body.includes("allow_implicit_invocation") ||
-        body.includes("policy")
-      ) {
-        throw new Error(
-          `${sourcePath}:${lineNumber}: unsupported YAML syntax around invocation policy`,
-        );
-      }
-      continue;
+      throw new Error(
+        `${sourcePath}:${lineNumber}: unsupported YAML syntax in Codex metadata`,
+      );
     }
 
+    const valueShape = validateYamlSubsetValue(
+      entry.rest,
+      sourcePath,
+      lineNumber,
+    );
     const record = {
       ...entry,
       indent,
@@ -150,7 +250,7 @@ export function validateCodexMetadata(source, sourcePath) {
       invocationEntries.push(record);
     }
 
-    if (isYamlBlockMappingValue(entry.rest)) {
+    if (valueShape.blockMapping) {
       stack.push({ key: entry.key, indent, lineNumber });
     }
   }
@@ -183,7 +283,7 @@ export function validateCodexMetadata(source, sourcePath) {
   const isDirectPolicyChild =
     declaration.parent?.key === "policy" && declaration.parent.indent === 0;
   const exactFalsePolicy =
-    /^  allow_implicit_invocation:\s*false\s*(?:#.*)?$/;
+    /^  allow_implicit_invocation:\s*false(?:\s+#.*)?\s*$/;
 
   if (
     !isDirectPolicyChild ||
@@ -192,7 +292,7 @@ export function validateCodexMetadata(source, sourcePath) {
     !exactFalsePolicy.test(declaration.line)
   ) {
     throw new Error(
-      `${sourcePath}:${declaration.lineNumber}: policy.allow_implicit_invocation must be one unquoted direct child with boolean value false`,
+      `${sourcePath}:${declaration.lineNumber}: policy.allow_implicit_invocation must be one unquoted direct child with YAML boolean value false`,
     );
   }
 }
