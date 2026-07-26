@@ -27,7 +27,7 @@ Each focused module:
 
 A complete explicit-only installation is harness-specific:
 
-- Codex installs canonical `SKILL.md` together with `agents/openai.yaml`, where `allow_implicit_invocation: false` is required.
+- Codex installs canonical `SKILL.md` together with `agents/openai.yaml`, where `policy.allow_implicit_invocation` must be the single active boolean `false` declaration.
 - Claude Code installs a rendered copy of canonical `SKILL.md` with `disable-model-invocation: true` added to frontmatter.
 
 Use the reviewed installer rather than copying only `SKILL.md`.
@@ -43,7 +43,8 @@ Project scope is recommended for the first trial. See [the complete installation
 
 ## Version references
 
-- `v0.2.3` is the latest reviewed repository release and corrects the explicit-only installation contract.
+- `v0.2.4` is the latest reviewed repository release and hardens Codex policy validation and first-parent release detection.
+- `v0.2.3` remains the installation-contract release; module content and installed artifact shapes are unchanged in `v0.2.4`.
 - Existing tag `v0.2.2` is a preserved non-release ref to a pre-patch commit and must not be used for the corrected installer.
 - Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
 - `v0.2.1` remains the historical documentation-localization release.
