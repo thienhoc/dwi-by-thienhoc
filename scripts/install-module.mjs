@@ -183,11 +183,12 @@ export function validateCodexMetadata(source, sourcePath) {
     throw new TypeError(`${sourcePath}: metadata must be UTF-8 text`);
   }
   if (source.startsWith("\uFEFF")) {
-    throw new Error(`${sourcePath}: UTF-8 BOM is not supported`);
+    throw new Error($${sourcePath}: UTF-8 BOM is not supported`);
   }
 
   const lines = source.split(/\r?\n/);
   const stack = [];
+  const records = [];
   const policyEntries = [];
   const invocationEntries = [];
 
@@ -243,7 +244,9 @@ export function validateCodexMetadata(source, sourcePath) {
       line,
       lineNumber,
       parent,
+      valueShape,
     };
+    records.push(record);
 
     if (entry.key === "policy") policyEntries.push(record);
     if (entry.key === "allow_implicit_invocation") {
@@ -253,6 +256,63 @@ export function validateCodexMetadata(source, sourcePath) {
     if (valueShape.blockMapping) {
       stack.push({ key: entry.key, indent, lineNumber });
     }
+  }
+
+  const topLevelEntries = records.filter((record) => record.parent === null);
+  const topLevelKeys = topLevelEntries.map((record) => record.key);
+  if (
+    topLevelEntries.length !== 2 ||
+    topLevelKeys.filter((key) => key === "interface").length !== 1 ||
+    topLevelKeys.filter((key) => key === "policy").length !== 1
+  ) {
+    throw new Error(
+      `${sourcePath}: expected exactly the top-level interface and policy blocks`,
+    );
+  }
+
+  const interfaceBlock = topLevelEntries.find(
+    (record) => record.key === "interface",
+  );
+  if (
+    !interfaceBlock ||
+    interfaceBlock.indent !== 0 ||
+    interfaceBlock.quoted ||
+    !interfaceBlock.valueShape.blockMapping
+  ) {
+    throw new Error(
+      `${sourcePath}: interface must be one unquoted top-level block mapping`,
+    );
+  }
+
+  const allowedInterfaceKeys = new Set([
+    "display_name",
+    "short_description",
+    "brand_color",
+    "default_prompt",
+  ]);
+  const interfaceChildren = records.filter(
+    (record) => record.parent?.key === "interface" && record.parent.indent === 0,
+  );
+  if (interfaceChildren.length === 0) {
+    throw new Error( ${sourcePath}: interface block must not be empty`);
+  }
+  const seenInterfaceKeys = new Set();
+  for (const child of interfaceChildren) {
+    if (
+      child.indent !== 2 ||
+      child.quoted ||
+      child.valueShape.blockMapping ||
+      !allowedInterfaceKeys.has(child.key) ||
+      seenInterfaceKeys.has(child.key)
+    ) {
+      throw new Error(
+        `${sourcePath}:${child.lineNumber}: interface must contain unique supported scalar fields`,
+      );
+    }
+    seenInterfaceKeys.add(child.key);
+  }
+  if (!seenInterfaceKeys.has("display_name")) {
+    throw new Error(`${sourcePath}: interface.display_name is required`);
   }
 
   if (policyEntries.length !== 1) {
@@ -273,9 +333,16 @@ export function validateCodexMetadata(source, sourcePath) {
     );
   }
 
-  if (invocationEntries.length !== 1) {
+  const policyChildren = records.filter(
+    (record) => record.parent?.key === "policy" && record.parent.indent === 0,
+  );
+  if (
+    invocationEntries.length !== 1 ||
+    policyChildren.length !== 1 ||
+    policyChildren[0].key !== "allow_implicit_invocation"
+  ) {
     throw new Error(
-      `${sourcePath}: expected exactly one active allow_implicit_invocation declaration`,
+      `${sourcePath}: policy must contain exactly one active allow_implicit_invocation declaration`,
     );
   }
 

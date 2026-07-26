@@ -19,7 +19,13 @@ const validFixtures = new Map([
   ],
   [
     "separated comment",
-    "policy:\n  allow_implicit_invocation: false # explicit only\n",
+    [
+      "interface:",
+      "  display_name: Dwi",
+      "policy:",
+      "  allow_implicit_invocation: false # explicit only",
+      "",
+    ].join("\n"),
   ],
 ]);
 
@@ -94,6 +100,26 @@ const malformedFixtures = new Map([
   [
     "UTF-8 BOM",
     "\uFEFFpolicy:\n  allow_implicit_invocation: false\n",
+  ],
+  [
+    "unknown top-level key",
+    "interface:\n  display_name: Dwi\nextra: value\npolicy:\n  allow_implicit_invocation: false\n",
+  ],
+  [
+    "scalar interface",
+    "interface: Dwi\npolicy:\n  allow_implicit_invocation: false\n",
+  ],
+  [
+    "duplicate interface field",
+    "interface:\n  display_name: Dwi\n  display_name: Other\npolicy:\n  allow_implicit_invocation: false\n",
+  ],
+  [
+    "unknown interface field",
+    "interface:\n  display_name: Dwi\n  hidden_behavior: enabled\npolicy:\n  allow_implicit_invocation: false\n",
+  ],
+  [
+    "extra policy child",
+    "interface:\n  display_name: Dwi\npolicy:\n  allow_implicit_invocation: false\n  another_control: true\n",
   ],
 ]);
 
