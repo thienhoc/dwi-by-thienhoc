@@ -36,14 +36,8 @@ for (const [name, fixture] of validFixtures) {
 }
 
 const malformedFixtures = new Map([
-  [
-    "multiline double-quoted scalar",
-    [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi'), /multiline quoted scalars/],
-  ],
-  [
-    "multiline single-quoted scalar",
-    [replace('  display_name: "Dwi • Conduct"', "  display_name: 'Dwi"), /multiline quoted scalars/],
-  ],
+  ["multiline double-quoted scalar", [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi'), /multiline quoted scalars/]],
+  ["multiline single-quoted scalar", [replace('  display_name: "Dwi • Conduct"', "  display_name: 'Dwi"), /multiline quoted scalars/]],
   ["literal block scalar", [replace('  display_name: "Dwi • Conduct"', "  display_name: |"), /block scalars/]],
   ["folded block scalar", [replace('  display_name: "Dwi • Conduct"', "  display_name: >"), /block scalars/]],
   ["unseparated policy comment", [replace("false", "false#note"), /YAML boolean false/]],
@@ -72,6 +66,12 @@ const malformedFixtures = new Map([
   ["duplicate interface field", [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi"\n  display_name: "Other"'), /unsupported or duplicate/]],
   ["unknown interface field", [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi"\n  hidden_behavior: enabled'), /unsupported or duplicate/]],
   ["extra policy child", [replace("  allow_implicit_invocation: false", "  allow_implicit_invocation: false\n  another_control: true"), /policy must contain only/]],
+  ["NBSP before interface colon", [replace("interface:", "interface\u00A0:"), /unsupported YAML syntax/]],
+  ["NBSP before policy colon", [replace("policy:", "policy\u00A0:"), /unsupported YAML syntax/]],
+  ["NUL in mapping comment", [replace("interface:", "interface: # note\u0000"), /control characters are not supported/]],
+  ["vertical tab in scalar comment", [replace('"Dwi • Conduct"', '"Dwi • Conduct" # note\u000B'), /control characters are not supported/]],
+  ["lone high surrogate escape", [replace('"Dwi • Conduct"', '"\\uD800"'), /lone surrogate/]],
+  ["lone low surrogate escape", [replace('"Dwi • Conduct"', '"\\uDC00"'), /lone surrogate/]],
 ]);
 
 for (const [name, [fixture, expectedError]] of malformedFixtures) {
