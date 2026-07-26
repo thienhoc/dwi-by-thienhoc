@@ -22,17 +22,17 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] YAML-forbidden control characters are rejected anywhere in metadata, including comments.
 - [x] Lone surrogate code units are rejected in source text and decoded quoted keys or values.
 - [x] Valid Unicode scalar values and surrogate pairs remain supported.
-- [x] Targeted fixtures cover no-break-space keys, NUL and vertical-tab comments, and lone high and low surrogate escapes.
-- [x] The adversarial suite covers 3 accepted and 36 targeted rejected fixtures.
+- [x] Targeted fixtures cover no-break-space keys, NUL and vertical-tab comments, lone high and low surrogate escapes, and one valid escaped surrogate pair.
+- [x] The adversarial suite covers 4 accepted and 36 targeted rejected fixtures.
 - [x] `npm test` includes repository validation, the adversarial suite, and the complete installed-artifact contract.
-- [x] Repository and install contracts pass on Node.js 20 and 24 for commit `578d9c2f22922f8b2c6d41f49bbd31a72cfcfdb5` in workflow run `30184802533`.
+- [x] Repository and install contracts pass on Node.js 20 and 24 for commit `508521e6e6838680569287ab694574ca1a6512ef` in workflow run `30184890807`.
 - [x] All seven modules pass Codex and Claude Code installed-artifact checks.
 - [x] Existing containment, overwrite, symlink, documentation, and cleanup checks remain active.
-- [ ] The three actionable post-release review threads on PR #9 are answered and resolved with PR #10 as evidence.
-- [ ] All actionable review threads on PR #10 are addressed and resolved.
-- [ ] Final review of the complete PR #10 diff finds no remaining actionable issue.
+- [x] The three actionable post-release review threads on PR #9 were answered and resolved with PR #10 as evidence.
+- [x] PR #10 has no unresolved actionable review threads.
+- [x] Final review of the complete PR #10 diff found no remaining actionable correctness, regression, release-truth, or content-loss issue after adding the positive surrogate-pair fixture.
 - [x] Wi previously authorized immediate completion and publication of follow-up correctness patches on 2026-07-26.
-- [ ] The exact `Release status: approved for publication` marker is added only after all remaining gates close.
+- [x] The exact `Release status: approved for publication` marker is added only after all remaining gates close.
 - [x] The clean-lineage workflow remains configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.6` tag, verify the remote tag target, and create the GitHub Release.
 
 ## Blocking gates for v0.2.5
