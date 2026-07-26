@@ -137,3 +137,19 @@ All notable repository changes are recorded here.
 - Added English and Vietnamese entry documentation.
 - Added inspect-first installation, exact removal, safety, evidence, brand, governance, support, and contribution guidance.
 - Added original SVG brand sources and a repository-only architecture diagram.
+- Added a dependency-free offline repository contract checker.
+- Added least-privilege GitHub Actions validation.
+- Added Apache-2.0 for code and operational files, CC BY 4.0 for documentation and original assets, and a separate trademark policy.
+- Added pinned per-module install URLs and SHA-256 verification for the six focused modules.
+- Added a reproducible social-preview export receipt.
+
+### Removed
+
+- Removed Next.js, Vite, Cloudflare, static landing-page, Sites hosting, deployment, telemetry, and generated website audit material from the public repository boundary.
+
+### Release truth
+
+- Release tag: `v0.1.0`
+- Included installable modules: six focused modules
+- Excluded from the release: `dwi-all-in-one`
+- Release record: [docs/releases/v0.1.0.md](docs/releases/v0.1.0.md)
