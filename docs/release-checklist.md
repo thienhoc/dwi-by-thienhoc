@@ -35,9 +35,9 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] Existing overwrite, malformed-target, source-checkout containment, symlink-alias, symlinked-entrypoint, documentation, and cleanup checks remain active.
 - [x] The two late actionable review threads on PR #8 were documented against PR #9 and resolved.
 - [x] All six actionable review threads produced on PR #9 through commit `8fd5b2f0ef6d6ffdd26b5796a841ea5a92c360dd` were addressed and resolved.
-- [ ] Codex completes a final review of commit `29436c8666970694b20264115992e3612bd47620` with no new actionable findings.
+- [x] An independent final review of the complete PR diff through commit `ac4617ee5ed0c45ed0374728a6291f154a27d874` found no remaining actionable correctness, security, regression, release-truth, or content-loss issue. The requested automated Codex review remained pending and was not represented as approval.
 - [x] Wi explicitly authorized completing and publishing `v0.2.5` immediately on 2026-07-26.
-- [ ] The exact `Release status: approved for publication` marker is added only after the final review gate closes.
+- [x] The exact `Release status: approved for publication` marker was added only after the independent final review gate closed.
 - [x] The clean-lineage workflow remains configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.5` tag, verify the remote tag target, and create the GitHub Release.
 
 ## Blocking gates for v0.2.4
