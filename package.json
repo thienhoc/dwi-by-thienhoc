@@ -19,9 +19,9 @@
   },
   "type": "module",
   "scripts": {
-    "check": "node scripts/validate-repo.mjs && node scripts/validate-install-contract.mjs",
+    "check": "node scripts/validate-repo.mjs && node scripts/validate-yaml-policy-adversarial.mjs && node scripts/validate-install-contract.mjs",
     "test": "npm run check",
-    "preflight:public": "node scripts/validate-install-contract.mjs && node scripts/public-release-preflight.mjs"
+    "preflight:public": "node scripts/validate-yaml-policy-adversarial.mjs && node scripts/validate-install-contract.mjs && node scripts/public-release-preflight.mjs"
   },
   "engines": {
     "node": ">=20"

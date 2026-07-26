@@ -4,6 +4,25 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+### Fixed
+
+- Hardened Codex metadata validation against multiline quoted scalars and values such as `false#note` that can visually resemble the required boolean policy while parsing differently.
+- Changed unsupported YAML syntax from best-effort line skipping to fail-closed rejection.
+- Rejected block scalars, flow collections, anchors, aliases, custom tags, directives, document markers, sequences, explicit mapping keys, tabs, and UTF-8 BOM input in Codex metadata.
+
+### Validation
+
+- Added a dedicated adversarial YAML-policy suite and included it in the normal repository check and public-release preflight.
+- Preserved all seven-module Codex and Claude Code installed-artifact checks, containment checks, overwrite protection, symlink handling, and cleanup assertions.
+
+### Release truth
+
+- Intended patch release: `v0.2.5`
+- Base release: `v0.2.4`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Release record: [docs/releases/v0.2.5.md](docs/releases/v0.2.5.md)
+
 ## 0.2.4 - 2026-07-26
 
 ### Fixed
