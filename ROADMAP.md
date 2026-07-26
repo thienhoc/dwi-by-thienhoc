@@ -60,11 +60,25 @@ See [the v0.2.2 non-release record](docs/releases/v0.2.2.md).
 - [x] Add installed-artifact and failure-path regression checks for both harnesses
 - [x] Pass repository and installation contracts on Node.js 20 and 24
 - [x] Record bounded clean-session runtime PASS observations for Codex and Claude Code
-- [x] Resolve all actionable PR review threads
 - [x] Preserve the occupied `v0.2.2` ref and advance the approved release to `v0.2.3`
-- [x] Publish the reviewed `v0.2.3` tag and GitHub Release through the gated release workflow
+- [x] Publish the reviewed `v0.2.3` tag and GitHub Release through the gated clean-lineage workflow
 
 See [the v0.2.3 release record](docs/releases/v0.2.3.md).
+
+## 0.2.4 Validation-hardening release - released as v0.2.4
+
+- [x] Replace Codex policy substring matching with structural block-mapping validation
+- [x] Reject quoted equivalent keys, false-like strings, duplicates, nested declarations, wrong indentation, flow mappings, and duplicate policy blocks
+- [x] Preserve import-safe installer tests while allowing CLI execution through a symlinked entrypoint
+- [x] Keep release validation pinned to the exact triggering `GITHUB_SHA`
+- [x] Detect release records through an explicit first-parent diff
+- [x] Add regression assertions for policy structure, symlinked CLI execution, and merge-commit release detection
+- [x] Preserve canonical module bodies, checksums, and installed artifact shapes
+- [x] Pass repository and installation contracts on Node.js 20 and 24
+- [x] Resolve all actionable late review threads
+- [x] Publish the reviewed `v0.2.4` tag and GitHub Release through the gated clean-lineage workflow
+
+See [the v0.2.4 release record](docs/releases/v0.2.4.md).
 
 ## Later, only with evidence
 
