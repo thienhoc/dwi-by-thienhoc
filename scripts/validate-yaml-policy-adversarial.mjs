@@ -1,32 +1,31 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import { validateCodexMetadata } from "./install-module.mjs";
+import { validateCodexMetadata } from "./codex-metadata-validator.mjs";
+
+const canonical = [
+  "interface:",
+  '  display_name: "Dwi • Conduct"',
+  '  short_description: "Clear, kind, answerable agent communication"',
+  '  brand_color: "#FF4F2E"',
+  '  default_prompt: "Use $dwi-conduct explicitly."',
+  "policy:",
+  "  allow_implicit_invocation: false",
+  "",
+].join("\n");
+
+const replace = (from, to) => canonical.replace(from, to);
 
 const validFixtures = new Map([
+  ["canonical metadata", canonical],
   [
-    "canonical metadata",
-    [
-      "interface:",
-      '  display_name: "Dwi • Conduct"',
-      '  short_description: "Clear, kind, answerable agent communication"',
-      '  brand_color: "#FF4F2E"',
-      '  default_prompt: "Use $dwi-conduct explicitly."',
-      "policy:",
-      "  allow_implicit_invocation: false",
-      "",
-    ].join("\n"),
+    "separated comments",
+    canonical
+      .replace("interface:", "interface: # public interface")
+      .replace("policy:", "policy: # invocation policy")
+      .replace("false", "false # explicit only"),
   ],
-  [
-    "separated comment",
-    [
-      "interface:",
-      "  display_name: Dwi",
-      "policy:",
-      "  allow_implicit_invocation: false # explicit only",
-      "",
-    ].join("\n"),
-  ],
+  ["safe plain scalar", replace('  display_name: "Dwi • Conduct"', "  display_name: Dwi Conduct")],
 ]);
 
 for (const [name, fixture] of validFixtures) {
@@ -39,98 +38,50 @@ for (const [name, fixture] of validFixtures) {
 const malformedFixtures = new Map([
   [
     "multiline double-quoted scalar",
-    'foo: "text\npolicy:\n  allow_implicit_invocation: false\n"\n',
+    [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi'), /multiline quoted scalars/],
   ],
   [
     "multiline single-quoted scalar",
-    "foo: 'text\npolicy:\n  allow_implicit_invocation: false\n'\n",
+    [replace('  display_name: "Dwi • Conduct"', "  display_name: 'Dwi"), /multiline quoted scalars/],
   ],
-  [
-    "literal block scalar",
-    "foo: |\n  policy:\n    allow_implicit_invocation: false\n",
-  ],
-  [
-    "folded block scalar",
-    "foo: >\n  policy:\n    allow_implicit_invocation: false\n",
-  ],
-  [
-    "unseparated comment marker",
-    "policy:\n  allow_implicit_invocation: false#note\n",
-  ],
-  [
-    "flow mapping",
-    "policy: { allow_implicit_invocation: false }\n",
-  ],
-  [
-    "flow sequence",
-    "interface: [policy, allow_implicit_invocation]\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "anchor",
-    "defaults: &defaults false\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "alias",
-    "defaults: false\npolicy:\n  allow_implicit_invocation: *defaults\n",
-  ],
-  [
-    "custom tag",
-    "policy:\n  allow_implicit_invocation: !bool false\n",
-  ],
-  [
-    "document start",
-    "---\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "second document",
-    "policy:\n  allow_implicit_invocation: false\n---\npolicy:\n  allow_implicit_invocation: true\n",
-  ],
-  [
-    "directive",
-    "%YAML 1.2\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "sequence item",
-    "- policy:\n    allow_implicit_invocation: false\n",
-  ],
-  [
-    "explicit mapping key",
-    "? policy\n: allow_implicit_invocation: false\n",
-  ],
-  [
-    "UTF-8 BOM",
-    "\uFEFFpolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "unknown top-level key",
-    "interface:\n  display_name: Dwi\nextra: value\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "scalar interface",
-    "interface: Dwi\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "duplicate interface field",
-    "interface:\n  display_name: Dwi\n  display_name: Other\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "unknown interface field",
-    "interface:\n  display_name: Dwi\n  hidden_behavior: enabled\npolicy:\n  allow_implicit_invocation: false\n",
-  ],
-  [
-    "extra policy child",
-    "interface:\n  display_name: Dwi\npolicy:\n  allow_implicit_invocation: false\n  another_control: true\n",
-  ],
+  ["literal block scalar", [replace('  display_name: "Dwi • Conduct"', "  display_name: |"), /block scalars/]],
+  ["folded block scalar", [replace('  display_name: "Dwi • Conduct"', "  display_name: >"), /block scalars/]],
+  ["unseparated policy comment", [replace("false", "false#note"), /YAML boolean false/]],
+  ["unseparated mapping comment", [replace("interface:", "interface:#note"), /separated from its colon/]],
+  ["unseparated policy mapping comment", [replace("policy:", "policy:#note"), /separated from its colon/]],
+  ["unseparated policy value", [replace("allow_implicit_invocation: false", "allow_implicit_invocation:false"), /separated from its colon/]],
+  ["flow mapping", [replace("policy:", "policy: { allow_implicit_invocation: false }"), /flow collections/]],
+  ["flow sequence", [replace('  display_name: "Dwi • Conduct"', "  display_name: [Dwi]"), /flow collections/]],
+  ["anchor", [replace('  display_name: "Dwi • Conduct"', "  display_name: &name Dwi"), /anchors, aliases/]],
+  ["alias", [replace('  display_name: "Dwi • Conduct"', "  display_name: *name"), /anchors, aliases/]],
+  ["custom tag", [replace('  display_name: "Dwi • Conduct"', "  display_name: !text Dwi"), /anchors, aliases/]],
+  ["document start", [`---\n${canonical}`, /document markers/]],
+  ["second document", [`${canonical}---\n${canonical}`, /document markers/]],
+  ["directive", [`%YAML 1.2\n${canonical}`, /directives/]],
+  ["sequence item", [replace('  display_name: "Dwi • Conduct"', "  - display_name: Dwi"), /sequences/]],
+  ["explicit mapping key", [replace('  display_name: "Dwi • Conduct"', "  ? display_name\n  : Dwi"), /explicit mapping keys/]],
+  ["UTF-8 BOM", [`\uFEFF${canonical}`, /UTF-8 BOM/]],
+  ["tab indentation", [replace('  display_name: "Dwi • Conduct"', '\tdisplay_name: "Dwi"'), /tabs are not supported/]],
+  ["tab after colon", [replace("allow_implicit_invocation: false", "allow_implicit_invocation:\tfalse"), /tabs are not supported/]],
+  ["tab before comment", [replace("false", "false\t# note"), /tabs are not supported/]],
+  ["plain scalar unsafe colon", [replace('  display_name: "Dwi • Conduct"', "  display_name: a: b"), /unsafe mapping separator/]],
+  ["plain scalar reserved indicator", [replace('  display_name: "Dwi • Conduct"', "  display_name: @value"), /unsupported plain scalar indicator/]],
+  ["quoted scalar unseparated comment", [replace('"Dwi • Conduct"', '"Dwi • Conduct"#note'), /content follows a quoted scalar/]],
+  ["unknown top-level key", [`${canonical}extra: value\n`, /expected exactly the top-level/]],
+  ["scalar interface", [replace("interface:", "interface: Dwi"), /expected exactly the top-level/]],
+  ["duplicate interface field", [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi"\n  display_name: "Other"'), /unsupported or duplicate/]],
+  ["unknown interface field", [replace('  display_name: "Dwi • Conduct"', '  display_name: "Dwi"\n  hidden_behavior: enabled'), /unsupported or duplicate/]],
+  ["extra policy child", [replace("  allow_implicit_invocation: false", "  allow_implicit_invocation: false\n  another_control: true"), /policy must contain only/]],
 ]);
 
-for (const [name, fixture] of malformedFixtures) {
+for (const [name, [fixture, expectedError]] of malformedFixtures) {
   assert.throws(
     () => validateCodexMetadata(fixture, `${name}/agents/openai.yaml`),
-    Error,
-    `Codex metadata validator accepted ${name}`,
+    expectedError,
+    `Codex metadata validator did not reject ${name} for the targeted reason`,
   );
 }
 
 console.log(
-  `Adversarial Codex metadata validation passed for ${validFixtures.size} valid and ${malformedFixtures.size} rejected fixtures.`,
+  `Adversarial Codex metadata validation passed for ${validFixtures.size} valid and ${malformedFixtures.size} targeted rejected fixtures.`,
 );
