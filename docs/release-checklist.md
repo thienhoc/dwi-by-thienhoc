@@ -14,24 +14,27 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 
 ## Blocking gates for v0.2.4
 
-- [x] `v0.2.4` has a draft versioned release record.
+- [x] `v0.2.4` has a versioned release record.
 - [x] `v0.2.3` remains immutable and valid.
 - [x] Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
 - [x] Codex and Claude installed artifact shapes remain unchanged from `v0.2.3`.
-- [x] The production installer exports and uses one strict Codex metadata validator.
-- [x] The strict validator requires exactly one active `allow_implicit_invocation` declaration.
-- [x] The declaration must be inside the single top-level `policy` block with canonical indentation and boolean value `false`.
-- [x] Regression fixtures reject lookalike keys, commented occurrences, `falsehood`, `true`, duplicate declarations, wrong-block declarations, wrong indentation, and duplicate policy blocks.
+- [x] The production installer exports and uses one structural Codex metadata validator.
+- [x] The validator requires exactly one active `allow_implicit_invocation` declaration.
+- [x] The declaration must be an unquoted direct child of the single unquoted top-level `policy` block, use canonical indentation, and have boolean value `false`.
+- [x] Regression fixtures reject lookalike keys, comments posing as declarations, false-like strings, `true`, duplicate declarations, quoted and escaped equivalent keys, nested declarations, wrong blocks, wrong indentation, flow mappings, and duplicate policy blocks.
 - [x] Importing `scripts/install-module.mjs` does not execute the CLI entrypoint.
+- [x] Calling the installer through a symlinked entrypoint executes the CLI and creates the complete artifact.
 - [x] Release automation remains pinned to the triggering `GITHUB_SHA` before inspecting release records.
 - [x] Release automation compares the triggering commit with its first parent.
 - [x] Regression validation forbids the former commit-only `git diff-tree` release-record scan.
-- [ ] Repository and install contracts pass on Node.js 20 and 24 for the complete candidate.
-- [ ] All actionable late review threads on PR #5 are replied to and resolved.
-- [ ] The v0.2.4 pull request is reviewed, mergeable, and merged after checks pass.
-- [ ] English, Vietnamese, and localized release-status surfaces identify `v0.2.4` consistently.
-- [ ] The final release record contains `Release status: approved for publication` only after all preceding gates pass.
-- [ ] The clean-lineage publication workflow creates and verifies the immutable `v0.2.4` tag and GitHub Release.
+- [x] Repository and install contracts pass on Node.js 20 and 24 for the complete candidate in workflow run `30180937560`.
+- [x] All actionable late review threads on PR #5 were documented and resolved.
+- [x] All actionable review threads on PR #8 were replied to and resolved.
+- [x] PR #8 was squash-merged after checks passed at commit `85ed839994de72f6c8a5ca5bedd2cc9de7a68134`.
+- [x] English, Vietnamese, Japanese, Korean, Simplified Chinese, French, and Hindi release-status surfaces identify `v0.2.4` consistently.
+- [x] Wi explicitly authorized completing and publishing this patch on 2026-07-26.
+- [x] This checklist commit closes every prerequisite before the separate final publication commit adds the exact `Release status: approved for publication` marker.
+- [x] The clean-lineage workflow is configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.4` tag, verify the remote tag target, and create the GitHub Release.
 
 ## Blocking gates for v0.2.3
 
