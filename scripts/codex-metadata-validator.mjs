@@ -11,8 +11,23 @@ function error(sourcePath, lineNumber, message) {
   return new Error(`${location}: ${message}`);
 }
 
+function assertUnicodeScalarString(value, sourcePath, lineNumber) {
+  for (let index = 0; index < value.length; index += 1) {
+    const codeUnit = value.charCodeAt(index);
+    if (codeUnit >= 0xd800 && codeUnit <= 0xdbff) {
+      const next = value.charCodeAt(index + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw error(sourcePath, lineNumber, "Unicode text contains a lone surrogate");
+      }
+      index += 1;
+    } else if (codeUnit >= 0xdc00 && codeUnit <= 0xdfff) {
+      throw error(sourcePath, lineNumber, "Unicode text contains a lone surrogate");
+    }
+  }
+}
+
 function parseEntry(body, sourcePath, lineNumber) {
-  const doubleQuoted = body.match(/^"((?:[^"\\]|\\.)*)"\s*:(.*)$/);
+  const doubleQuoted = body.match(/^"((?:[^"\\]|\\.)*)" *:(.*)$/);
   if (doubleQuoted) {
     let key;
     try {
@@ -20,19 +35,18 @@ function parseEntry(body, sourcePath, lineNumber) {
     } catch {
       throw error(sourcePath, lineNumber, "invalid double-quoted YAML key");
     }
+    assertUnicodeScalarString(key, sourcePath, lineNumber);
     return { key, rest: doubleQuoted[2], quoted: true };
   }
 
-  const singleQuoted = body.match(/^'((?:[^']|'')*)'\s*:(.*)$/);
+  const singleQuoted = body.match(/^'((?:[^']|'')*)' *:(.*)$/);
   if (singleQuoted) {
-    return {
-      key: singleQuoted[1].replace(/''/g, "'"),
-      rest: singleQuoted[2],
-      quoted: true,
-    };
+    const key = singleQuoted[1].replace(/''/g, "'");
+    assertUnicodeScalarString(key, sourcePath, lineNumber);
+    return { key, rest: singleQuoted[2], quoted: true };
   }
 
-  const plain = body.match(/^([A-Za-z_][A-Za-z0-9_-]*)\s*:(.*)$/);
+  const plain = body.match(/^([A-Za-z_][A-Za-z0-9_-]*) *:(.*)$/);
   return plain ? { key: plain[1], rest: plain[2], quoted: false } : null;
 }
 
@@ -55,11 +69,13 @@ function validateQuotedScalar(value, quote, sourcePath, lineNumber) {
       } else if (character === '"') {
         const scalar = value.slice(0, index + 1);
         validateTrailingComment(value.slice(index + 1), sourcePath, lineNumber);
+        let decoded;
         try {
-          JSON.parse(scalar);
+          decoded = JSON.parse(scalar);
         } catch {
           throw error(sourcePath, lineNumber, "invalid double-quoted YAML scalar");
         }
+        assertUnicodeScalarString(decoded, sourcePath, lineNumber);
         return;
       }
     }
@@ -70,6 +86,8 @@ function validateQuotedScalar(value, quote, sourcePath, lineNumber) {
         index += 1;
         continue;
       }
+      const decoded = value.slice(1, index).replace(/''/g, "'");
+      assertUnicodeScalarString(decoded, sourcePath, lineNumber);
       validateTrailingComment(value.slice(index + 1), sourcePath, lineNumber);
       return;
     }
@@ -89,9 +107,6 @@ function validatePlainScalar(value, sourcePath, lineNumber) {
   }
   if (/:(?:\s|$)/.test(scalar)) {
     throw error(sourcePath, lineNumber, "plain scalar contains an unsafe mapping separator");
-  }
-  if (/[\u0000-\u001F\u007F]/.test(scalar)) {
-    throw error(sourcePath, lineNumber, "plain scalar contains a control character");
   }
 }
 
@@ -132,6 +147,10 @@ export function validateCodexMetadata(source, sourcePath) {
   if (source.includes("\t")) {
     throw error(sourcePath, null, "tabs are not supported in Codex metadata");
   }
+  if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/.test(source)) {
+    throw error(sourcePath, null, "control characters are not supported in Codex metadata");
+  }
+  assertUnicodeScalarString(source, sourcePath, null);
 
   const stack = [];
   const records = [];
