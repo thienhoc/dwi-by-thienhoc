@@ -36,6 +36,13 @@ function parseEntry(body, sourcePath, lineNumber) {
   return plain ? { key: plain[1], rest: plain[2], quoted: false } : null;
 }
 
+function validateTrailingComment(trailing, sourcePath, lineNumber) {
+  if (trailing === "" || /^ +$/.test(trailing) || /^ +#.*$/.test(trailing)) {
+    return;
+  }
+  throw error(sourcePath, lineNumber, "content follows a quoted scalar");
+}
+
 function validateQuotedScalar(value, quote, sourcePath, lineNumber) {
   if (quote === '"') {
     let escaped = false;
@@ -47,10 +54,7 @@ function validateQuotedScalar(value, quote, sourcePath, lineNumber) {
         escaped = true;
       } else if (character === '"') {
         const scalar = value.slice(0, index + 1);
-        const trailing = value.slice(index + 1);
-        if (!/^\s*(?:#.*)?$/.test(trailing)) {
-          throw error(sourcePath, lineNumber, "content follows a quoted scalar");
-        }
+        validateTrailingComment(value.slice(index + 1), sourcePath, lineNumber);
         try {
           JSON.parse(scalar);
         } catch {
@@ -66,18 +70,39 @@ function validateQuotedScalar(value, quote, sourcePath, lineNumber) {
         index += 1;
         continue;
       }
-      if (!/^\s*(?:#.*)?$/.test(value.slice(index + 1))) {
-        throw error(sourcePath, lineNumber, "content follows a quoted scalar");
-      }
+      validateTrailingComment(value.slice(index + 1), sourcePath, lineNumber);
       return;
     }
   }
   throw error(sourcePath, lineNumber, "multiline quoted scalars are not supported");
 }
 
+function validatePlainScalar(value, sourcePath, lineNumber) {
+  const commentIndex = value.search(/ +#/);
+  const scalar = (commentIndex === -1 ? value : value.slice(0, commentIndex)).trimEnd();
+
+  if (scalar === "") {
+    throw error(sourcePath, lineNumber, "plain scalar must not be empty");
+  }
+  if (/^[\-?:,\[\]{}#&*!|>'"%@`]/.test(scalar)) {
+    throw error(sourcePath, lineNumber, "unsupported plain scalar indicator");
+  }
+  if (/:(?:\s|$)/.test(scalar)) {
+    throw error(sourcePath, lineNumber, "plain scalar contains an unsafe mapping separator");
+  }
+  if (/[\u0000-\u001F\u007F]/.test(scalar)) {
+    throw error(sourcePath, lineNumber, "plain scalar contains a control character");
+  }
+}
+
 function classifyValue(rest, sourcePath, lineNumber) {
+  if (rest === "") return "mapping";
+  if (/^ +#.*$/.test(rest)) return "mapping";
+  if (!/^ +/.test(rest)) {
+    throw error(sourcePath, lineNumber, "a mapping value must be separated from its colon");
+  }
+
   const value = rest.trimStart();
-  if (value === "" || value.startsWith("#")) return "mapping";
   if (/^[|>]/.test(value)) {
     throw error(sourcePath, lineNumber, "block scalars are not supported");
   }
@@ -87,8 +112,13 @@ function classifyValue(rest, sourcePath, lineNumber) {
   if (/^[&*!]/.test(value)) {
     throw error(sourcePath, lineNumber, "anchors, aliases, and custom tags are not supported");
   }
-  if (value.startsWith('"')) validateQuotedScalar(value, '"', sourcePath, lineNumber);
-  if (value.startsWith("'")) validateQuotedScalar(value, "'", sourcePath, lineNumber);
+  if (value.startsWith('"')) {
+    validateQuotedScalar(value, '"', sourcePath, lineNumber);
+  } else if (value.startsWith("'")) {
+    validateQuotedScalar(value, "'", sourcePath, lineNumber);
+  } else {
+    validatePlainScalar(value, sourcePath, lineNumber);
+  }
   return "scalar";
 }
 
@@ -99,17 +129,17 @@ export function validateCodexMetadata(source, sourcePath) {
   if (source.startsWith("\uFEFF")) {
     throw error(sourcePath, null, "UTF-8 BOM is not supported");
   }
+  if (source.includes("\t")) {
+    throw error(sourcePath, null, "tabs are not supported in Codex metadata");
+  }
 
   const stack = [];
   const records = [];
   for (const [index, line] of source.split(/\r?\n/).entries()) {
     const lineNumber = index + 1;
-    if (/^\s*$/.test(line) || /^\s*#/.test(line)) continue;
+    if (/^ *$/.test(line) || /^ *#/.test(line)) continue;
 
-    const whitespace = line.match(/^[ \t]*/)?.[0] ?? "";
-    if (whitespace.includes("\t")) {
-      throw error(sourcePath, lineNumber, "tabs are not allowed in indentation");
-    }
+    const whitespace = line.match(/^ */)?.[0] ?? "";
     const indent = whitespace.length;
     const body = line.slice(indent);
     if (indent === 0 && (/^(?:---|\.\.\.)(?:\s|$)/.test(body) || body.startsWith("%"))) {
@@ -166,7 +196,7 @@ export function validateCodexMetadata(source, sourcePath) {
   const declaration = policyChildren[0];
   if (
     declaration.indent !== 2 || declaration.quoted || declaration.kind !== "scalar" ||
-    !/^  allow_implicit_invocation:\s*false(?:\s+#.*)?\s*$/.test(declaration.line)
+    !/^  allow_implicit_invocation: +false(?: +#.*)? *$/.test(declaration.line)
   ) {
     throw error(
       sourcePath,
