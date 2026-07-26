@@ -4,6 +4,29 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.6 - 2026-07-26
+
+### Fixed
+
+- Rejected non-ASCII whitespace between YAML mapping keys and colons.
+- Rejected YAML-forbidden control characters anywhere in Codex metadata, including comments.
+- Rejected lone surrogate code units in source text and decoded quoted keys or values.
+
+### Validation
+
+- Added targeted no-break-space, control-character, and lone-surrogate fixtures.
+- Preserved all adversarial parser checks and the seven-module Codex and Claude Code installed-artifact suite.
+
+### Release truth
+
+- Intended patch release: `v0.2.6`
+- Base release: `v0.2.5`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Release record: [docs/releases/v0.2.6.md](docs/releases/v0.2.6.md)
+
+## 0.2.5 - 2026-07-26
+
 ### Fixed
 
 - Hardened Codex metadata validation against multiline quoted scalars and values such as `false#note` that can visually resemble the required boolean policy while parsing differently.
@@ -17,7 +40,7 @@ All notable repository changes are recorded here.
 
 ### Release truth
 
-- Intended patch release: `v0.2.5`
+- Release tag: `v0.2.5`
 - Base release: `v0.2.4`
 - Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
 - Installed artifact shapes: unchanged from `v0.2.3`

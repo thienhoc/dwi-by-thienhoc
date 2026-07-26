@@ -1,8 +1,8 @@
-# Release checklist for Dwi v0.2.5
+# Release checklist for Dwi v0.2.6
 
 Repository visibility, a development branch, a release tag, and a GitHub Release are separate states.
 
-The current release candidate is `v0.2.5`. Release `v0.2.4` remains immutable. This patch hardens the Codex metadata validator and its regression architecture without changing canonical module content or installed artifact shapes.
+The current release candidate is `v0.2.6`. Release `v0.2.5` remains immutable. This patch closes three post-release Unicode and parser-integrity findings without changing canonical module content or installed artifact shapes.
 
 Run:
 
@@ -12,7 +12,32 @@ npm run preflight:public
 
 The command checks automatable gates and lists manual GitHub or human gates. Static validation does not replace runtime evidence.
 
+## Blocking gates for v0.2.6
+
+- [x] `v0.2.6` has a versioned release record.
+- [x] `v0.2.5` remains immutable and valid.
+- [x] Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
+- [x] Codex and Claude installed artifact shapes remain unchanged from `v0.2.3`.
+- [x] Non-ASCII whitespace between mapping keys and colons is rejected.
+- [x] YAML-forbidden control characters are rejected anywhere in metadata, including comments.
+- [x] Lone surrogate code units are rejected in source text and decoded quoted keys or values.
+- [x] Valid Unicode scalar values and surrogate pairs remain supported.
+- [x] Targeted fixtures cover no-break-space keys, NUL and vertical-tab comments, lone high and low surrogate escapes, and one valid escaped surrogate pair.
+- [x] The adversarial suite covers 4 accepted and 36 targeted rejected fixtures.
+- [x] `npm test` includes repository validation, the adversarial suite, and the complete installed-artifact contract.
+- [x] Repository and install contracts pass on Node.js 20 and 24 for commit `508521e6e6838680569287ab694574ca1a6512ef` in workflow run `30184890807`.
+- [x] All seven modules pass Codex and Claude Code installed-artifact checks.
+- [x] Existing containment, overwrite, symlink, documentation, and cleanup checks remain active.
+- [x] The three actionable post-release review threads on PR #9 were answered and resolved with PR #10 as evidence.
+- [x] PR #10 has no unresolved actionable review threads.
+- [x] Final review of the complete PR #10 diff found no remaining actionable correctness, regression, release-truth, or content-loss issue after adding the positive surrogate-pair fixture.
+- [x] Wi previously authorized immediate completion and publication of follow-up correctness patches on 2026-07-26.
+- [x] The exact `Release status: approved for publication` marker is added only after all remaining gates close.
+- [x] The clean-lineage workflow remains configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.6` tag, verify the remote tag target, and create the GitHub Release.
+
 ## Blocking gates for v0.2.5
+
+This historical section records the completed parser-hardening release.
 
 - [x] `v0.2.5` has a versioned release record.
 - [x] `v0.2.4` remains immutable and valid.
@@ -24,21 +49,16 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] Mapping values and mapping comments require YAML separation after `:`.
 - [x] Policy comments require separation before `#`; `false#note` is rejected.
 - [x] Multiline quoted scalars, block scalars, flow collections, anchors, aliases, custom tags, directives, document markers, sequences, explicit mapping keys, BOM input, and tabs anywhere in metadata are rejected.
-- [x] Plain scalars reject reserved leading indicators, unsafe mapping separators, and control characters.
+- [x] Plain scalars reject reserved leading indicators and unsafe mapping separators.
 - [x] The schema rejects unknown top-level keys, unsupported interface keys, duplicate fields, and extra policy controls.
 - [x] The dedicated adversarial suite starts from canonical valid metadata, changes one target property per fixture, and asserts the targeted rejection reason.
-- [x] The adversarial suite covers 3 accepted and 30 targeted rejected fixtures.
-- [x] `npm test` includes repository validation, the dedicated adversarial suite, and the complete installed-artifact contract.
-- [x] Public-release preflight reruns the dedicated adversarial suite and installed-artifact contract.
-- [x] Repository and install contracts pass on Node.js 20 and 24 for commit `29436c8666970694b20264115992e3612bd47620` in workflow run `30184205631`.
-- [x] All seven modules pass Codex and Claude Code installed-artifact checks.
-- [x] Existing overwrite, malformed-target, source-checkout containment, symlink-alias, symlinked-entrypoint, documentation, and cleanup checks remain active.
-- [x] The two late actionable review threads on PR #8 were documented against PR #9 and resolved.
-- [x] All six actionable review threads produced on PR #9 through commit `8fd5b2f0ef6d6ffdd26b5796a841ea5a92c360dd` were addressed and resolved.
-- [x] An independent final review of the complete PR diff through commit `ac4617ee5ed0c45ed0374728a6291f154a27d874` found no remaining actionable correctness, security, regression, release-truth, or content-loss issue. The requested automated Codex review remained pending and was not represented as approval.
+- [x] Repository and install contracts passed on Node.js 20 and 24.
+- [x] All seven modules passed Codex and Claude Code installed-artifact checks.
+- [x] Existing overwrite, malformed-target, source-checkout containment, symlink-alias, symlinked-entrypoint, documentation, and cleanup checks remained active.
+- [x] The two late actionable review threads on PR #8 were documented and resolved.
+- [x] The actionable review threads produced before publication on PR #9 were addressed and resolved.
 - [x] Wi explicitly authorized completing and publishing `v0.2.5` immediately on 2026-07-26.
-- [x] The exact `Release status: approved for publication` marker was added only after the independent final review gate closed.
-- [x] The clean-lineage workflow remains configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.5` tag, verify the remote tag target, and create the GitHub Release.
+- [x] The exact `Release status: approved for publication` marker was added after the recorded review gate closed.
 
 ## Blocking gates for v0.2.4
 
