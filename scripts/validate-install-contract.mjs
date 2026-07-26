@@ -29,11 +29,19 @@ async function exists(filePath) {
   }
 }
 
+function runInstallerFrom(executablePath, harness, moduleId, target) {
+  return spawnSync(
+    process.execPath,
+    [executablePath, harness, moduleId, target],
+    {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    },
+  );
+}
+
 function runInstaller(harness, moduleId, target) {
-  return spawnSync(process.execPath, [installerPath, harness, moduleId, target], {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-  });
+  return runInstallerFrom(installerPath, harness, moduleId, target);
 }
 
 function requireText(content, expected, source) {
@@ -140,8 +148,14 @@ async function validateDocumentation() {
   }
 
   const readmeChecks = [
-    ["README.md", "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy"],
-    ["README.vi.md", "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ"],
+    [
+      "README.md",
+      "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy",
+    ],
+    [
+      "README.vi.md",
+      "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ",
+    ],
   ];
 
   for (const [relativePath, expected] of readmeChecks) {
@@ -227,12 +241,40 @@ try {
       "policy:\n  allow_implicit_invocation: false\n  allow_implicit_invocation: true\n",
     ],
     [
+      "double-quoted duplicate",
+      'policy:\n  allow_implicit_invocation: false\n  "allow_implicit_invocation": true\n',
+    ],
+    [
+      "single-quoted duplicate",
+      "policy:\n  allow_implicit_invocation: false\n  'allow_implicit_invocation': true\n",
+    ],
+    [
+      "escaped quoted duplicate",
+      'policy:\n  allow_implicit_invocation: false\n  "allow_implicit_\\u0069nvocation": true\n',
+    ],
+    [
+      "quoted declaration only",
+      'policy:\n  "allow_implicit_invocation": false\n',
+    ],
+    [
+      "nested declaration",
+      "policy:\n x:\n  allow_implicit_invocation: false\n",
+    ],
+    [
       "wrong block",
       "interface:\n  allow_implicit_invocation: false\npolicy:\n",
     ],
     [
       "wrong indentation",
       "policy:\n    allow_implicit_invocation: false\n",
+    ],
+    [
+      "quoted policy block",
+      '"policy":\n  allow_implicit_invocation: false\n',
+    ],
+    [
+      "flow policy mapping",
+      "policy: { allow_implicit_invocation: false }\n",
     ],
     [
       "duplicate policy blocks",
@@ -251,7 +293,10 @@ try {
   const catalog = JSON.parse(
     await readFile(path.join(repositoryRoot, "modules", "catalog.json"), "utf8"),
   );
-  assert.ok(Array.isArray(catalog.modules), "modules/catalog.json: modules must be an array");
+  assert.ok(
+    Array.isArray(catalog.modules),
+    "modules/catalog.json: modules must be an array",
+  );
   assert.ok(catalog.modules.length > 0, "modules/catalog.json: no modules found");
 
   for (const entry of catalog.modules) {
@@ -394,13 +439,38 @@ try {
     "installer did not canonicalize a symlinked target before containment checking",
   );
 
+  const installerAlias = path.join(temporaryRoot, "install-module-alias.mjs");
+  await symlink(installerPath, installerAlias, "file");
+  const symlinkCliTarget = path.join(temporaryRoot, "symlink-cli", knownModule);
+  const symlinkCliRun = runInstallerFrom(
+    installerAlias,
+    "codex",
+    knownModule,
+    symlinkCliTarget,
+  );
+  assert.equal(
+    symlinkCliRun.status,
+    0,
+    `installer did not execute through a symlinked entrypoint\n${symlinkCliRun.stderr}`,
+  );
+  assert.equal(
+    await exists(path.join(symlinkCliTarget, "SKILL.md")),
+    true,
+    "symlinked installer entrypoint exited without creating SKILL.md",
+  );
+  assert.equal(
+    await exists(path.join(symlinkCliTarget, "agents", "openai.yaml")),
+    true,
+    "symlinked installer entrypoint exited without creating Codex metadata",
+  );
+
   const leftovers = (await readdir(temporaryRoot, { recursive: true })).filter(
     (entry) => String(entry).includes(".dwi-install-"),
   );
   assert.deepEqual(leftovers, [], "installer left a staging directory behind");
 
   console.log(
-    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including strict Codex policy validation, documentation, containment, symlink, and failure-path checks.`,
+    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including structural Codex policy validation, symlinked CLI execution, documentation, containment, symlink, and failure-path checks.`,
   );
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
