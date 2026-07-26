@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { realpathSync } from "node:fs";
 import {
   access,
   mkdir,
@@ -58,60 +59,140 @@ function isSameOrDescendant(parentPath, candidatePath) {
   );
 }
 
+function parseYamlMappingEntry(body, sourcePath, lineNumber) {
+  const doubleQuoted = body.match(/^"((?:[^"\\]|\\.)*)"\s*:(.*)$/);
+  if (doubleQuoted) {
+    let key;
+    try {
+      key = JSON.parse(`"${doubleQuoted[1]}"`);
+    } catch {
+      throw new Error(
+        `${sourcePath}:${lineNumber}: invalid double-quoted YAML key`,
+      );
+    }
+    return { key, rest: doubleQuoted[2], quoted: true };
+  }
+
+  const singleQuoted = body.match(/^'((?:[^']|'')*)'\s*:(.*)$/);
+  if (singleQuoted) {
+    return {
+      key: singleQuoted[1].replace(/''/g, "'"),
+      rest: singleQuoted[2],
+      quoted: true,
+    };
+  }
+
+  const plain = body.match(/^([A-Za-z_][A-Za-z0-9_-]*)\s*:(.*)$/);
+  if (plain) {
+    return { key: plain[1], rest: plain[2], quoted: false };
+  }
+
+  return null;
+}
+
+function isYamlBlockMappingValue(rest) {
+  return /^\s*(?:#.*)?$/.test(rest);
+}
+
 export function validateCodexMetadata(source, sourcePath) {
   if (typeof source !== "string") {
     throw new TypeError(`${sourcePath}: metadata must be UTF-8 text`);
   }
 
   const lines = source.split(/\r?\n/);
-  const policyIndexes = [];
-  const invocationDeclarations = [];
+  const stack = [];
+  const policyEntries = [];
+  const invocationEntries = [];
 
   for (const [index, line] of lines.entries()) {
-    if (/^policy:\s*(?:#.*)?$/.test(line)) {
-      policyIndexes.push(index);
+    const lineNumber = index + 1;
+    if (/^\s*$/.test(line) || /^\s*#/.test(line)) continue;
+
+    const leadingWhitespace = line.match(/^[ \t]*/)?.[0] ?? "";
+    if (leadingWhitespace.includes("\t")) {
+      throw new Error(
+        `${sourcePath}:${lineNumber}: tabs are not allowed in YAML indentation`,
+      );
     }
 
-    if (/^\s*allow_implicit_invocation\s*:/.test(line)) {
-      invocationDeclarations.push({ index, line });
+    const indent = leadingWhitespace.length;
+    const body = line.slice(indent);
+
+    while (stack.length > 0 && stack.at(-1).indent >= indent) {
+      stack.pop();
+    }
+
+    const parent = stack.at(-1) ?? null;
+    const entry = parseYamlMappingEntry(body, sourcePath, lineNumber);
+
+    if (!entry) {
+      if (
+        body.includes("allow_implicit_invocation") ||
+        body.includes("policy")
+      ) {
+        throw new Error(
+          `${sourcePath}:${lineNumber}: unsupported YAML syntax around invocation policy`,
+        );
+      }
+      continue;
+    }
+
+    const record = {
+      ...entry,
+      indent,
+      line,
+      lineNumber,
+      parent,
+    };
+
+    if (entry.key === "policy") policyEntries.push(record);
+    if (entry.key === "allow_implicit_invocation") {
+      invocationEntries.push(record);
+    }
+
+    if (isYamlBlockMappingValue(entry.rest)) {
+      stack.push({ key: entry.key, indent, lineNumber });
     }
   }
 
-  if (policyIndexes.length !== 1) {
+  if (policyEntries.length !== 1) {
     throw new Error(
       `${sourcePath}: expected exactly one top-level policy block`,
     );
   }
 
-  if (invocationDeclarations.length !== 1) {
+  const policy = policyEntries[0];
+  if (
+    policy.indent !== 0 ||
+    policy.parent !== null ||
+    policy.quoted ||
+    !/^policy:\s*(?:#.*)?$/.test(policy.line)
+  ) {
+    throw new Error(
+      `${sourcePath}:${policy.lineNumber}: policy must be one unquoted top-level block mapping`,
+    );
+  }
+
+  if (invocationEntries.length !== 1) {
     throw new Error(
       `${sourcePath}: expected exactly one active allow_implicit_invocation declaration`,
     );
   }
 
-  const policyStart = policyIndexes[0];
-  let policyEnd = lines.length;
-
-  for (let index = policyStart + 1; index < lines.length; index += 1) {
-    const line = lines[index];
-    if (/^\s*(?:#.*)?$/.test(line)) continue;
-    if (/^[^\s]/.test(line)) {
-      policyEnd = index;
-      break;
-    }
-  }
-
-  const declaration = invocationDeclarations[0];
+  const declaration = invocationEntries[0];
+  const isDirectPolicyChild =
+    declaration.parent?.key === "policy" && declaration.parent.indent === 0;
   const exactFalsePolicy =
     /^  allow_implicit_invocation:\s*false\s*(?:#.*)?$/;
 
   if (
-    declaration.index <= policyStart ||
-    declaration.index >= policyEnd ||
+    !isDirectPolicyChild ||
+    declaration.indent !== 2 ||
+    declaration.quoted ||
     !exactFalsePolicy.test(declaration.line)
   ) {
     throw new Error(
-      `${sourcePath}: policy.allow_implicit_invocation must be declared exactly once as false`,
+      `${sourcePath}:${declaration.lineNumber}: policy.allow_implicit_invocation must be one unquoted direct child with boolean value false`,
     );
   }
 }
@@ -222,8 +303,17 @@ async function main() {
   );
 }
 
+function canonicalizeEntrypoint(filePath) {
+  try {
+    return realpathSync(filePath);
+  } catch {
+    return path.resolve(filePath);
+  }
+}
+
 const isDirectRun =
-  Boolean(process.argv[1]) && path.resolve(process.argv[1]) === scriptPath;
+  Boolean(process.argv[1]) &&
+  canonicalizeEntrypoint(process.argv[1]) === canonicalizeEntrypoint(scriptPath);
 
 if (isDirectRun) {
   main().catch((error) => {
