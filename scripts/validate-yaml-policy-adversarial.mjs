@@ -26,6 +26,7 @@ const validFixtures = new Map([
       .replace("false", "false # explicit only"),
   ],
   ["safe plain scalar", replace('  display_name: "Dwi • Conduct"', "  display_name: Dwi Conduct")],
+  ["valid escaped surrogate pair", replace('"Dwi • Conduct"', '"Dwi \\uD83D\\uDE00"')],
 ]);
 
 for (const [name, fixture] of validFixtures) {
