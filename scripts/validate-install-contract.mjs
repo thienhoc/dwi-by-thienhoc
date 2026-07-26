@@ -14,6 +14,7 @@ import path from "node:path";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { validateCodexMetadata } from "./install-module.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repositoryRoot = path.resolve(path.dirname(scriptPath), "..");
@@ -28,11 +29,19 @@ async function exists(filePath) {
   }
 }
 
+function runInstallerFrom(executablePath, harness, moduleId, target) {
+  return spawnSync(
+    process.execPath,
+    [executablePath, harness, moduleId, target],
+    {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    },
+  );
+}
+
 function runInstaller(harness, moduleId, target) {
-  return spawnSync(process.execPath, [installerPath, harness, moduleId, target], {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-  });
+  return runInstallerFrom(installerPath, harness, moduleId, target);
 }
 
 function requireText(content, expected, source) {
@@ -139,8 +148,14 @@ async function validateDocumentation() {
   }
 
   const readmeChecks = [
-    ["README.md", "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy"],
-    ["README.vi.md", "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ"],
+    [
+      "README.md",
+      "The one-file installation examples published in `v0.1.0` through `v0.2.1` did not preserve the explicit-only invocation policy",
+    ],
+    [
+      "README.vi.md",
+      "Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ",
+    ],
   ];
 
   for (const [relativePath, expected] of readmeChecks) {
@@ -161,6 +176,29 @@ async function validateDocumentation() {
     );
     requireText(content, expected, relativePath);
   }
+
+  const workflowPath = ".github/workflows/validate.yml";
+  const workflow = await readFile(path.join(repositoryRoot, workflowPath), "utf8");
+  requireText(
+    workflow,
+    'test "$(git rev-parse HEAD)" = "$GITHUB_SHA"',
+    workflowPath,
+  );
+  requireText(
+    workflow,
+    'first_parent="$(git rev-parse "${GITHUB_SHA}^1")"',
+    workflowPath,
+  );
+  requireText(
+    workflow,
+    'git diff --name-only "$first_parent" "$GITHUB_SHA"',
+    workflowPath,
+  );
+  forbidText(
+    workflow,
+    'git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA"',
+    workflowPath,
+  );
 }
 
 const temporaryRoot = await mkdtemp(
@@ -170,10 +208,95 @@ const temporaryRoot = await mkdtemp(
 try {
   await validateDocumentation();
 
+  const validMetadataFixture = [
+    "interface:",
+    "  display_name: Dwi",
+    "policy:",
+    "  allow_implicit_invocation: false",
+    "",
+  ].join("\n");
+  assert.doesNotThrow(() =>
+    validateCodexMetadata(validMetadataFixture, "valid/agents/openai.yaml"),
+  );
+
+  const malformedMetadataFixtures = new Map([
+    [
+      "lookalike key",
+      "policy:\n  not_allow_implicit_invocation: false\n",
+    ],
+    [
+      "commented occurrence",
+      "policy:\n  # allow_implicit_invocation: false\n",
+    ],
+    [
+      "falsehood value",
+      "policy:\n  allow_implicit_invocation: falsehood\n",
+    ],
+    [
+      "true value",
+      "policy:\n  allow_implicit_invocation: true\n",
+    ],
+    [
+      "duplicate declarations",
+      "policy:\n  allow_implicit_invocation: false\n  allow_implicit_invocation: true\n",
+    ],
+    [
+      "double-quoted duplicate",
+      'policy:\n  allow_implicit_invocation: false\n  "allow_implicit_invocation": true\n',
+    ],
+    [
+      "single-quoted duplicate",
+      "policy:\n  allow_implicit_invocation: false\n  'allow_implicit_invocation': true\n",
+    ],
+    [
+      "escaped quoted duplicate",
+      'policy:\n  allow_implicit_invocation: false\n  "allow_implicit_\\u0069nvocation": true\n',
+    ],
+    [
+      "quoted declaration only",
+      'policy:\n  "allow_implicit_invocation": false\n',
+    ],
+    [
+      "nested declaration",
+      "policy:\n x:\n  allow_implicit_invocation: false\n",
+    ],
+    [
+      "wrong block",
+      "interface:\n  allow_implicit_invocation: false\npolicy:\n",
+    ],
+    [
+      "wrong indentation",
+      "policy:\n    allow_implicit_invocation: false\n",
+    ],
+    [
+      "quoted policy block",
+      '"policy":\n  allow_implicit_invocation: false\n',
+    ],
+    [
+      "flow policy mapping",
+      "policy: { allow_implicit_invocation: false }\n",
+    ],
+    [
+      "duplicate policy blocks",
+      "policy:\n  allow_implicit_invocation: false\npolicy:\n",
+    ],
+  ]);
+
+  for (const [fixtureName, fixture] of malformedMetadataFixtures) {
+    assert.throws(
+      () => validateCodexMetadata(fixture, `${fixtureName}/agents/openai.yaml`),
+      Error,
+      `Codex metadata validator accepted ${fixtureName}`,
+    );
+  }
+
   const catalog = JSON.parse(
     await readFile(path.join(repositoryRoot, "modules", "catalog.json"), "utf8"),
   );
-  assert.ok(Array.isArray(catalog.modules), "modules/catalog.json: modules must be an array");
+  assert.ok(
+    Array.isArray(catalog.modules),
+    "modules/catalog.json: modules must be an array",
+  );
   assert.ok(catalog.modules.length > 0, "modules/catalog.json: no modules found");
 
   for (const entry of catalog.modules) {
@@ -183,20 +306,20 @@ try {
       path.join(sourceDirectory, "SKILL.md"),
       "utf8",
     );
-    const sourceMetadata = await readFile(
-      path.join(sourceDirectory, "agents", "openai.yaml"),
-      "utf8",
+    const sourceMetadataPath = path.join(
+      sourceDirectory,
+      "agents",
+      "openai.yaml",
     );
+    const sourceMetadata = await readFile(sourceMetadataPath, "utf8");
 
     assert.doesNotMatch(
       sourceSkill,
       /^disable-model-invocation\s*:/m,
       `${moduleId}: canonical SKILL.md must remain provider-neutral`,
     );
-    assert.equal(
-      (sourceMetadata.match(/allow_implicit_invocation:\s*false/g) ?? []).length,
-      1,
-      `${moduleId}: Codex metadata must contain exactly one explicit-only policy`,
+    assert.doesNotThrow(() =>
+      validateCodexMetadata(sourceMetadata, sourceMetadataPath),
     );
 
     const codexTarget = path.join(temporaryRoot, "codex", moduleId);
@@ -316,13 +439,38 @@ try {
     "installer did not canonicalize a symlinked target before containment checking",
   );
 
+  const installerAlias = path.join(temporaryRoot, "install-module-alias.mjs");
+  await symlink(installerPath, installerAlias, "file");
+  const symlinkCliTarget = path.join(temporaryRoot, "symlink-cli", knownModule);
+  const symlinkCliRun = runInstallerFrom(
+    installerAlias,
+    "codex",
+    knownModule,
+    symlinkCliTarget,
+  );
+  assert.equal(
+    symlinkCliRun.status,
+    0,
+    `installer did not execute through a symlinked entrypoint\n${symlinkCliRun.stderr}`,
+  );
+  assert.equal(
+    await exists(path.join(symlinkCliTarget, "SKILL.md")),
+    true,
+    "symlinked installer entrypoint exited without creating SKILL.md",
+  );
+  assert.equal(
+    await exists(path.join(symlinkCliTarget, "agents", "openai.yaml")),
+    true,
+    "symlinked installer entrypoint exited without creating Codex metadata",
+  );
+
   const leftovers = (await readdir(temporaryRoot, { recursive: true })).filter(
     (entry) => String(entry).includes(".dwi-install-"),
   );
   assert.deepEqual(leftovers, [], "installer left a staging directory behind");
 
   console.log(
-    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including documentation, containment, symlink, and failure-path checks.`,
+    `Install contract passed for ${catalog.modules.length} module(s) across Codex and Claude Code, including structural Codex policy validation, symlinked CLI execution, documentation, containment, symlink, and failure-path checks.`,
   );
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });

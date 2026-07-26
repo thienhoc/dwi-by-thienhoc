@@ -6,14 +6,14 @@ Dwi is a modular human layer. Each module is distributed as agent-native instruc
 
 The installation examples published in `v0.1.0` through `v0.2.1` copied only `SKILL.md`. That was enough for the harness to discover the module, but it did not preserve Dwi's intended explicit-only invocation contract:
 
-- Codex also needs `agents/openai.yaml` with `allow_implicit_invocation: false`.
+- Codex also needs `agents/openai.yaml` with one active `policy.allow_implicit_invocation` boolean set to `false`.
 - Claude Code needs `disable-model-invocation: true` in the installed `SKILL.md` frontmatter.
 
 Without those harness-specific controls, the model may select a Dwi module from its description even when the person did not invoke it explicitly. This is a packaging and documentation defect. It does not grant the module extra tool permissions or bypass the native sandbox and approval system.
 
 The earlier examples also changed into the Dwi checkout before using a relative target such as `.agents/skills/...`. Unless the Dwi checkout was intentionally the project under test, that installed the module into the source checkout rather than the person's actual project. The corrected examples keep `DWI_ROOT` and `PROJECT_ROOT` separate, resolve physical paths before comparing them, and reject a target inside the Dwi source checkout.
 
-Published release tags remain immutable. Do not rewrite them. `v0.2.3` is the reviewed release containing the complete per-harness installer and corrected project-targeting guidance. The existing `v0.2.2` tag points to a pre-patch commit, was not published as the installation-contract release, and must not be used for the corrected installation.
+Published release tags remain immutable. Do not rewrite them. `v0.2.3` introduced the complete per-harness installer and corrected project-targeting guidance. `v0.2.4` preserves the same module content and installed artifact shapes while enforcing the effective Codex policy structurally and keeping release automation pinned to the reviewed commit. The existing `v0.2.2` tag points to a pre-patch commit, was not published as the installation-contract release, and must not be used for the corrected installation.
 
 ## Before installing
 
@@ -27,18 +27,18 @@ Do not pipe an unreviewed remote script into a shell.
 
 ## Install from a pinned checkout
 
-Clone the immutable corrected release:
+Clone the latest immutable release:
 
 ```bash
-git clone --depth 1 --branch v0.2.3 \
+git clone --depth 1 --branch v0.2.4 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.3
+  dwi-by-thienhoc-v0.2.4
 ```
 
 Keep the inspected Dwi source checkout separate from the project receiving the module. Replace the target project path below with a directory that already exists. `pwd -P` resolves alternate spellings and symlink aliases before the containment check:
 
 ```bash
-DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.3" && pwd -P)" || exit 1
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.4" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/absolute/path/to/your-project" && pwd -P)" || exit 1
 test -f "$DWI_ROOT/scripts/install-module.mjs"
 case "$PROJECT_ROOT/" in
@@ -50,7 +50,7 @@ esac
 node --version
 ```
 
-The local helper requires Node.js 20 or later, refuses to overwrite an existing module directory, stages the complete artifact before moving it into place, canonicalizes the prospective target, and rejects targets that resolve to the Dwi source checkout or any directory inside it. This last check also covers symlink aliases.
+The local helper requires Node.js 20 or later, refuses to overwrite an existing module directory, stages the complete artifact before moving it into place, canonicalizes the prospective target, and rejects targets that resolve to the Dwi source checkout or any directory inside it. This last check also covers symlink aliases. The CLI remains executable when the inspected checkout itself is reached through a symlink.
 
 ## Codex
 
@@ -66,6 +66,8 @@ test -f "$TARGET/SKILL.md"
 test -f "$TARGET/agents/openai.yaml"
 grep -Eq '^  allow_implicit_invocation: false$' "$TARGET/agents/openai.yaml"
 ```
+
+The installer validates the effective mapping, not a text fragment. It requires one unquoted top-level `policy` block and exactly one unquoted direct child named `allow_implicit_invocation` whose YAML value is the boolean `false`. It rejects quoted equivalent keys, comments posing as declarations, false-like strings, duplicate keys, nested declarations, wrong indentation, flow mappings, and duplicate policy blocks.
 
 The installed structure is:
 
@@ -165,7 +167,7 @@ dwi-all-in-one
 
 ## Public release: pinned module URLs
 
-`v0.2.3` contains the complete per-harness installer. The immutable raw source URLs below remain pinned to the `v0.2.0` canonical module-content baseline because the module bodies and SHA-256 values did not change in `v0.2.3`. These one-file URLs are useful for inspection, but they are not a complete explicit-only installation package.
+`v0.2.4` contains the complete per-harness installer with hardened Codex policy validation. The immutable raw source URLs below remain pinned to the `v0.2.0` canonical module-content baseline because the module bodies and SHA-256 values did not change in `v0.2.3` or `v0.2.4`. These one-file URLs are useful for inspection, but they are not a complete explicit-only installation package.
 
 | Module | Immutable canonical source |
 | --- | --- |
@@ -177,7 +179,7 @@ dwi-all-in-one
 | Evidence | [dwi-evidence/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-evidence/SKILL.md) |
 | All-in-One | [dwi-all-in-one/SKILL.md](https://raw.githubusercontent.com/thienhoc/dwi-by-thienhoc/v0.2.0/modules/dwi-all-in-one/SKILL.md) |
 
-The `v0.2.3` release pins the complete installation path and passed `scripts/validate-install-contract.mjs` before publication. The existing `v0.2.2` tag does not contain this installer.
+The `v0.2.4` release pins the complete installation path and passes `scripts/validate-install-contract.mjs` before publication. The existing `v0.2.2` tag does not contain this installer.
 
 ## Repair an existing one-file install
 

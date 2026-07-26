@@ -4,6 +4,25 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.4 - 2026-07-26
+
+### Fixed
+
+- Replaced permissive substring matching of Codex `allow_implicit_invocation` metadata with an exact structural validator.
+- Rejected lookalike keys, commented occurrences, non-boolean false-like values, true values, duplicate declarations, wrong-block declarations, incorrect indentation, and duplicate policy blocks.
+- Made `scripts/install-module.mjs` import-safe so the regression suite exercises the same parser used by the installer.
+- Changed release-record discovery to compare the triggering commit with its first parent, preserving release detection when a reviewed change lands as a merge commit.
+- Added workflow regression assertions for first-parent detection and the existing `GITHUB_SHA` pin.
+
+### Release truth
+
+- Intended release tag: `v0.2.4`
+- Base release: `v0.2.3`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Scope: installer validation and release-automation hardening only
+- Release record: [docs/releases/v0.2.4.md](docs/releases/v0.2.4.md)
+
 ## 0.2.3 - 2026-07-26
 
 ### Fixed

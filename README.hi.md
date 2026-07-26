@@ -6,7 +6,7 @@
 
 <p align="center">अत्यधिक योजना, टोकन की बर्बादी, संदर्भ खोने और स्पष्ट अनुमति के बिना की गई कार्रवाइयों को कम करने वाली एक मॉड्यूलर मानव परत।</p>
 
-<p align="center"><strong>Research Preview 0.2.0</strong> · नवीनतम reviewed repository release: v0.2.3 · 6 focused modules + 1 optional All-in-One</p>
+<p align="center"><strong>Research Preview 0.2.0</strong> · नवीनतम reviewed repository release: v0.2.4 · 6 focused modules + 1 optional All-in-One</p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.ko.md">한국어</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.fr.md">Français</a></p>
 
@@ -43,8 +43,9 @@ Dwi कोई नया runtime, daemon या MCP server नहीं है।
 ## स्थिति
 
 - Module-content Research Preview baseline: `0.2.0`
-- नवीनतम reviewed repository release: `v0.2.3`
-- यह release Codex और Claude Code के explicit-only installation contract को ठीक करता है
+- नवीनतम reviewed repository release: `v0.2.4`
+- `v0.2.3`: Codex और Claude Code के explicit-only installation contract को ठीक करता है
+- `v0.2.4`: Codex policy validation और merge commits में release detection को मजबूत करता है
 - मौजूदा `v0.2.2` tag: patch से पहले के commit की non-release reference; corrected installation के लिए उपयोग न करें
 - Canonical module bodies और SHA-256: `v0.2.0` से अपरिवर्तित
 - Installable content: 6 focused modules + optional All-in-One

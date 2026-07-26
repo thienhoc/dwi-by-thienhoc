@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>Bản Research Preview 0.2.0</strong> · bản phát hành kho đã duyệt gần nhất: v0.2.3 · 6 mô-đun chuyên biệt + 1 All-in-One tùy chọn
+  <strong>Bản Research Preview 0.2.0</strong> · bản phát hành kho đã duyệt gần nhất: v0.2.4 · 6 mô-đun chuyên biệt + 1 All-in-One tùy chọn
 </p>
 
 <p align="center">
@@ -55,13 +55,13 @@ Nếu gặp từ lạ, hãy mở [bảng thuật ngữ dễ hiểu](docs/vi/glos
 4. Gọi mô-đun một cách rõ ràng rồi so sánh với cách làm thường ngày.
 5. Xóa thư mục mô-đun nếu không hữu ích. Bạn không cần xin lỗi hoặc tiếp tục thử.
 
-Clone bản phát hành bất biến đã sửa, chuẩn hóa checkout Dwi và dự án đích thành đường dẫn vật lý, rồi từ chối target nằm trong checkout Dwi:
+Clone bản phát hành bất biến mới nhất, chuẩn hóa checkout Dwi và dự án đích thành đường dẫn vật lý, rồi từ chối target nằm trong checkout Dwi:
 
 ```bash
-git clone --depth 1 --branch v0.2.3 \
+git clone --depth 1 --branch v0.2.4 \
   https://github.com/thienhoc/dwi-by-thienhoc.git \
-  dwi-by-thienhoc-v0.2.3
-DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.3" && pwd -P)" || exit 1
+  dwi-by-thienhoc-v0.2.4
+DWI_ROOT="$(cd "dwi-by-thienhoc-v0.2.4" && pwd -P)" || exit 1
 PROJECT_ROOT="$(cd "/duong-dan-tuyet-doi/toi/du-an-cua-ban" && pwd -P)" || exit 1
 MODULE="dwi-conduct"
 case "$PROJECT_ROOT/" in
@@ -89,7 +89,7 @@ node "$DWI_ROOT/scripts/install-module.mjs" claude "$MODULE" "$TARGET"
 grep -Eq '^disable-model-invocation: true$' "$TARGET/SKILL.md"
 ```
 
-Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ và có thể đặt skill bên trong checkout Dwi thay vì dự án chủ ý cài. `v0.2.3` sửa hợp đồng cài đặt này. Tag `v0.2.2` hiện có trỏ tới một commit trước bản vá, không được phát hành như bản vá này và không được dùng cho cách cài đã sửa. Xem hướng dẫn cài đặt để biết chính xác ảnh hưởng, cách sửa bản cài cũ, cách cài thủ công tương đương và lệnh gỡ.
+Các ví dụ cài một file đã phát hành từ `v0.1.0` đến `v0.2.1` không giữ được chính sách chỉ kích hoạt khi gọi rõ và có thể đặt skill bên trong checkout Dwi thay vì dự án chủ ý cài. `v0.2.3` đã sửa hợp đồng cài đặt này. `v0.2.4` giữ nguyên nội dung mô-đun và cấu trúc artifact đã cài, đồng thời siết chặt kiểm tra policy Codex và phát hiện release record trong merge commit. Tag `v0.2.2` hiện có trỏ tới một commit trước bản vá, không được phát hành như bản sửa và không được dùng cho cách cài này.
 
 All-in-One là mô-đun phối hợp tùy chọn được phát hành lần đầu trong `v0.2.0`. Chỉ dùng khi nhiều vấn đề đã quan sát lặp lại trong cùng workflow.
 
@@ -146,14 +146,16 @@ Kho này chủ động không chứa mã chạy website. Trang giới thiệu l�
 ## Trạng thái
 
 - Baseline nội dung mô-đun Research Preview: `0.2.0`
-- Bản phát hành kho đã duyệt gần nhất: `v0.2.3`, sửa cơ chế cài explicit-only cho Codex và Claude Code
+- Bản phát hành kho đã duyệt gần nhất: `v0.2.4`, siết kiểm tra policy Codex và release detection theo first parent
+- Bản sửa installation contract: phát hành trong `v0.2.3` và không thay đổi trong `v0.2.4`
 - Tag `v0.2.2` hiện có: ref lịch sử không phát hành trỏ tới commit trước bản vá; không dùng cho cách cài đã sửa
 - Nội dung mô-đun chuẩn và mã SHA-256: không đổi so với `v0.2.0`
 - Mô-đun đi kèm: sáu mô-đun chuyên biệt và All-in-One tùy chọn
 - Quan sát tương thích có giới hạn: [hồ sơ bằng chứng Codex và Claude Code](evidence/compatibility/README.md)
 - Giấy phép: [Apache-2.0 cho mã; CC BY 4.0 cho tài liệu và tài sản gốc](LICENSES.md)
 - Checklist phát hành: [checklist phát hành](docs/release-checklist.md)
-- Hồ sơ phát hành: [v0.2.3](docs/releases/v0.2.3.md)
+- Hồ sơ phát hành: [v0.2.4](docs/releases/v0.2.4.md)
+- Hồ sơ phát hành trước: [v0.2.3](docs/releases/v0.2.3.md)
 - Hồ sơ tag không phát hành: [v0.2.2](docs/releases/v0.2.2.md)
 - Lộ trình: [ROADMAP.md](ROADMAP.md)
 - Thay đổi: [CHANGELOG.md](CHANGELOG.md)

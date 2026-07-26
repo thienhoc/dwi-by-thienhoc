@@ -70,8 +70,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git fetch --tags --force origin
 
+          first_parent="$(git rev-parse "${GITHUB_SHA}^1")"
           mapfile -t release_records < <(
-            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" |
+            git diff --name-only "$first_parent" "$GITHUB_SHA" |
               grep -E '^docs/releases/v[0-9]+\.[0-9]+\.[0-9]+\.md$' || true
           )
 
