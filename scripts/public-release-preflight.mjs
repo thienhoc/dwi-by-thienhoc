@@ -133,7 +133,7 @@ if (headForbidden.length === 0) {
   );
 }
 
-const commitsResult = git(["rev-list", "--all"]);
+const commitsResult = git(["rev-list", "HEAD"]);
 const commits = commitsResult.status === 0 ? lines(commitsResult.stdout) : [];
 const historyFindings = [];
 for (const commit of commits) {
@@ -144,31 +144,61 @@ for (const commit of commits) {
 }
 
 if (commits.length === 0) {
-  fail("Reachable history boundary", "No reachable commit could be inspected.");
+  fail("Publication history boundary", "No publication commit could be inspected.");
 } else if (historyFindings.length === 0) {
   pass(
-    "Reachable history boundary",
-    `${commits.length} reachable commit(s) contain no forbidden website path.`,
+    "Publication history boundary",
+    `${commits.length} publication commit(s) contain no forbidden website path.`,
   );
 } else {
   fail(
-    "Reachable history boundary",
+    "Publication history boundary",
     `${historyFindings.length} commit(s) retain website material; first: ${historyFindings[0]}`,
   );
 }
 
-const emails = git(["log", "--all", "--format=%ae"]);
-const uniqueEmails = emails.status === 0 ? [...new Set(lines(emails.stdout))] : [];
 const legacyAuthorEmail = ["thienhoc.tk", "gmail.com"].join("@");
-if (uniqueEmails.includes(legacyAuthorEmail)) {
+const approvedLegacyIdentityBoundary =
+  "b15a45f00c03c325a12673123f685c32d1ecf8ab";
+const boundaryCheck = git([
+  "merge-base",
+  "--is-ancestor",
+  approvedLegacyIdentityBoundary,
+  "HEAD",
+]);
+
+if (boundaryCheck.status !== 0) {
   fail(
     "Public author identity",
-    "Reachable history contains a legacy private author identity; use clean history or obtain explicit disclosure approval.",
+    "The approved historical identity boundary is not an ancestor of HEAD.",
   );
-} else if (uniqueEmails.length > 0) {
-  pass("Public author identity", uniqueEmails.join(", "));
 } else {
-  fail("Public author identity", "No reachable author identity found.");
+  const postBoundaryEmails = git([
+    "log",
+    `${approvedLegacyIdentityBoundary}..HEAD`,
+    "--format=%ae",
+  ]);
+  const uniquePostBoundaryEmails =
+    postBoundaryEmails.status === 0
+      ? [...new Set(lines(postBoundaryEmails.stdout))]
+      : [];
+
+  if (postBoundaryEmails.status !== 0) {
+    fail(
+      "Public author identity",
+      "Unable to inspect author identities after the approved historical boundary.",
+    );
+  } else if (uniquePostBoundaryEmails.includes(legacyAuthorEmail)) {
+    fail(
+      "Public author identity",
+      "Release lineage contains a legacy private author identity after the approved historical boundary.",
+    );
+  } else {
+    pass(
+      "Public author identity",
+      "Release lineage contains no legacy private author identity after the approved historical boundary.",
+    );
+  }
 }
 
 const codeLicense = ["LICENSE", "LICENSE.md", "LICENSE.txt"].find((file) =>

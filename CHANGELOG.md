@@ -4,6 +4,126 @@ All notable repository changes are recorded here.
 
 ## Unreleased
 
+## 0.2.6 - 2026-07-26
+
+### Fixed
+
+- Rejected non-ASCII whitespace between YAML mapping keys and colons.
+- Rejected YAML-forbidden control characters anywhere in Codex metadata, including comments.
+- Rejected lone surrogate code units in source text and decoded quoted keys or values.
+
+### Validation
+
+- Added targeted no-break-space, control-character, and lone-surrogate fixtures.
+- Preserved all adversarial parser checks and the seven-module Codex and Claude Code installed-artifact suite.
+
+### Release truth
+
+- Intended patch release: `v0.2.6`
+- Base release: `v0.2.5`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Release record: [docs/releases/v0.2.6.md](docs/releases/v0.2.6.md)
+
+## 0.2.5 - 2026-07-26
+
+### Fixed
+
+- Hardened Codex metadata validation against multiline quoted scalars and values such as `false#note` that can visually resemble the required boolean policy while parsing differently.
+- Changed unsupported YAML syntax from best-effort line skipping to fail-closed rejection.
+- Rejected block scalars, flow collections, anchors, aliases, custom tags, directives, document markers, sequences, explicit mapping keys, tabs, and UTF-8 BOM input in Codex metadata.
+
+### Validation
+
+- Added a dedicated adversarial YAML-policy suite and included it in the normal repository check and public-release preflight.
+- Preserved all seven-module Codex and Claude Code installed-artifact checks, containment checks, overwrite protection, symlink handling, and cleanup assertions.
+
+### Release truth
+
+- Release tag: `v0.2.5`
+- Base release: `v0.2.4`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Release record: [docs/releases/v0.2.5.md](docs/releases/v0.2.5.md)
+
+## 0.2.4 - 2026-07-26
+
+### Fixed
+
+- Replaced permissive substring matching of Codex `allow_implicit_invocation` metadata with an exact structural validator.
+- Rejected lookalike keys, commented occurrences, non-boolean false-like values, true values, duplicate declarations, wrong-block declarations, incorrect indentation, and duplicate policy blocks.
+- Made `scripts/install-module.mjs` import-safe so the regression suite exercises the same parser used by the installer.
+- Changed release-record discovery to compare the triggering commit with its first parent, preserving release detection when a reviewed change lands as a merge commit.
+- Added workflow regression assertions for first-parent detection and the existing `GITHUB_SHA` pin.
+
+### Release truth
+
+- Intended release tag: `v0.2.4`
+- Base release: `v0.2.3`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Installed artifact shapes: unchanged from `v0.2.3`
+- Scope: installer validation and release-automation hardening only
+- Release record: [docs/releases/v0.2.4.md](docs/releases/v0.2.4.md)
+
+## 0.2.3 - 2026-07-26
+
+### Fixed
+
+- Corrected the installation contract so Codex receives `agents/openai.yaml` with `allow_implicit_invocation: false` instead of receiving only `SKILL.md`.
+- Corrected the Claude Code installation contract so the installed artifact contains `disable-model-invocation: true` while the canonical provider-neutral `SKILL.md` remains unchanged.
+- Corrected project-scoped examples to keep the inspected Dwi source checkout separate from the target project; the earlier relative target could place the module inside the Dwi repository instead of the intended project.
+- Canonicalized prospective install targets and made the installer reject direct paths and symlink aliases that resolve inside the Dwi source checkout.
+- Moved Claude repair backups outside `.claude/skills/` so the old implicitly invocable artifact cannot remain discoverable during fresh-session verification.
+- Replaced the incomplete one-file installation path with a harness-aware local installer that refuses to overwrite an existing module directory.
+- Added an installed-artifact regression test for all focused modules and All-in-One across both Codex and Claude Code.
+
+### Validated
+
+- Repository and install contracts pass on Node.js 20 and 24.
+- Clean Codex fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
+- Clean Claude Code fresh-session negative and explicit-invocation tests were reported PASS by the repository owner on 2026-07-26.
+- Both actionable Codex review threads were addressed and resolved before release preparation.
+- Publication gates reject an existing tag that points to a different commit.
+
+### Release truth
+
+- Release tag: `v0.2.3`
+- Base repository release: `v0.2.1`
+- Canonical module bodies and SHA-256 values: unchanged from `v0.2.0`
+- Packaging and installation contract: corrected in `v0.2.3`
+- Version `v0.2.2` was not published as this patch because that tag already identified a pre-patch commit and was preserved immutably.
+- Runtime evidence remains bounded to the reported trials; no universal compatibility claim is made.
+- Release record: [docs/releases/v0.2.3.md](docs/releases/v0.2.3.md)
+
+## v0.2.2 - not published
+
+- The tag already existed at pre-patch commit `4fdecbcccb2caf092a145517b2bdcc84e431de27`.
+- The tag does not contain the installation-contract correction and was not moved or rewritten.
+- No GitHub Release was published for `v0.2.2`.
+- Historical record: [docs/releases/v0.2.2.md](docs/releases/v0.2.2.md)
+
+## 0.2.1 - 2026-07-26
+
+### Added
+
+- Added localized repository entry documentation in Japanese, Korean, Simplified Chinese, French, and Hindi.
+- Added `LANGUAGES.md` to define language coverage and the translation boundary.
+- Added the documentation-only release record for `v0.2.1`.
+
+### Changed
+
+- Expanded public documentation access without changing module behavior, installation paths, compatibility claims, evidence policy, or licensing.
+- Kept English as the canonical operational source and Vietnamese as the first complete translated documentation surface.
+
+### Release truth
+
+- Release tag: `v0.2.1`
+- Included installable modules: unchanged from `v0.2.0`
+- Runtime and module contract changes: none
+- Release record: [docs/releases/v0.2.1.md](docs/releases/v0.2.1.md)
+
+## 0.2.0 - 2026-07-25
+
 ### Added
 
 - Added an optional All-in-One composition module on the development branch.
@@ -13,8 +133,8 @@ All notable repository changes are recorded here.
 
 ### Changed
 
-- Marked `main` as development version `0.2.0-dev`.
-- Separated the reviewed `v0.1.0` release truth from unreleased All-in-One development.
+- Released the optional All-in-One composition module in `v0.2.0`.
+- Separated the historical `v0.1.0` focused-module release truth from the `v0.2.0` composition release.
 - Refactored All-in-One to select only relevant lenses and preserve a silent fast path.
 - Expanded repository validation to cover semantic module surfaces, EN/VI parity, release truth, issue forms, examples, and table shape.
 - Replaced project-specific actor wording in public Bridge guidance with an authorized decision-owner role.
@@ -25,6 +145,12 @@ All notable repository changes are recorded here.
 - Corrected the malformed All-in-One row and wording in `MODULES.vi.md`.
 - Removed the unsupported umbrella claim that Dwi was generally "tested with Claude and Codex".
 - Added the missing All-in-One examples and issue-form options.
+
+### Release truth
+
+- Release tag: `v0.2.0`
+- Included installable modules: six focused modules and optional All-in-One
+- Release record: [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md)
 
 ## 0.1.0 - 2026-07-25
 

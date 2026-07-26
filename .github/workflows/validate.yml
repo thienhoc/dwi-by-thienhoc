@@ -36,8 +36,244 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           package-manager-cache: false
-      - name: Check repository contract
-        run: node scripts/validate-repo.mjs
+      - name: Check repository and install contracts
+        run: npm test
+
+  publish-reviewed-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: repository-contract
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Resolve a reviewed release record changed by this commit
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git switch -C main --track origin/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git fetch --tags --force origin
+
+          first_parent="$(git rev-parse "${GITHUB_SHA}^1")"
+          mapfile -t release_records < <(
+            git diff --name-only "$first_parent" "$GITHUB_SHA" |
+              grep -E '^docs/releases/v[0-9]+\.[0-9]+\.[0-9]+\.md$' || true
+          )
+
+          if [ "${#release_records[@]}" -eq 0 ]; then
+            printf 'publish=false\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${#release_records[@]}" -ne 1 ]; then
+            printf '%s\n' "Expected at most one versioned release record in a publication commit; found ${#release_records[@]}." >&2
+            exit 1
+          fi
+
+          release_record="${release_records[0]}"
+          tag="$(basename "$release_record" .md)"
+          test "$(head -n 1 "$release_record")" = "# Dwi $tag"
+
+          if ! grep -Fxq 'Release status: approved for publication' "$release_record"; then
+            printf 'publish=false\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          printf 'publish=true\n' >> "$GITHUB_OUTPUT"
+          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
+          printf 'release_record=%s\n' "$release_record" >> "$GITHUB_OUTPUT"
+
+      - name: Validate release gates
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          npm run check
+
+          section="$({
+            sed -n "/^## Blocking gates for ${TAG}$/,/^## /p" docs/release-checklist.md
+          } | sed '$d')"
+
+          test -n "$section"
+          if grep -F -- "- [ ]" <<<"$section"; then
+            printf '%s\n' "One or more ${TAG} release gates remain open." >&2
+            exit 1
+          fi
+
+      - name: Create clean publication commit
+        id: publication
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          APPROVED_BOUNDARY: b15a45f00c03c325a12673123f685c32d1ecf8ab
+          PUBLIC_NAME: Trần Thiện Học
+          PUBLIC_EMAIL: hoc@wi.works
+        run: |
+          set -euo pipefail
+          git cat-file -e "${APPROVED_BOUNDARY}^{commit}"
+
+          reviewed_tree="$(git rev-parse "${GITHUB_SHA}^{tree}")"
+          publication_date="$(git show -s --format=%cI "$GITHUB_SHA")"
+
+          export GIT_AUTHOR_NAME="$PUBLIC_NAME"
+          export GIT_AUTHOR_EMAIL="$PUBLIC_EMAIL"
+          export GIT_COMMITTER_NAME="$PUBLIC_NAME"
+          export GIT_COMMITTER_EMAIL="$PUBLIC_EMAIL"
+          export GIT_AUTHOR_DATE="$publication_date"
+          export GIT_COMMITTER_DATE="$publication_date"
+
+          publication_commit="$(
+            printf 'Dwi %s reviewed release\n\nTree-equivalent to reviewed main commit %s.\n' "$TAG" "$GITHUB_SHA" |
+              git commit-tree "$reviewed_tree" -p "$APPROVED_BOUNDARY"
+          )"
+
+          test "$(git rev-parse "${publication_commit}^{tree}")" = "$reviewed_tree"
+          test "$(git rev-parse "${publication_commit}^")" = "$APPROVED_BOUNDARY"
+          test "$(git show -s --format=%an "$publication_commit")" = "$PUBLIC_NAME"
+          test "$(git show -s --format=%ae "$publication_commit")" = "$PUBLIC_EMAIL"
+          test "$(git show -s --format=%cn "$publication_commit")" = "$PUBLIC_NAME"
+          test "$(git show -s --format=%ce "$publication_commit")" = "$PUBLIC_EMAIL"
+
+          printf 'source_sha=%s\n' "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$reviewed_tree" >> "$GITHUB_OUTPUT"
+          printf 'sha=%s\n' "$publication_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare immutable release ref
+        id: tag
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          PUBLICATION_COMMIT: ${{ steps.publication.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+            existing="$(git rev-parse "${TAG}^{commit}")"
+            test "$existing" = "$PUBLICATION_COMMIT"
+            printf 'existed=true\n' >> "$GITHUB_OUTPUT"
+          else
+            git update-ref "refs/tags/$TAG" "$PUBLICATION_COMMIT"
+            printf 'existed=false\n' >> "$GITHUB_OUTPUT"
+          fi
+
+          actual="$(git rev-parse "${TAG}^{commit}")"
+          test "$actual" = "$PUBLICATION_COMMIT"
+          printf 'sha=%s\n' "$actual" >> "$GITHUB_OUTPUT"
+
+      - name: Switch local main to clean publication lineage
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          PUBLICATION_COMMIT: ${{ steps.publication.outputs.sha }}
+          REVIEWED_TREE: ${{ steps.publication.outputs.tree }}
+        run: |
+          set -euo pipefail
+          git switch -C main "$PUBLICATION_COMMIT"
+          test "$(git branch --show-current)" = "main"
+          test "$(git rev-parse HEAD)" = "$PUBLICATION_COMMIT"
+          test "$(git rev-parse "HEAD^{tree}")" = "$REVIEWED_TREE"
+
+      - name: Run public-release preflight against clean lineage
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run preflight:public 2>&1 | tee /tmp/dwi-public-release-preflight.log
+
+      - name: Push immutable release tag
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          PUBLICATION_COMMIT: ${{ steps.publication.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          remote_sha="$(git ls-remote --tags origin "refs/tags/$TAG" | awk '{print $1}')"
+          if [ -n "$remote_sha" ]; then
+            test "$remote_sha" = "$PUBLICATION_COMMIT"
+            exit 0
+          fi
+
+          git push origin "refs/tags/$TAG"
+          remote_sha="$(git ls-remote --tags origin "refs/tags/$TAG" | awk '{print $1}')"
+          test "$remote_sha" = "$PUBLICATION_COMMIT"
+
+      - name: Publish GitHub Release
+        if: steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_RECORD: ${{ steps.release.outputs.release_record }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release view "$TAG"
+            exit 0
+          fi
+
+          gh release create "$TAG" \
+            --verify-tag \
+            --latest \
+            --title "Dwi $TAG" \
+            --notes-file "$RELEASE_RECORD"
+
+          gh release view "$TAG"
+
+      - name: Report reviewed release publication result
+        if: always() && steps.release.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          JOB_STATUS: ${{ job.status }}
+          SOURCE_COMMIT: ${{ steps.publication.outputs.source_sha }}
+          REVIEWED_TREE: ${{ steps.publication.outputs.tree }}
+          PUBLICATION_COMMIT: ${{ steps.publication.outputs.sha }}
+          TAG_COMMIT: ${{ steps.tag.outputs.sha }}
+          TAG_EXISTED: ${{ steps.tag.outputs.existed }}
+        run: |
+          set -euo pipefail
+          body_file="$(mktemp)"
+          {
+            printf '### Reviewed release publication\n\n'
+            printf -- '- Tag: `%s`\n' "$TAG"
+            printf -- '- Job status: `%s`\n' "$JOB_STATUS"
+            printf -- '- Workflow run ID: `%s`\n' "$GITHUB_RUN_ID"
+            printf -- '- Reviewed main commit: `%s`\n' "${SOURCE_COMMIT:-unknown}"
+            printf -- '- Reviewed tree: `%s`\n' "${REVIEWED_TREE:-unknown}"
+            printf -- '- Clean publication commit: `%s`\n' "${PUBLICATION_COMMIT:-unknown}"
+            printf -- '- Tag target: `%s`\n' "${TAG_COMMIT:-unknown}"
+            printf -- '- Tag existed before this run: `%s`\n' "${TAG_EXISTED:-unknown}"
+            if [ -f /tmp/dwi-public-release-preflight.log ]; then
+              printf '\n<details><summary>Public-release preflight tail</summary>\n\n```text\n'
+              tail -n 100 /tmp/dwi-public-release-preflight.log
+              printf '\n```\n</details>\n'
+            fi
+          } > "$body_file"
+          gh pr comment 5 --body-file "$body_file"
 
   public-release-preflight:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
@@ -54,11 +290,22 @@ jobs:
         with:
           node-version: "24"
           package-manager-cache: false
-      - name: Align a tag checkout with main
+      - name: Align clean tag checkout with reviewed main tree
         if: github.ref_type == 'tag'
+        env:
+          APPROVED_BOUNDARY: b15a45f00c03c325a12673123f685c32d1ecf8ab
+          PUBLIC_EMAIL: hoc@wi.works
         run: |
-          TAG_COMMIT="$(git rev-list -n 1 "$GITHUB_REF_NAME")"
-          git switch -C main --track origin/main
-          test "$(git rev-parse HEAD)" = "$TAG_COMMIT"
+          set -euo pipefail
+          git fetch origin main --force
+          tag_commit="$(git rev-list -n 1 "$GITHUB_REF_NAME")"
+          tag_tree="$(git rev-parse "${tag_commit}^{tree}")"
+          main_tree="$(git rev-parse "origin/main^{tree}")"
+          test "$tag_tree" = "$main_tree"
+          test "$(git rev-parse "${tag_commit}^")" = "$APPROVED_BOUNDARY"
+          test "$(git show -s --format=%ae "$tag_commit")" = "$PUBLIC_EMAIL"
+          test "$(git show -s --format=%ce "$tag_commit")" = "$PUBLIC_EMAIL"
+          git switch -C main "$tag_commit"
+          test "$(git branch --show-current)" = "main"
       - name: Run public-release preflight
         run: npm run preflight:public
