@@ -1,8 +1,8 @@
-# Release checklist for Dwi v0.2.4
+# Release checklist for Dwi v0.2.5
 
 Repository visibility, a development branch, a release tag, and a GitHub Release are separate states.
 
-The current release candidate is `v0.2.4`. Release `v0.2.3` remains the valid installation-contract release. This patch hardens installer validation and release-record detection without changing canonical module content or installed artifact shapes.
+The current release candidate is `v0.2.5`. Release `v0.2.4` remains immutable. This patch hardens the Codex metadata validator and its regression architecture without changing canonical module content or installed artifact shapes.
 
 Run:
 
@@ -12,7 +12,37 @@ npm run preflight:public
 
 The command checks automatable gates and lists manual GitHub or human gates. Static validation does not replace runtime evidence.
 
+## Blocking gates for v0.2.5
+
+- [x] `v0.2.5` has a versioned release record.
+- [x] `v0.2.4` remains immutable and valid.
+- [x] Canonical module bodies and SHA-256 values remain unchanged from `v0.2.0`.
+- [x] Codex and Claude installed artifact shapes remain unchanged from `v0.2.3`.
+- [x] Production installation uses one import-safe Codex metadata validator module.
+- [x] The validator accepts only the canonical top-level `interface` and `policy` schema.
+- [x] The validator requires exactly one unquoted direct `policy.allow_implicit_invocation` child with YAML boolean value `false`.
+- [x] Mapping values and mapping comments require YAML separation after `:`.
+- [x] Policy comments require separation before `#`; `false#note` is rejected.
+- [x] Multiline quoted scalars, block scalars, flow collections, anchors, aliases, custom tags, directives, document markers, sequences, explicit mapping keys, BOM input, and tabs anywhere in metadata are rejected.
+- [x] Plain scalars reject reserved leading indicators, unsafe mapping separators, and control characters.
+- [x] The schema rejects unknown top-level keys, unsupported interface keys, duplicate fields, and extra policy controls.
+- [x] The dedicated adversarial suite starts from canonical valid metadata, changes one target property per fixture, and asserts the targeted rejection reason.
+- [x] The adversarial suite covers 3 accepted and 30 targeted rejected fixtures.
+- [x] `npm test` includes repository validation, the dedicated adversarial suite, and the complete installed-artifact contract.
+- [x] Public-release preflight reruns the dedicated adversarial suite and installed-artifact contract.
+- [x] Repository and install contracts pass on Node.js 20 and 24 for commit `29436c8666970694b20264115992e3612bd47620` in workflow run `30184205631`.
+- [x] All seven modules pass Codex and Claude Code installed-artifact checks.
+- [x] Existing overwrite, malformed-target, source-checkout containment, symlink-alias, symlinked-entrypoint, documentation, and cleanup checks remain active.
+- [x] The two late actionable review threads on PR #8 were documented against PR #9 and resolved.
+- [x] All six actionable review threads produced on PR #9 through commit `8fd5b2f0ef6d6ffdd26b5796a841ea5a92c360dd` were addressed and resolved.
+- [ ] Codex completes a final review of commit `29436c8666970694b20264115992e3612bd47620` with no new actionable findings.
+- [x] Wi explicitly authorized completing and publishing `v0.2.5` immediately on 2026-07-26.
+- [ ] The exact `Release status: approved for publication` marker is added only after the final review gate closes.
+- [x] The clean-lineage workflow remains configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.5` tag, verify the remote tag target, and create the GitHub Release.
+
 ## Blocking gates for v0.2.4
+
+This historical section records the completed validation-hardening release.
 
 - [x] `v0.2.4` has a versioned release record.
 - [x] `v0.2.3` remains immutable and valid.
@@ -21,20 +51,12 @@ The command checks automatable gates and lists manual GitHub or human gates. Sta
 - [x] The production installer exports and uses one structural Codex metadata validator.
 - [x] The validator requires exactly one active `allow_implicit_invocation` declaration.
 - [x] The declaration must be an unquoted direct child of the single unquoted top-level `policy` block, use canonical indentation, and have boolean value `false`.
-- [x] Regression fixtures reject lookalike keys, comments posing as declarations, false-like strings, `true`, duplicate declarations, quoted and escaped equivalent keys, nested declarations, wrong blocks, wrong indentation, flow mappings, and duplicate policy blocks.
 - [x] Importing `scripts/install-module.mjs` does not execute the CLI entrypoint.
 - [x] Calling the installer through a symlinked entrypoint executes the CLI and creates the complete artifact.
-- [x] Release automation remains pinned to the triggering `GITHUB_SHA` before inspecting release records.
-- [x] Release automation compares the triggering commit with its first parent.
-- [x] Regression validation forbids the former commit-only `git diff-tree` release-record scan.
-- [x] Repository and install contracts pass on Node.js 20 and 24 for the complete candidate in workflow run `30180937560`.
-- [x] All actionable late review threads on PR #5 were documented and resolved.
-- [x] All actionable review threads on PR #8 were replied to and resolved.
-- [x] PR #8 was squash-merged after checks passed at commit `85ed839994de72f6c8a5ca5bedd2cc9de7a68134`.
-- [x] English, Vietnamese, Japanese, Korean, Simplified Chinese, French, and Hindi release-status surfaces identify `v0.2.4` consistently.
+- [x] Release automation remains pinned to the triggering `GITHUB_SHA` and compares it with its first parent.
+- [x] Repository and install contracts passed on Node.js 20 and 24.
+- [x] PR #8 was squash-merged after checks passed.
 - [x] Wi explicitly authorized completing and publishing this patch on 2026-07-26.
-- [x] This checklist commit closes every prerequisite before the separate final publication commit adds the exact `Release status: approved for publication` marker.
-- [x] The clean-lineage workflow is configured to create a tree-equivalent public-identity commit, run public-release preflight, push the immutable `v0.2.4` tag, verify the remote tag target, and create the GitHub Release.
 
 ## Blocking gates for v0.2.3
 
