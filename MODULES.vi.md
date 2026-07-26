@@ -27,7 +27,7 @@ Mỗi mô-đun chuyên biệt:
 
 Một bản cài explicit-only hoàn chỉnh phụ thuộc vào lớp công cụ:
 
-- Codex cài `SKILL.md` chuẩn cùng `agents/openai.yaml`, trong đó bắt buộc có `allow_implicit_invocation: false`.
+- Codex cài `SKILL.md` chuẩn cùng `agents/openai.yaml`, trong đó `policy.allow_implicit_invocation` phải là khai báo boolean `false` hoạt động duy nhất.
 - Claude Code cài bản được render từ `SKILL.md` chuẩn và thêm `disable-model-invocation: true` vào frontmatter.
 
 Hãy dùng trình cài đã duyệt thay vì chỉ sao chép `SKILL.md`.
@@ -43,7 +43,8 @@ Lần thử đầu nên dùng phạm vi dự án. Xem [hướng dẫn cài và g
 
 ## Tham chiếu phiên bản
 
-- `v0.2.3` là bản phát hành kho đã duyệt gần nhất và sửa hợp đồng cài explicit-only.
+- `v0.2.4` là bản phát hành kho đã duyệt gần nhất, siết kiểm tra policy Codex và phát hiện release record theo first parent.
+- `v0.2.3` vẫn là bản sửa installation contract; nội dung mô-đun và cấu trúc artifact đã cài không đổi trong `v0.2.4`.
 - Tag `v0.2.2` hiện có là một ref lịch sử không phát hành trỏ tới commit trước bản vá; không dùng tag này cho trình cài đã sửa.
 - Nội dung mô-đun chuẩn và mã SHA-256 không đổi so với `v0.2.0`.
 - `v0.2.1` vẫn là bản phát hành tài liệu đa ngôn ngữ trong lịch sử.
